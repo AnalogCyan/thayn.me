@@ -1,0 +1,5 @@
+# If you would like to report a security issue
+# you may report it to me at the email below.
+Contact: mailto:security@thayn.me
+Acknowledgments: https://thayn.me/security
+Preferred-Languages: en
