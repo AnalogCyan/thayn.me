@@ -1,4 +1,4 @@
-<h3 align="center"><img src="" alt="icon" height="200px"></h3>
+<h3 align="center"><img src="./logo.png" alt="icon" height="200px"></h3>
 <p align="center">My personal website & portfolio.</p>
 
 <p align="center">
