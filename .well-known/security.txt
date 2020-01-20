@@ -1,5 +1,6 @@
-# If you would like to report a security issue
-# you may report it to me at the email below.
 Contact: mailto:security@thayn.me
+Contact: https://twitter.com/AnalogCyan
+Encryption: https://thayn.me/.well-known/age-key.txt
 Acknowledgments: https://thayn.me/security
 Preferred-Languages: en
+Canonical: https://thayn.me/.well-known/security.txt
