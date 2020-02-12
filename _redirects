@@ -13,6 +13,4 @@ https://thayn.me/live/* https://live.thayn.me/:splat 301!
 https://live.thayn.me/* https://www.twitch.tv/AnalogCyan/:splat 301!
 https://live.thayn.me/archive/* https://www.youtube.com/channel/UCHLeNBitZ7EJswbHR--33aA/:splat 301!
 
-boole.thayn.me/* http://boole.cs.atu.edu/~jthayn/:splat 301!
-http://boole.thayn.me/* http://boole.cs.atu.edu/~jthayn/:splat 301!
-https://boole.thayn.me/* http://boole.cs.atu.edu/~jthayn/:splat 301!
+https://boole.thayn.me/* http://boole.cs.atu.edu/~jthayn/:splat 200!
