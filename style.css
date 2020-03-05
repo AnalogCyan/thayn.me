@@ -1,0 +1,117 @@
+body {
+  font-family: 'Source Code Pro', monospace;
+  background-color: #212121;
+  color: #FAFAFA;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-rows: max-content auto max-content;
+}
+
+header {
+  grid-column: 2;
+  grid-row: 1;
+  display: grid;
+  grid-template-columns: max-content auto;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+main {
+  grid-column: 2;
+  grid-row: 2;
+  color: yellow;
+  text-align: justify;
+}
+
+#basics {
+  display: block;
+  max-width: 350px;
+  grid-column: 1;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 400;
+}
+
+h2 {
+  font-size: 1.5em;
+  font-weight: 300;
+}
+
+#basics h2 {
+  margin-right: 2.5em;
+}
+
+#avatar {
+  border-radius: 50%;
+  width: 300px;
+  height: 300px;
+  margin: 0 0 10px 0;
+  overflow: hidden;
+  grid-column: 2;
+}
+
+
+/** Footer **/
+footer {
+  grid-column: 2;
+  grid-row: 3;
+  /*text-align: center;*/
+  font-weight: 400 !important;
+  font-size: 90% !important;
+  color: #9E9E9E;
+}
+
+#footer-span {
+  display: flex;
+  justify-content: space-between;
+}
+
+::selection {
+  background-color: #eb4888;
+  color: black;
+}
+
+/* unvisited link */
+footer a:link {
+  color: #9E9E9E;
+  text-decoration: none;
+}
+
+/* visited link */
+footer a:visited {
+  color: #9E9E9E;
+  text-decoration: none;
+}
+
+/* mouse over link */
+footer a:hover {
+  color: lightpink;
+  text-decoration: underline;
+}
+
+/* selected link */
+footer a:active {
+  color: lightpink;
+  text-decoration: underline;
+}
+
+
+/** Smaller Displays **/
+@media screen and (max-width: 900px) {
+  #footer-span {
+    display: initial;
+  }
+}
+
+@media screen and (max-width: 660px) {
+  body {
+    grid-template-columns: 1fr !important;
+  }
+
+  * {
+    grid-column: 1 !important;
+  }
+}
