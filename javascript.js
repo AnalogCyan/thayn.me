@@ -8,7 +8,7 @@ var quotes = [
   '<a href="https://youtu.be/Yw6u6YkTgQ4" target="_blank" rel="noopener">Hello, World!</a>',
   'Keep it simple, stupid!',
   '<a href="./javascript.js" target="_blank">Now with JavaScript!</a>',
-  '<i class="fab fa-html5"></i> <i class="fab fa-css3-alt"></i> <i class="fab fa-js-square"></i>',
+  '<i class="fab fa-html5"></i> <i class="fab fa-css3-alt"></i> <i class="fab fa-js-square"></i> <i class="fab fa-font-awesome"></i>',
   '<a href="https://en.wikipedia.org/wiki/Dieter_Rams#%22Good_design%22_principles" target="_blank" rel="noopener">Good design is...</a>',
   'DFTBA',
   'Don\'t forget to be awesome.',

@@ -17,6 +17,10 @@ header {
   margin-top: 3em;
 }
 
+header i {
+  font-size: 2em;
+}
+
 main {
   grid-column: 2;
   grid-row: 2;
@@ -55,6 +59,57 @@ h2 {
   grid-column: 2;
 }
 
+::selection {
+  background-color: #eb4888;
+  color: black;
+}
+
+#pronounis {
+  color: #f6cefc;
+}
+
+#pronounis:hover,
+#pronounis:active {
+  color: #eb4888;
+}
+
+#github {
+  color: #FFFFFF;
+}
+
+#github:hover,
+#github:active {
+  color: #eb4888;
+}
+
+#twitter {
+  color: #00aced;
+}
+
+#twitter:hover,
+#twitter:active {
+  color: #eb4888;
+}
+
+#twitch {
+  color: #6441A4;
+}
+
+#twitch:hover,
+#twitch:active {
+  color: #eb4888;
+}
+
+#email {
+  color: #1565c0;
+}
+
+#email:hover,
+#email:active {
+  color: #eb4888;
+}
+
+
 
 /** Footer **/
 footer {
@@ -66,14 +121,13 @@ footer {
   color: #9E9E9E;
 }
 
+#copy {
+  font-size: 80%;
+}
+
 #footer-span {
   display: flex;
   justify-content: space-between;
-}
-
-::selection {
-  background-color: #eb4888;
-  color: black;
 }
 
 /* unvisited link */
@@ -115,6 +169,10 @@ footer a:active {
 
   * {
     grid-column: 1 !important;
+  }
+
+  header {
+    text-align: center;
   }
 
   #basics h2,
