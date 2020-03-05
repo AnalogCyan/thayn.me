@@ -21,7 +21,7 @@ function newQuote() {
   var randQuote = quotes[randomNumber];
   document.getElementById('quoteDisplay').innerHTML = quotes[randomNumber];
 
-  if (randQuote.replace(/<[^>]*>/g, '').length <= 20) {
+  if (randQuote.replace(/<[^>]*>/g, '').length <= 15) {
     console.log(randomNumber);
     document.getElementById("footer-span").style.display = "flex";
     document.getElementById("footer-span").style.justifyContent = "space-between";
