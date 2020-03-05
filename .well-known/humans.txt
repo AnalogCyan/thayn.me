@@ -1,6 +1,7 @@
 # Thayn.me is built and maintained by JD "Cyan" Thayn.
 # It is updated continuously, and built to be simple, quick to load, and informative.
-# If you find something wrong or broken on this or any of my sites feel free to contact me.
+# If you find something wrong or broken on this or any of my sites feel free to contact me,
+# or open an issue on GitHub.
 # For security related problems, see https://thayn.me/.well-known/security.txt
 Twitter: @AnalogCyan
 Email: contact@thayn.me

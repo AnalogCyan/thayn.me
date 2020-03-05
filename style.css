@@ -1,7 +1,7 @@
 body {
   font-family: 'Source Code Pro', monospace;
   background-color: #212121;
-  color: #FAFAFA;
+  color: #FFFFFF;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: max-content auto max-content;
@@ -41,7 +41,9 @@ h2 {
 }
 
 #basics h2 {
+  color: #DADADA;
   margin-right: 2.5em;
+  margin-top: -0.75em;
 }
 
 #avatar {
