@@ -19,10 +19,9 @@ var quotes = [
 function newQuote() {
   var randomNumber = Math.floor(Math.random() * (quotes.length));
   var randQuote = quotes[randomNumber];
-  document.getElementById('quoteDisplay').innerHTML = quotes[randomNumber];
+  document.getElementById('quoteDisplay').innerHTML = randQuote;
 
   if (randQuote.replace(/<[^>]*>/g, '').length <= 15) {
-    console.log(randomNumber);
     document.getElementById("footer-span").style.display = "flex";
     document.getElementById("footer-span").style.justifyContent = "space-between";
   }
