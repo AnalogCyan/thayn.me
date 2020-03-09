@@ -116,8 +116,8 @@ footer {
   grid-column: 2;
   grid-row: 3;
   /*text-align: center;*/
-  font-weight: 400 !important;
-  font-size: 90% !important;
+  font-weight: 400;
+  font-size: 90%;
   color: #9E9E9E;
 }
 
@@ -164,15 +164,27 @@ footer a:active {
 
 @media screen and (max-width: 660px) {
   body {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 1fr;
   }
 
   * {
-    grid-column: 1 !important;
+    grid-column: 1;
   }
 
   header {
+    grid-template-columns: auto;
+    grid-template-rows: auto auto;
     text-align: center;
+  }
+
+  #basics {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  #avatar {
+    grid-column: 1;
+    grid-row: 2;
   }
 
   #basics h2,

@@ -14,7 +14,7 @@ var quotes = [
   'Don\'t forget to be awesome.',
   'Darling, fetch the battle axe.',
   '<a href="./.well-known/humans.txt">Run by humans (probably).</a>'
-]
+];
 
 function newQuote() {
   var randomNumber = Math.floor(Math.random() * (quotes.length));
