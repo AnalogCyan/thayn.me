@@ -1,0 +1,53 @@
+[[redirects]]
+  from = "https://cyan.thayn.me/*"
+  to = "https://thayn.me/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://thayn.netlify.com/*"
+  to = "https://thayn.me/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://git.thayn.me/*"
+  to = "https://www.github.com/AnalogCyan/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://thayn.me/live/*"
+  to = "https://live.thayn.me/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://archive.live.thayn.me/*"
+  to = "https://www.youtube.com/channel/UCHLeNBitZ7EJswbHR--33aA/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://live.thayn.me/archive/*"
+  to = "https://www.youtube.com/channel/UCHLeNBitZ7EJswbHR--33aA/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://live.thayn.me/*"
+  to = "https://www.twitch.tv/AnalogCyan/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://boole.thayn.me/*"
+  to = "http://boole.cs.atu.edu/~jthayn/:splat"
+  status = 200
+  force = true
+
+[[plugins]]
+package = "netlify-plugin-checklinks"
+
+[[plugins]]
+package = "netlify-plugin-subfont"
