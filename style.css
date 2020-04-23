@@ -1,10 +1,20 @@
 body {
   font-family: 'Source Code Pro', monospace;
-  background-color: #212121;
+  background-color: #080808;
   color: #FFFFFF;
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   grid-template-rows: max-content auto max-content;
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--scrollbarBG);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: var(--thumbBG);
+  border-radius: 6px;
+  border: 3px solid var(--scrollbarBG);
 }
 
 header {
@@ -24,8 +34,6 @@ header i {
 main {
   grid-column: 2;
   grid-row: 2;
-  color: yellow;
-  text-align: center;
 }
 
 #basics {
@@ -68,42 +76,30 @@ h2 {
   color: #f6cefc;
 }
 
-#pronounis:hover,
-#pronounis:active {
-  color: #eb4888;
-}
-
 #github {
   color: #FFFFFF;
-}
-
-#github:hover,
-#github:active {
-  color: #eb4888;
 }
 
 #twitter {
   color: #00aced;
 }
 
-#twitter:hover,
-#twitter:active {
-  color: #eb4888;
-}
-
 #twitch {
   color: #6441A4;
-}
-
-#twitch:hover,
-#twitch:active {
-  color: #eb4888;
 }
 
 #email {
   color: #1565c0;
 }
 
+#pronounis:hover,
+#pronounis:active,
+#github:hover,
+#github:active,
+#twitter:hover,
+#twitter:active,
+#twitch:hover,
+#twitch:active,
 #email:hover,
 #email:active {
   color: #eb4888;
@@ -143,17 +139,12 @@ footer a:visited {
 }
 
 /* mouse over link */
-footer a:hover {
-  color: lightpink;
-  text-decoration: underline;
-}
-
 /* selected link */
+footer a:hover,
 footer a:active {
-  color: lightpink;
+  color: #eb4888;
   text-decoration: underline;
 }
-
 
 /** Smaller Displays **/
 @media screen and (max-width: 900px) {
@@ -167,11 +158,14 @@ footer a:active {
     grid-template-columns: 1fr;
   }
 
-  * {
+  *,
+  main,
+  footer {
     grid-column: 1;
   }
 
   header {
+    grid-column: 1;
     grid-template-columns: auto;
     grid-template-rows: auto auto;
     text-align: center;
@@ -203,4 +197,44 @@ footer a:active {
   position: relative;
   display: inline-block;
   border-bottom: 1px dotted #FAFAFA;
+}
+
+/** Light theme **/
+@media screen and (prefers-color-scheme: light) {
+  body {
+    background-color: #FFFFFF;
+    color: #000000;
+  }
+
+  #basics h2 {
+    color: #252525;
+  }
+
+  #pronounis {
+    color: #f29bff;
+  }
+
+  #github {
+    color: #252525;
+  }
+
+  #twitter {
+    color: #00aced;
+  }
+
+  #twitch {
+    color: #6441A4;
+  }
+
+  #email {
+    color: #1565c0;
+  }
+
+  main {
+    color: #0000ff;
+  }
+
+  footer {
+    color: #616161;
+  }
 }

@@ -16,6 +16,21 @@ var quotes = [
   '<a href="./.well-known/humans.txt">Run by humans (probably).</a>'
 ];
 
+window.onload = function load() {
+  randAvatar();
+  newQuote();
+
+  setInterval(() => {
+    randAvatar();
+  }, 2500);
+
+}
+
+function randAvatar() {
+  var randomNumber = Math.floor(Math.random() * 2) + 1;
+  document.getElementById("avatar").src = `./media/${randomNumber}.jpg`;
+}
+
 function newQuote() {
   var randomNumber = Math.floor(Math.random() * (quotes.length));
   var randQuote = quotes[randomNumber];
