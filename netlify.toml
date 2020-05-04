@@ -46,15 +46,9 @@
   status = 200
   force = true
 
-  [[redirects]]
+[[redirects]]
   from = "http://docker.thayn.me/*"
   to = "http://70.178.161.114:8080/:splat"
-  status = 200
-  force = true
-
-  [[redirects]]
-  from = "https://docker.thayn.me/*"
-  to = "https://70.178.161.114:4043/:splat"
   status = 200
   force = true
 
