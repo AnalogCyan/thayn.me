@@ -47,9 +47,9 @@
   force = true
 
 [[redirects]]
-  from = "https://docker.thayn.me/*"
-  to = "http://***REMOVED***:8080/:splat"
-  status = 200
+  from = "https://files.thayn.me/*"
+  to = "https://keybase.pub/analogcyan/:splat"
+  status = 301
   force = true
 
 [[plugins]]
