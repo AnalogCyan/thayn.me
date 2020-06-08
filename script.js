@@ -1,14 +1,15 @@
 // Hey look, this is what's in the thayn.me JavaScript file!
-// If you got here from the site footer, below is a list of all the quotes that can show up there!
+// If you got here from the site footer, you can find a list of all the quotes that can show up there
+// at https://thayn.me/media/quotes.txt
 
 window.onload = function load() {
-  randAvatar();
+  //randAvatar();
   newQuote();
   deadPixel();
 
-  setInterval(() => {
-    randAvatar();
-  }, 2500);
+  //setInterval(() => {
+  //  randAvatar();
+  //}, 2500);
 };
 
 function loadFile(filePath) {
