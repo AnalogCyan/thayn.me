@@ -1,6 +1,6 @@
 Contact: mailto:security@thayn.me
 Contact: https://twitter.com/AnalogCyan
-Encryption: https://thayn.me/.well-known/age-key.txt
-Acknowledgments: https://thayn.me/security
+Encryption: https://thayn.me/.well-known/keys/pgp-public.key
+Encryption: https://thayn.me/.well-known/keys/age-public.key
 Preferred-Languages: en
 Canonical: https://thayn.me/.well-known/security.txt
