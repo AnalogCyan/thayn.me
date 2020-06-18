@@ -1,3 +1,6 @@
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cdb2487986e94f0f87efb9b9688496aa)](https://app.codacy.com/manual/AnalogCyan/thayn.me?utm_source=github.com&utm_medium=referral&utm_content=AnalogCyan/thayn.me&utm_campaign=Badge_Grade_Dashboard)
+
 <h3 align="center"><img src="./media/logo.png" alt="icon" height="200px"></h3>
 <p align="center">My personal website & portfolio.</p>
 
