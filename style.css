@@ -242,10 +242,19 @@ footer a:active {
   }
 
   main {
-    color: #0000ff;
+    color: #000000;
   }
 
-  footer {
+  .projectLink:link,
+  .projectLink:visited,
+  .projectLink:hover,
+  .projectLink:active {
+    color: #000000;
+  }
+
+  footer,
+  footer a:link,
+  footer a:visited {
     color: #616161;
   }
 }
