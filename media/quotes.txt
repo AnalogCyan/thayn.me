@@ -10,3 +10,4 @@ Don't forget to be awesome.
 Darling, fetch the battle axe.
 <a href="./.well-known/humans.txt">Run by humans (probably).</a>
 Did you find the dead pixel?
+Made with <i class="fas fa-heart"></i>
