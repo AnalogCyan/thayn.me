@@ -48,13 +48,30 @@ h2 {
   margin-top: -0.75em;
 }
 
-#avatar {
+#avatar,
+#avatar img {
   border-radius: 50%;
   width: 300px;
   height: 300px;
   margin: 0 0 10px 0;
   overflow: hidden;
   grid-column: 2;
+}
+
+#avatar img {
+  -webkit-transition: opacity 1s ease-in-out;
+  -moz-transition: opacity 1s ease-in-out;
+  -o-transition: opacity 1s ease-in-out;
+  transition: opacity 1s ease-in-out;
+}
+
+#avatar img.top {
+  position: absolute;
+  margin-left: -300px;
+}
+
+#avatar img.top:hover {
+  opacity: 0;
 }
 
 ::selection {
@@ -100,6 +117,7 @@ h2 {
 
 .projectInfo {
   grid-column: 3;
+  max-width: 22em;
 }
 
 .projectInfo p {
