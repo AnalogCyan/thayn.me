@@ -17,12 +17,6 @@
   force = true
 
 [[redirects]]
-  from = "https://👩‍💻.thayn.me/*"
-  to = "https://www.github.com/AnalogCyan/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
   from = "https://xn--rq8hef.thayn.me/*"
   to = "https://www.github.com/AnalogCyan/:splat"
   status = 301
