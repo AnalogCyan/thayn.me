@@ -17,6 +17,18 @@
   force = true
 
 [[redirects]]
+  from = "https://xn--rq8hef.thayn.me/*"
+  to = "https://www.github.com/AnalogCyan/:splat"
+  status = 301
+  force = true
+
+  [[redirects]]
+  from = "https://xn--nl8h.thayn.me/*"
+  to = "https://open.spotify.com/user/fsy82d6sk34ice2jffwxgmxfh/playlists/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "https://thayn.me/live/*"
   to = "https://live.thayn.me/:splat"
   status = 301
