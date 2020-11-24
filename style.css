@@ -232,6 +232,9 @@ footer a:active {
   .projectInfo {
     margin-top: -0.75em;
   }
+  .projectOther {
+    display: block;
+  }
 }
 
 /** Tooltip **/
