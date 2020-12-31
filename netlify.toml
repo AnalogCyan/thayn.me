@@ -88,6 +88,7 @@ package = "netlify-plugin-checklinks"
   skipPatterns = [
     "https://boole.thayn.me/",
     "http://boole.cs.atu.edu/*",
+    "https://twitter.com/AnalogCyan",
   ]
 
   # You can mark some check as todo, which will execute the check, but allow failures.
