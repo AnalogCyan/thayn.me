@@ -1,13 +1,16 @@
 Are you ready to embrace uncertainty?
 Are you ready to embrace uncertainty?
+Did you find the dead pixel?
+Did you find the dead pixel?
+Made with <i class="fas fa-heart"></i>
+Made with <i class="fas fa-heart"></i>
+<i class="fab fa-html5"></i> <i class="fab fa-css3-alt"></i> <i class="fab fa-js-square"></i> <i class="fab fa-font-awesome"></i>
+<i class="fab fa-html5"></i> <i class="fab fa-css3-alt"></i> <i class="fab fa-js-square"></i> <i class="fab fa-font-awesome"></i>
 <a href="https://slimegirls.bandcamp.com/album/vacation-wasteland-ep" target="_blank" rel="noopener">Please listen kindly.</a>
 <a href="https://youtu.be/Yw6u6YkTgQ4" target="_blank" rel="noopener">Hello, World!</a>
 Keep it simple, stupid!
 <a href="./script.js" target="_blank">Now with JavaScript!</a>
-<i class="fab fa-html5"></i> <i class="fab fa-css3-alt"></i> <i class="fab fa-js-square"></i> <i class="fab fa-font-awesome"></i>
 DFTBA
 Don't forget to be awesome.
 Darling, fetch the battle axe.
 <a href="./.well-known/humans.txt">Run by humans (probably).</a>
-Did you find the dead pixel?
-Made with <i class="fas fa-heart"></i>
