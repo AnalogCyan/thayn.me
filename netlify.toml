@@ -64,6 +64,12 @@
   status = 301
   force = true
 
+[[redirects]]
+  from = "https://canary.thayn.me/*"
+  to = "http://canarytokens.com/:splat"
+  status = 200
+  force = true
+
 [[plugins]]
 package = "netlify-plugin-checklinks"
 
