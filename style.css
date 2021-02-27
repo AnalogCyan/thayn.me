@@ -49,6 +49,10 @@ h2 {
   margin-top: -0.75em;
 }
 
+.IT {
+  display: inline-block;
+}
+
 #avatar,
 #avatar img {
   border-radius: 50%;
@@ -178,6 +182,13 @@ footer a:active {
 }
 
 @media screen and (max-width: 675px) {
+  .IT span {
+    display: none;
+  }
+  .IT:after {
+    content: "IT";
+  }
+
   body {
     grid-template-columns: 1fr;
   }
