@@ -257,7 +257,7 @@ footer a:active {
   border-bottom: 1px dotted #fafafa;
 }
 
-/** Light theme **/
+/** Light theme
 @media screen and (prefers-color-scheme: light) {
   main,
   body {
@@ -312,7 +312,7 @@ footer a:active {
     color: #eb4888;
     text-decoration: underline;
   }
-}
+}**/
 
 /** Inspired (copied) from /r/ProgrammerHumor... **/
 #broken-green-pixel {
