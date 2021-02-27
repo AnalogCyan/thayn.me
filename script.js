@@ -4,6 +4,7 @@
 
 window.onload = function load() {
   //randAvatar();
+  copyDate();
   newQuote();
   deadPixel();
 
@@ -21,6 +22,10 @@ function loadFile(filePath) {
     result = xmlhttp.responseText;
   }
   return result;
+}
+
+function copyDate() {
+  document.getElementById("cDate").innerHTML = new Date().getFullYear();
 }
 
 function randAvatar() {
