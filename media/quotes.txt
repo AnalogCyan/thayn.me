@@ -15,4 +15,4 @@ DFTBA
 Don't forget to be awesome.
 Darling, fetch the battle axe.
 <a href="./.well-known/humans.txt">Run by humans (probably).</a>
-Some of these are links!
+<a href="./media/quotes.txt">Some of these are links!</a>
