@@ -129,6 +129,12 @@ h2 {
   margin-top: -0.75em;
 }
 
+.projectOther {
+  color: gray;
+  font-style: italic;
+  font-weight: lighter;
+}
+
 .projectLink:link,
 .projectLink:visited,
 .projectLink:hover,
