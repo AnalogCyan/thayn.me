@@ -3,5 +3,8 @@
     "autoprefixer": "^10.3.2",
     "postcss": "^8.3.6",
     "tailwindcss": "^2.2.7"
+  },
+  "scripts": {
+    "build-css": "tailwindcss build -i css/tailwind.css -o css/styles.css"
   }
 }

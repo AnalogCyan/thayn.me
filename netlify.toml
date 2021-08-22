@@ -82,6 +82,9 @@
   status = 302
   force = true
 
+[[build]]
+  command = "npm run build-css"
+
 [[plugins]]
 package = "netlify-plugin-checklinks"
 
