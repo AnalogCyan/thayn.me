@@ -6,5 +6,8 @@
   },
   "scripts": {
     "build-css": "tailwindcss build -i css/tailwind.css -o css/styles.css"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4"
   }
 }
