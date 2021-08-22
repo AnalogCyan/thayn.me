@@ -119,3 +119,6 @@ dist
 
 # Old Site files
 old
+
+# Misc
+css/styles.css
