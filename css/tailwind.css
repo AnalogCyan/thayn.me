@@ -6,6 +6,10 @@
   html {
     -webkit-tap-highlight-color: transparent;
   }
+  ::selection {
+    background-color: #eb4888;
+    color: black;
+  }
   #broken-green-pixel {
     background-color: #f0f;
     width: 1px;

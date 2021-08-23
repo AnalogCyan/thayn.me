@@ -6,14 +6,14 @@ Made with <i class="fas fa-heart"></i>
 Made with <i class="fas fa-heart"></i>
 <i class="fab fa-html5"></i> <i class="fab fa-css3-alt"></i> <i class="fab fa-js-square"></i> <i class="fab fa-font-awesome"></i>
 <i class="fab fa-html5"></i> <i class="fab fa-css3-alt"></i> <i class="fab fa-js-square"></i> <i class="fab fa-font-awesome"></i>
-<a href="https://slimegirls.bandcamp.com/album/vacation-wasteland-ep" target="_blank" rel="noopener">Please listen kindly.</a>
+<a href="https://slimegirls.bandcamp.com/album/vacation-wasteland-ep" target="_blank" rel="noopener" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Please listen kindly.</a>
 You belong, always.
-<a href="https://youtu.be/Yw6u6YkTgQ4" target="_blank" rel="noopener">Hello, World!</a>
+<a href="https://youtu.be/Yw6u6YkTgQ4" target="_blank" rel="noopener" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Hello, World!</a>
 Keep it simple, stupid!
-<a href="./script.js" target="_blank">Now with JavaScript!</a>
-<a href="./script.js" target="_blank">Now with Tailwind!</a>
+<a href="./script.js" target="_blank" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Now with JavaScript!</a>
+<a href="./script.js" target="_blank" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Now with Tailwind!</a>
 DFTBA
 Don't forget to be awesome.
 Darling, fetch the battle axe.
-<a href="./.well-known/humans.txt">Run by humans (probably).</a>
-<a href="./media/quotes.txt">Some of these are links!</a>
+<a href="./.well-known/humans.txt" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Run by humans (probably).</a>
+<a href="./media/quotes.txt" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Some of these are links!</a>
