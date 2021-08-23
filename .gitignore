@@ -122,3 +122,5 @@ old
 
 # Misc
 css/generated
+# Local Netlify folder
+.netlify
