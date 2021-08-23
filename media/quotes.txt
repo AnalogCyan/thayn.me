@@ -11,6 +11,7 @@ You belong, always.
 <a href="https://youtu.be/Yw6u6YkTgQ4" target="_blank" rel="noopener">Hello, World!</a>
 Keep it simple, stupid!
 <a href="./script.js" target="_blank">Now with JavaScript!</a>
+<a href="./script.js" target="_blank">Now with Tailwind!</a>
 DFTBA
 Don't forget to be awesome.
 Darling, fetch the battle axe.
