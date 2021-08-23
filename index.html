@@ -22,67 +22,65 @@
     <!-- Projects -->
     <div
       class="
-        bg-transparent
-        min-h-full
-        p-6
         grid
         gap-6
-        place-content-center
         items-center
         justify-center
+        place-content-center
+        p-6
+        min-h-full
+        bg-transparent
         overflow-hidden
       "
     >
       <!-- Header -->
       <div
         class="
+          flex flex-none flex-col
+          items-center
+          justify-center
           p-6
           bg-gradient-to-b
-          from-gray-800
-          via-gray-900
-          to-transparent
-          flex-none
-          sm:flex
-          items-center
           rounded-3xl
-          duration-500
+          from-gray-800
+          to-transparent
+          via-gray-900
           overflow-hidden
-          flex flex-col
-          sm:flex-row-reverse sm:justify-between
-          justify-center
+          duration-500
+          sm:flex sm:flex-row-reverse sm:justify-between
         "
       >
         <img
           src="./media/profile.jpg"
           alt=""
-          class="h-40 w-40 sm:mb-0 mb-3 object-cover rounded-2xl flex"
+          class="flex mb-3 w-40 h-40 rounded-2xl object-cover sm:mb-0"
         />
         <img
           src="./media/profileColorPop.jpg"
           alt=""
           class="
-            opacity-100
-            hover:opacity-0
-            transition
-            duration-1000
-            h-40
-            w-40
-            sm:mb-0
-            mb-3
-            object-cover
-            rounded-2xl
             absolute
             top-12
+            mb-3
+            w-40
+            h-40
+            rounded-2xl
+            hover:opacity-0
+            opacity-100
+            object-cover
+            transition
+            duration-1000
+            sm:mb-0
           "
         />
         <div class="flex flex-col items-center">
-          <div class="text-2xl text-gray-200 font-bold leading-none">
+          <div class="text-gray-200 text-2xl font-bold leading-none">
             JD "Cyan" Thayn
           </div>
-          <div class="text-lg text-gray-400 my-1">
+          <div class="my-1 text-gray-400 text-lg">
             <span>Information Technology</span>
           </div>
-          <div class="text-2xl inline-flex space-x-4">
+          <div class="inline-flex text-2xl space-x-4">
             <a
               href="https://pronoun.is/they/them"
               target="_blank"
@@ -93,9 +91,10 @@
               class="
                 text-pink-200
                 hover:text-pink-500
+                motion-reduce:transform-none
                 transition
+                motion-reduce:transition-none
                 duration-500
-                motion-reduce:transition-none motion-reduce:transform-none
               "
               ><i class="fas fa-transgender-alt"></i
             ></a>
@@ -107,11 +106,12 @@
               title="GitHub"
               tabindex="2"
               class="
-                text-white
                 hover:text-pink-500
+                text-white
+                motion-reduce:transform-none
                 transition
+                motion-reduce:transition-none
                 duration-500
-                motion-reduce:transition-none motion-reduce:transform-none
               "
               ><i class="fab fa-github"></i
             ></a>
@@ -125,9 +125,10 @@
               class="
                 text-blue-500
                 hover:text-pink-500
+                motion-reduce:transform-none
                 transition
+                motion-reduce:transition-none
                 duration-500
-                motion-reduce:transition-none motion-reduce:transform-none
               "
               ><i class="fab fa-twitter"></i
             ></a>
@@ -139,11 +140,12 @@
               title="Twitch"
               tabindex="4"
               class="
-                text-purple-700
                 hover:text-pink-500
+                text-purple-700
+                motion-reduce:transform-none
                 transition
+                motion-reduce:transition-none
                 duration-500
-                motion-reduce:transition-none motion-reduce:transform-none
               "
               ><i class="fab fa-twitch"></i
             ></a>
@@ -157,9 +159,10 @@
               class="
                 text-blue-800
                 hover:text-pink-500
+                motion-reduce:transform-none
                 transition
+                motion-reduce:transition-none
                 duration-500
-                motion-reduce:transition-none motion-reduce:transform-none
               "
               ><i class="fas fa-envelope-open-text"></i
             ></a>
@@ -172,49 +175,51 @@
       <a href="https://github.com/AnalogCyan/SwiftWin">
         <div
           class="
-            p-6
-            bg-gray-900
             flex-col
             items-center
+            p-6
+            bg-gray-900
             rounded-3xl
+            hover:shadow-glow
             shadow-md
-            hover:shadow-glow hover:scale-105
-            transition
-            transform
-            motion-reduce:transition-none motion-reduce:transform-none
-            duration-500
             cursor-pointer
             overflow-hidden
+            transform
+            motion-reduce:transform-none
+            hover:scale-105
+            transition
+            motion-reduce:transition-none
+            duration-500
           "
         >
-          <h1 class="text-xl font-bold text-gray-50 mb-2">
+          <h1 class="mb-2 text-gray-50 text-xl font-bold">
             🔮 SwiftWin
-            <div class="sm:flex sm:pl-0 pl-2 float-right w-min">
+            <div class="float-right pl-2 w-min sm:flex sm:pl-0">
               <div
                 class="
-                  float-right
-                  sm:float-none
                   flex-auto
-                  justify-center
-                  w-min
                   items-center
+                  justify-center
+                  float-right
                   m-1
-                  font-medium
-                  py-1
                   px-2
-                  rounded-full
+                  py-1
+                  w-min
                   text-yellow-800
+                  font-medium
                   bg-yellow-100
                   border border-yellow-800
+                  rounded-full
+                  sm:float-none
                 "
               >
                 <div
                   class="
+                    flex-initial
+                    max-w-full
                     text-xs
                     font-normal
                     leading-none
-                    max-w-full
-                    flex-initial
                   "
                 >
                   WIP
@@ -222,30 +227,29 @@
               </div>
               <div
                 class="
-                  float-right
-                  sm:float-none
                   flex-auto
-                  justify-center
-                  w-min
                   items-center
+                  justify-center
+                  float-right
                   m-1
-                  font-medium
-                  py-1
                   px-2
-                  bg-white
-                  rounded-full
+                  py-1
+                  w-min
                   text-blue-700
-                  bg-blue-100
+                  font-medium
+                  bg-blue-100 bg-white
                   border border-blue-700
+                  rounded-full
+                  sm:float-none
                 "
               >
                 <div
                   class="
+                    flex-initial
+                    max-w-full
                     text-xs
                     font-normal
                     leading-none
-                    max-w-full
-                    flex-initial
                   "
                 >
                   PowerShell
@@ -253,30 +257,29 @@
               </div>
               <div
                 class="
-                  float-right
-                  sm:float-none
                   flex-auto
-                  justify-center
-                  w-min
                   items-center
+                  justify-center
+                  float-right
                   m-1
-                  font-medium
-                  py-1
                   px-2
-                  bg-white
-                  rounded-full
+                  py-1
+                  w-min
                   text-blue-700
-                  bg-blue-100
+                  font-medium
+                  bg-blue-100 bg-white
                   border border-blue-700
+                  rounded-full
+                  sm:float-none
                 "
               >
                 <div
                   class="
+                    flex-initial
+                    max-w-full
                     text-xs
                     font-normal
                     leading-none
-                    max-w-full
-                    flex-initial
                   "
                 >
                   GPLv3
@@ -284,7 +287,7 @@
               </div>
             </div>
           </h1>
-          <p class="text-gray-100 min-w-prose max-w-prose text-sm">
+          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
             PowerShell utility for performing a series of Windows maintenance
             tasks I commonly use when cleaning up and optimizing a system.
           </p>
@@ -296,50 +299,50 @@
       <a href="https://itadakimasu.app/">
         <div
           class="
-            p-6
-            bg-gray-900
             flex-col
             items-center
+            p-6
+            bg-gray-900
             rounded-3xl
+            hover:shadow-glow
             shadow-md
-            hover:shadow-glow hover:scale-105
-            transition
-            transform
-            duration-500
             cursor-pointer
             overflow-hidden
+            transform
+            hover:scale-105
+            transition
+            duration-500
           "
         >
           <div>
-            <h1 class="text-xl font-bold text-gray-50 mb-2">
+            <h1 class="mb-2 text-gray-50 text-xl font-bold">
               🔑 Itadakimasu
-              <div class="sm:flex sm:pl-0 pl-2 float-right w-min">
+              <div class="float-right pl-2 w-min sm:flex sm:pl-0">
                 <div
                   class="
-                    float-right
-                    sm:float-none
                     flex-auto
-                    justify-center
-                    w-min
                     items-center
+                    justify-center
+                    float-right
                     m-1
-                    font-medium
-                    py-1
                     px-2
-                    bg-white
-                    rounded-full
+                    py-1
+                    w-min
                     text-blue-700
-                    bg-blue-100
+                    font-medium
+                    bg-blue-100 bg-white
                     border border-blue-700
+                    rounded-full
+                    sm:float-none
                   "
                 >
                   <div
                     class="
+                      flex-initial
+                      max-w-full
                       text-xs
                       font-normal
                       leading-none
-                      max-w-full
-                      flex-initial
                     "
                   >
                     PWA
@@ -347,30 +350,29 @@
                 </div>
                 <div
                   class="
-                    float-right
-                    sm:float-none
                     flex-auto
-                    justify-center
-                    w-min
                     items-center
+                    justify-center
+                    float-right
                     m-1
-                    font-medium
-                    py-1
                     px-2
-                    bg-white
-                    rounded-full
+                    py-1
+                    w-min
                     text-blue-700
-                    bg-blue-100
+                    font-medium
+                    bg-blue-100 bg-white
                     border border-blue-700
+                    rounded-full
+                    sm:float-none
                   "
                 >
                   <div
                     class="
+                      flex-initial
+                      max-w-full
                       text-xs
                       font-normal
                       leading-none
-                      max-w-full
-                      flex-initial
                     "
                   >
                     GPLv3
@@ -378,7 +380,7 @@
                 </div>
               </div>
             </h1>
-            <p class="text-gray-100 min-w-prose max-w-prose text-sm">
+            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
               Random recipe password generator web app inspired by episode 'Nice
               Security Hollywood Terror' of the Random but Memorable podcast
               from 1Password.
@@ -392,49 +394,50 @@
       <a href="https://github.com/AnalogCyan/Rati">
         <div
           class="
-            p-6
-            bg-gray-900
             flex-col
             items-center
+            p-6
+            bg-gray-900
             rounded-3xl
+            hover:shadow-glow
             shadow-md
-            hover:shadow-glow hover:scale-105
-            transition
-            transform
-            duration-500
             cursor-pointer
             overflow-hidden
+            transform
+            hover:scale-105
+            transition
+            duration-500
           "
         >
           <div>
-            <h1 class="text-xl font-bold text-gray-50 mb-2">
+            <h1 class="mb-2 text-gray-50 text-xl font-bold">
               🖼️ Rati
-              <div class="sm:flex sm:pl-0 pl-2 float-right w-min">
+              <div class="float-right pl-2 w-min sm:flex sm:pl-0">
                 <div
                   class="
-                    float-right
-                    sm:float-none
                     flex-auto
-                    justify-center
-                    w-min
                     items-center
+                    justify-center
+                    float-right
                     m-1
-                    font-medium
-                    py-1
                     px-2
-                    rounded-full
+                    py-1
+                    w-min
                     text-yellow-800
+                    font-medium
                     bg-yellow-100
                     border border-yellow-800
+                    rounded-full
+                    sm:float-none
                   "
                 >
                   <div
                     class="
+                      flex-initial
+                      max-w-full
                       text-xs
                       font-normal
                       leading-none
-                      max-w-full
-                      flex-initial
                     "
                   >
                     WIP
@@ -442,30 +445,29 @@
                 </div>
                 <div
                   class="
-                    float-right
-                    sm:float-none
                     flex-auto
-                    justify-center
-                    w-min
                     items-center
+                    justify-center
+                    float-right
                     m-1
-                    font-medium
-                    py-1
                     px-2
-                    bg-white
-                    rounded-full
+                    py-1
+                    w-min
                     text-blue-700
-                    bg-blue-100
+                    font-medium
+                    bg-blue-100 bg-white
                     border border-blue-700
+                    rounded-full
+                    sm:float-none
                   "
                 >
                   <div
                     class="
+                      flex-initial
+                      max-w-full
                       text-xs
                       font-normal
                       leading-none
-                      max-w-full
-                      flex-initial
                     "
                   >
                     Flutter
@@ -473,7 +475,7 @@
                 </div>
               </div>
             </h1>
-            <p class="text-gray-100 min-w-prose max-w-prose text-sm">
+            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
               A tag-based photo organizer app. Still in planning stages.
             </p>
           </div>
@@ -485,50 +487,50 @@
       <a href="https://github.com/AnalogCyan/More-Vanilla-Mobs">
         <div
           class="
-            p-6
-            bg-gray-900
             flex-col
             items-center
+            p-6
+            bg-gray-900
             rounded-3xl
+            hover:shadow-glow
             shadow-md
-            hover:shadow-glow hover:scale-105
-            transition
-            transform
-            duration-500
             cursor-pointer
             overflow-hidden
+            transform
+            hover:scale-105
+            transition
+            duration-500
           "
         >
           <div>
-            <h1 class="text-xl font-bold text-gray-50 mb-2">
+            <h1 class="mb-2 text-gray-50 text-xl font-bold">
               🎮 More Vanilla Mobs
-              <div class="sm:flex sm:pl-0 pl-2 float-right w-min">
+              <div class="float-right pl-2 w-min sm:flex sm:pl-0">
                 <div
                   class="
-                    float-right
-                    sm:float-none
                     flex-auto
-                    justify-center
-                    w-min
                     items-center
+                    justify-center
+                    float-right
                     m-1
-                    font-medium
-                    py-1
                     px-2
-                    bg-white
-                    rounded-full
+                    py-1
+                    w-min
                     text-blue-700
-                    bg-blue-100
+                    font-medium
+                    bg-blue-100 bg-white
                     border border-blue-700
+                    rounded-full
+                    sm:float-none
                   "
                 >
                   <div
                     class="
+                      flex-initial
+                      max-w-full
                       text-xs
                       font-normal
                       leading-none
-                      max-w-full
-                      flex-initial
                     "
                   >
                     mcfunction
@@ -536,30 +538,29 @@
                 </div>
                 <div
                   class="
-                    float-right
-                    sm:float-none
                     flex-auto
-                    justify-center
-                    w-min
                     items-center
+                    justify-center
+                    float-right
                     m-1
-                    font-medium
-                    py-1
                     px-2
-                    bg-white
-                    rounded-full
+                    py-1
+                    w-min
                     text-blue-700
-                    bg-blue-100
+                    font-medium
+                    bg-blue-100 bg-white
                     border border-blue-700
+                    rounded-full
+                    sm:float-none
                   "
                 >
                   <div
                     class="
+                      flex-initial
+                      max-w-full
                       text-xs
                       font-normal
                       leading-none
-                      max-w-full
-                      flex-initial
                     "
                   >
                     GPLv3
@@ -567,7 +568,7 @@
                 </div>
               </div>
             </h1>
-            <p class="text-gray-100 min-w-prose max-w-prose text-sm">
+            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
               Minecraft 1.17+ data pack that implements some of the mobs that
               technically exist in the game, but don't appear in survival.
             </p>
@@ -580,49 +581,49 @@
       <a href="https://github.com/Box-Analyst/InventorySystem">
         <div
           class="
-            p-6
-            bg-gray-900
             flex-col
             items-center
+            p-6
+            bg-gray-900
             rounded-3xl
+            hover:shadow-glow
             shadow-md
-            hover:shadow-glow hover:scale-105
-            transition
-            transform
-            duration-500
             cursor-pointer
             overflow-hidden
+            transform
+            hover:scale-105
+            transition
+            duration-500
           "
         >
-          <h1 class="text-xl font-bold text-gray-50 mb-2">
+          <h1 class="mb-2 text-gray-50 text-xl font-bold">
             🏥 InventorySystem
-            <div class="sm:flex sm:pl-0 pl-2 float-right w-min">
+            <div class="float-right pl-2 w-min sm:flex sm:pl-0">
               <div
                 class="
-                  float-right
-                  sm:float-none
                   flex-auto
-                  justify-center
-                  w-min
                   items-center
+                  justify-center
+                  float-right
                   m-1
-                  font-medium
-                  py-1
                   px-2
-                  bg-white
-                  rounded-full
+                  py-1
+                  w-min
                   text-blue-700
-                  bg-blue-100
+                  font-medium
+                  bg-blue-100 bg-white
                   border border-blue-700
+                  rounded-full
+                  sm:float-none
                 "
               >
                 <div
                   class="
+                    flex-initial
+                    max-w-full
                     text-xs
                     font-normal
                     leading-none
-                    max-w-full
-                    flex-initial
                   "
                 >
                   UWP
@@ -630,30 +631,29 @@
               </div>
               <div
                 class="
-                  float-right
-                  sm:float-none
                   flex-auto
-                  justify-center
-                  w-min
                   items-center
+                  justify-center
+                  float-right
                   m-1
-                  font-medium
-                  py-1
                   px-2
-                  bg-white
-                  rounded-full
+                  py-1
+                  w-min
                   text-blue-700
-                  bg-blue-100
+                  font-medium
+                  bg-blue-100 bg-white
                   border border-blue-700
+                  rounded-full
+                  sm:float-none
                 "
               >
                 <div
                   class="
+                    flex-initial
+                    max-w-full
                     text-xs
                     font-normal
                     leading-none
-                    max-w-full
-                    flex-initial
                   "
                 >
                   AGPLv3
@@ -661,7 +661,7 @@
               </div>
             </div>
           </h1>
-          <p class="text-gray-100 min-w-prose max-w-prose text-sm">
+          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
             Medical sample inventory management system, created as our senior
             project in the COMS 4043 course at Arkansas Tech University.
           </p>
@@ -672,26 +672,12 @@
       <!-- Test
       <a href="https://github.com/Box-Analyst/InventorySystem">
         <div
-          class="
-            p-6
-            bg-white
-            flex
-            items-center
-            space-x-6
-            rounded-3xl
-            shadow-md
-            hover:scale-105
-            transition
-            transform
-            duration-500
-            cursor-pointer
-            overflow-hidden
-          "
+          class="flex items-center p-6 space-x-6 overflow-hidden transition duration-500 transform bg-white shadow-md cursor-pointer rounded-3xl hover:scale-105"
         >
           <div>
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-20 w-20"
+              class="w-20 h-20"
               fill="none"
               viewBox="0 0 500 500"
               stroke="currentColor"
@@ -727,99 +713,39 @@
             </svg>
           </div>
           <div>
-            <h1 class="text-xl font-bold text-gray-700 mb-2">
+            <h1 class="mb-2 text-xl font-bold text-gray-700">
               🏥 InventorySystem
               <div class="flex sm:float-right w-min">
                 <div
-                  class="
-                    flex-auto
-                    justify-center
-                    w-min
-                    items-center
-                    m-1
-                    font-medium
-                    py-1
-                    px-2
-                    bg-white
-                    rounded-full
-                    text-blue-700
-                    bg-blue-100
-                    border border-blue-300
-                  "
+                  class="items-center justify-center flex-auto px-2 py-1 m-1 font-medium text-blue-700 bg-white bg-blue-100 border border-blue-300 rounded-full w-min"
                 >
                   <div
-                    class="
-                      text-xs
-                      font-normal
-                      leading-none
-                      max-w-full
-                      flex-initial
-                    "
+                    class="flex-initial max-w-full text-xs font-normal leading-none "
                   >
                     WIP
                   </div>
                 </div>
                 <div
-                  class="
-                    flex-auto
-                    justify-center
-                    w-min
-                    items-center
-                    m-1
-                    font-medium
-                    py-1
-                    px-2
-                    bg-white
-                    rounded-full
-                    text-blue-700
-                    bg-blue-100
-                    border border-blue-300
-                  "
+                  class="items-center justify-center flex-auto px-2 py-1 m-1 font-medium text-blue-700 bg-white bg-blue-100 border border-blue-300 rounded-full w-min"
                 >
                   <div
-                    class="
-                      text-xs
-                      font-normal
-                      leading-none
-                      max-w-full
-                      flex-initial
-                    "
+                    class="flex-initial max-w-full text-xs font-normal leading-none "
                   >
                     PowerShell
                   </div>
                 </div>
                 <div
-                  class="
-                    flex-auto
-                    justify-center
-                    w-min
-                    items-center
-                    m-1
-                    font-medium
-                    py-1
-                    px-2
-                    bg-white
-                    rounded-full
-                    text-blue-700
-                    bg-blue-100
-                    border border-blue-300
-                  "
+                  class="items-center justify-center flex-auto px-2 py-1 m-1 font-medium text-blue-700 bg-white bg-blue-100 border border-blue-300 rounded-full w-min"
                 >
                   <div
-                    class="
-                      text-xs
-                      font-normal
-                      leading-none
-                      max-w-full
-                      flex-initial
-                    "
+                    class="flex-initial max-w-full text-xs font-normal leading-none "
                   >
                     GPLv3
                   </div>
                 </div>
               </div>
             </h1>
-            <p class="text-gray-600 min-w-prose max-w-prose sm:w-80 text-sm">
+            <p class="text-sm text-gray-600 min-w-prose max-w-prose sm:w-80">
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dicta
               cupiditate ut laboriosam!
             </p>
@@ -831,11 +757,9 @@
         <div
           id="footer-span"
           class="
+            flex flex-col-reverse
             place-items-center
-            flex
-            sm:flex-row
-            flex-col-reverse
-            sm:justify-between
+            sm:flex-row sm:justify-between
           "
         >
           <div>
