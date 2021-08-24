@@ -12,6 +12,7 @@ module.exports = {
       "2xl": "0 25px 50px -12px rgba(255, 255, 255, 0.25)",
       "3xl": "0 35px 60px -15px rgba(255, 255, 255, 0.3)",
       glow: "0 0px 10px 5px rgba(255, 255, 255, 0.1), 0 0px 10px 5px rgba(255, 255, 255, 0.04)",
+      error: "0 0px 10px 5px rgba(255, 0, 0, 0.2), 0 0px 10px 5px rgba(255, 0, 0, 0.08)",
       inner: "inset 0 2px 4px 0 rgba(255, 255, 255, 0.06)",
       none: "none",
     },
