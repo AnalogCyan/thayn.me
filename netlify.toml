@@ -59,27 +59,15 @@
   force = true
 
 [[redirects]]
-  from = "https://boole.thayn.me/*"
-  to = "http://boole.cs.atu.edu/~jthayn/:splat"
-  status = 200
-  force = true
-
-[[redirects]]
   from = "https://files.thayn.me/*"
   to = "https://keybase.pub/analogcyan/:splat"
   status = 301
   force = true
 
 [[redirects]]
-  from = "https://canary.thayn.me/*"
-  to = "http://canarytokens.com/:splat"
+  from = "https://badui.thayn.me/*"
+  to = "https://thayn.me/badui/:splat"
   status = 200
-  force = true
-
-[[redirects]]
-  from = "https://mc.thayn.me/*"
-  to = "https://thayn.me/:splat"
-  status = 302
   force = true
 
 [[redirects]]
