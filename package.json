@@ -1,0 +1,16 @@
+{
+  "devDependencies": {
+    "autoprefixer": "^10.3.2",
+    "postcss": "^8.3.6",
+    "prettier": "^2.3.2",
+    "prettier-plugin-tailwind": "^2.2.12",
+    "tailwindcss": "^2.2.7"
+  },
+  "scripts": {
+    "build-css": "tailwindcss build -i css/tailwind.css -o css/generated/styles.css",
+    "copy-fa": "cp -a node_modules/@fortawesome/ css/generated/@fortawesome/"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.4"
+  }
+}

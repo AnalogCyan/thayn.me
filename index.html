@@ -4,7 +4,7 @@
     <title>JD "Cyan" Thayn</title>
     <meta
       name="Description"
-      content="JD 'Cyan' Thayn, Information Technology Student at Arkansas Tech University."
+      content="JD 'Cyan' Thayn | Information Technology"
     />
     <!-- Icons -->
     <link
@@ -47,12 +47,14 @@
     <meta property="og:title" content="JD 'Cyan' Thayn" />
     <meta
       property="og:description"
-      content="JD 'Cyan' Thayn, Information Technology Student at Arkansas Tech University."
+      content="JD 'Cyan' Thayn | Information Technology"
     />
     <meta property="og:image" content="https://thayn.me/media/profile.jpg" />
-    <!--Import main stylsheet-->
-    <link rel="stylesheet" href="style.css" />
-    <!--Import fonts-->
+    <!--Imports, etc.-->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./css/generated/styles.css" rel="stylesheet" />
+    <script src="./js/script.js" async></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;700&display=swap"
@@ -60,191 +62,781 @@
       rel="stylesheet"
     />
     <link
-      href="/media/fontawesome-free-5.15.3-web/css/all.min.css"
+      href="/css/generated/@fortawesome/fontawesome-free/css/all.min.css"
       rel="stylesheet"
     />
-    <!--Inport Scripts-->
-    <script src="script.js" async></script>
-    <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--Fix Chrome CSS Transition Bug-->
+    <script src="./js/chrome_bug_fix.js"></script>
   </head>
-
-  <body>
-    <header>
-      <div id="basics">
-        <h1>JD "Cyan" Thayn</h1>
-        <h2>
-          <div class="IT">
-            <span>Information Technology</span>
-          </div>
-          Student at
-          <span class="tooltip" title="Arkansas Tech University">ATU</span>
-        </h2>
-        <p>
-          <a
-            href="https://pronoun.is/they/them"
-            target="_blank"
-            rel="noreferrer noopener"
-            id="pronounis"
-            title="Pronouns"
-            tabindex="1"
-            ><i class="fas fa-transgender-alt"></i></a
-          >&nbsp
-          <a
-            href="https://github.com/AnalogCyan"
-            target="_blank"
-            rel="noreferrer noopener"
-            id="github"
-            title="GitHub"
-            tabindex="2"
-            ><i class="fab fa-github"></i></a
-          >&nbsp
-          <a
-            href="https://twitter.com/AnalogCyan"
-            target="_blank"
-            rel="noreferrer noopener"
-            id="twitter"
-            title="Twitter"
-            tabindex="3"
-            ><i class="fab fa-twitter"></i></a
-          >&nbsp
-          <a
-            href="https://www.twitch.tv/AnalogCyan/"
-            target="_blank"
-            rel="noreferrer noopener"
-            id="twitch"
-            title="Twitch"
-            tabindex="4"
-            ><i class="fab fa-twitch"></i></a
-          >&nbsp
-          <a
-            href="mailto:webcontact@thayn.me"
-            target="_blank"
-            rel="noreferrer noopener"
-            id="email"
-            title="Email"
-            tabindex="5"
-            ><i class="fas fa-envelope-open-text"></i
-          ></a>
-        </p>
-      </div>
-      <div id="avatar">
-        <img class="bottom" src="./media/profile.jpg" alt="Avatar" />
-        <img class="top" src="./media/profileColorPop.jpg" alt="Avatar" />
-      </div>
-    </header>
-
-    <main>
-      <br />
-      <h2>👋 About</h2>
-      <p>
-        Hello there! My name is JD, though you may also know me as Cyan or
-        AnalogCyan. I'm a student at Arkansas Tech University, currently
-        studying Information Technology.
-      </p>
-      <br />
-      <h2>👩‍💻 Projects</h2>
-      <p>
-        Here are some miscellaneous things I've either made personally, or have
-        been closely involved in. You can click on any of them to learn more!
-        You can also browse my GitHub (linked above) for more things not listed
-        here.
-      </p>
-      <br />
-
-      <a class="projectLink" id="itadakimasu" href="https://itadakimasu.app/">
-        <div class="project">
-          <div class="projectImg">
-            <img src="https://itadakimasu.app/Assets/icon.png" alt="" />
-          </div>
-          <div class="projectInfo">
-            <h3>
-              Itadakimasu
-              <span class="projectOther">PWA, GPLv3</span>
-            </h3>
-            <p>🔑 Random recipe password generator.</p>
-          </div>
-        </div>
-      </a>
-
-      <a
-        class="projectLink"
-        id="rati"
-        href="https://github.com/AnalogCyan/Rati"
+  <body class="font-sans bg-black">
+    <div
+      class="
+        grid
+        gap-6
+        items-center
+        justify-center
+        place-content-center
+        p-6
+        min-h-full
+        bg-transparent
+        overflow-hidden
+      "
+    >
+      <!-- Header -->
+      <header
+        class="
+          flex-col
+          bg-gradient-to-b
+          rounded-3xl
+          shadow-glow
+          from-gray-800
+          to-gray-800
+        "
       >
-        <div class="project">
-          <div class="projectImg">
-            <img
-              src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/microsoft/209/frame-with-picture_1f5bc.png"
-              alt=""
-            />
+        <div
+          class="
+            flex flex-none flex-col
+            items-center
+            justify-center
+            p-6
+            overflow-hidden
+            duration-500
+            sm:flex sm:flex-row-reverse sm:justify-between
+          "
+        >
+          <img
+            src="./media/profile.jpg"
+            alt=""
+            class="flex mb-3 w-40 h-40 rounded-2xl object-cover sm:mb-0"
+          />
+          <img
+            src="./media/profileColorPop.jpg"
+            alt=""
+            class="
+              absolute
+              top-12
+              mb-3
+              w-40
+              h-40
+              rounded-2xl
+              hover:opacity-0
+              opacity-100
+              object-cover
+              transition
+              duration-1000
+              sm:mb-0
+            "
+          />
+          <div class="flex flex-col items-center">
+            <div class="text-gray-200 text-2xl font-bold leading-none">
+              JD "Cyan" Thayn
+            </div>
+            <div class="my-1 text-gray-400 text-lg">
+              <span>Information Technology</span>
+            </div>
+            <div class="inline-flex text-2xl space-x-4">
+              <a
+                href="https://pronoun.is/they/them"
+                target="_blank"
+                rel="noreferrer noopener"
+                id="pronounis"
+                title="Pronouns"
+                tabindex="1"
+                class="
+                  text-pink-200
+                  hover:text-pink-500
+                  motion-reduce:transform-none motion-reduce:transition-none
+                  sm:transition sm:duration-500
+                "
+                ><i class="fas fa-transgender-alt"></i
+              ></a>
+              <a
+                href="https://github.com/AnalogCyan"
+                target="_blank"
+                rel="noreferrer noopener"
+                id="github"
+                title="GitHub"
+                tabindex="2"
+                class="
+                  hover:text-pink-500
+                  text-white
+                  motion-reduce:transform-none motion-reduce:transition-none
+                  sm:transition sm:duration-500
+                "
+                ><i class="fab fa-github"></i
+              ></a>
+              <a
+                href="https://twitter.com/AnalogCyan"
+                target="_blank"
+                rel="noreferrer noopener"
+                id="twitter"
+                title="Twitter"
+                tabindex="3"
+                class="
+                  text-blue-500
+                  hover:text-pink-500
+                  motion-reduce:transform-none motion-reduce:transition-none
+                  sm:transition sm:duration-500
+                "
+                ><i class="fab fa-twitter"></i
+              ></a>
+              <a
+                href="https://www.twitch.tv/AnalogCyan/"
+                target="_blank"
+                rel="noreferrer noopener"
+                id="twitch"
+                title="Twitch"
+                tabindex="4"
+                class="
+                  hover:text-pink-500
+                  text-purple-700
+                  motion-reduce:transform-none motion-reduce:transition-none
+                  sm:transition sm:duration-500
+                "
+                ><i class="fab fa-twitch"></i
+              ></a>
+              <a
+                href="mailto:webcontact@thayn.me"
+                target="_blank"
+                rel="noreferrer noopener"
+                id="email"
+                title="Email"
+                tabindex="5"
+                class="
+                  text-blue-800
+                  hover:text-pink-500
+                  motion-reduce:transform-none motion-reduce:transition-none
+                  sm:transition sm:duration-500
+                "
+                ><i class="fas fa-envelope-open-text"></i
+              ></a>
+            </div>
           </div>
-          <div class="projectInfo">
-            <h3>
-              Rati (WIP)
-              <span class="projectOther">Flutter</span>
-            </h3>
-            <p>🖼 An over-engineered photo organizer app.</p>
+        </div>
+        <div class="flex-col items-center -mt-4 p-6 overflow-hidden sm:-mt-8">
+          <h2 class="mb-2 text-gray-50 text-xl font-bold">👋 About</h2>
+          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+            Hello there! My name is JD, though you may also know me as Cyan or
+            AnalogCyan. I have a degree in Information Technology from Arkansas
+            Tech University, along with some basic CyberSecurity knowledge.
+          </p>
+        </div>
+        <div class="flex-col items-center -mt-4 p-6 overflow-hidden">
+          <h2 class="mb-2 text-gray-50 text-xl font-bold">👩‍💻 Projects</h2>
+          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+            Below are some miscellaneous things I've either made personally, or
+            have been closely involved in. You can click on any of them to learn
+            more! You can also browse my GitHub (linked above) for more things
+            not listed here.
+          </p>
+        </div>
+      </header>
+      <!--// -->
+
+      <!-- Projects -->
+      <!-- SwiftWin -->
+      <a href="https://github.com/AnalogCyan/SwiftWin">
+        <div
+          class="
+            flex-col
+            items-center
+            p-6
+            bg-gray-900
+            rounded-3xl
+            hover:shadow-glow
+            shadow-md
+            cursor-pointer
+            overflow-hidden
+            transform
+            motion-reduce:transform-none
+            hover:scale-105
+            transition
+            motion-reduce:transition-none
+            duration-500
+          "
+        >
+          <h1 class="mb-2 text-gray-50 text-xl font-bold">
+            🔮 SwiftWin
+            <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
+              <div
+                class="
+                  flex-auto
+                  items-center
+                  justify-center
+                  float-right
+                  m-1
+                  px-2
+                  py-1
+                  w-min
+                  text-yellow-800
+                  font-medium
+                  bg-yellow-100
+                  border border-yellow-800
+                  rounded-full
+                  sm:float-none
+                "
+              >
+                <div
+                  class="
+                    flex-initial
+                    max-w-full
+                    text-xs
+                    font-normal
+                    leading-none
+                  "
+                >
+                  WIP
+                </div>
+              </div>
+              <div
+                class="
+                  flex-auto
+                  items-center
+                  justify-center
+                  float-right
+                  m-1
+                  px-2
+                  py-1
+                  w-min
+                  text-blue-700
+                  font-medium
+                  bg-blue-100 bg-white
+                  border border-blue-700
+                  rounded-full
+                  sm:float-none
+                "
+              >
+                <div
+                  class="
+                    flex-initial
+                    max-w-full
+                    text-xs
+                    font-normal
+                    leading-none
+                  "
+                >
+                  PowerShell
+                </div>
+              </div>
+              <div
+                class="
+                  flex-auto
+                  items-center
+                  justify-center
+                  float-right
+                  m-1
+                  px-2
+                  py-1
+                  w-min
+                  text-blue-700
+                  font-medium
+                  bg-blue-100 bg-white
+                  border border-blue-700
+                  rounded-full
+                  sm:float-none
+                "
+              >
+                <div
+                  class="
+                    flex-initial
+                    max-w-full
+                    text-xs
+                    font-normal
+                    leading-none
+                  "
+                >
+                  GPLv3
+                </div>
+              </div>
+            </div>
+          </h1>
+          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+            PowerShell utility for performing a series of Windows maintenance
+            tasks I commonly use when cleaning up and optimizing a system.
+          </p>
+        </div>
+      </a>
+      <!--// -->
+
+      <!-- Itadakimasu -->
+      <a href="https://itadakimasu.app/">
+        <div
+          class="
+            flex-col
+            items-center
+            p-6
+            bg-gray-900
+            rounded-3xl
+            hover:shadow-glow
+            shadow-md
+            cursor-pointer
+            overflow-hidden
+            transform
+            hover:scale-105
+            transition
+            duration-500
+          "
+        >
+          <div>
+            <h1 class="mb-2 text-gray-50 text-xl font-bold">
+              🔑 Itadakimasu
+              <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
+                <div
+                  class="
+                    flex-auto
+                    items-center
+                    justify-center
+                    float-right
+                    m-1
+                    px-2
+                    py-1
+                    w-min
+                    text-blue-700
+                    font-medium
+                    bg-blue-100 bg-white
+                    border border-blue-700
+                    rounded-full
+                    sm:float-none
+                  "
+                >
+                  <div
+                    class="
+                      flex-initial
+                      max-w-full
+                      text-xs
+                      font-normal
+                      leading-none
+                    "
+                  >
+                    PWA
+                  </div>
+                </div>
+                <div
+                  class="
+                    flex-auto
+                    items-center
+                    justify-center
+                    float-right
+                    m-1
+                    px-2
+                    py-1
+                    w-min
+                    text-blue-700
+                    font-medium
+                    bg-blue-100 bg-white
+                    border border-blue-700
+                    rounded-full
+                    sm:float-none
+                  "
+                >
+                  <div
+                    class="
+                      flex-initial
+                      max-w-full
+                      text-xs
+                      font-normal
+                      leading-none
+                    "
+                  >
+                    GPLv3
+                  </div>
+                </div>
+              </div>
+            </h1>
+            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+              Random recipe password generator web app inspired by episode 'Nice
+              Security Hollywood Terror' of the Random but Memorable podcast
+              from 1Password.
+            </p>
           </div>
         </div>
       </a>
+      <!--// -->
 
-      <a
-        class="projectLink"
-        id="green-tomatoes"
-        href="https://github.com/Box-Analyst/green-tomatoes"
-      >
-        <div class="project">
-          <div class="projectImg">
-            <img src="/media/green-tomatoes.png" alt="" />
-          </div>
-          <div class="projectInfo">
-            <h3>
-              Green Tomatoes
-              <span class="projectOther">Web</span>
-            </h3>
-            <p>🍅 University project for COMS-4033.</p>
+      <!-- Rati -->
+      <a href="https://github.com/AnalogCyan/Rati">
+        <div
+          class="
+            flex-col
+            items-center
+            p-6
+            bg-gray-900
+            rounded-3xl
+            hover:shadow-glow
+            shadow-md
+            cursor-pointer
+            overflow-hidden
+            transform
+            hover:scale-105
+            transition
+            duration-500
+          "
+        >
+          <div>
+            <h1 class="mb-2 text-gray-50 text-xl font-bold">
+              🖼️ Rati
+              <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
+                <div
+                  class="
+                    flex-auto
+                    items-center
+                    justify-center
+                    float-right
+                    m-1
+                    px-2
+                    py-1
+                    w-min
+                    text-yellow-800
+                    font-medium
+                    bg-yellow-100
+                    border border-yellow-800
+                    rounded-full
+                    sm:float-none
+                  "
+                >
+                  <div
+                    class="
+                      flex-initial
+                      max-w-full
+                      text-xs
+                      font-normal
+                      leading-none
+                    "
+                  >
+                    WIP
+                  </div>
+                </div>
+                <div
+                  class="
+                    flex-auto
+                    items-center
+                    justify-center
+                    float-right
+                    m-1
+                    px-2
+                    py-1
+                    w-min
+                    text-blue-700
+                    font-medium
+                    bg-blue-100 bg-white
+                    border border-blue-700
+                    rounded-full
+                    sm:float-none
+                  "
+                >
+                  <div
+                    class="
+                      flex-initial
+                      max-w-full
+                      text-xs
+                      font-normal
+                      leading-none
+                    "
+                  >
+                    Flutter
+                  </div>
+                </div>
+              </div>
+            </h1>
+            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+              A tag-based photo organizer app. Still in planning stages.
+            </p>
           </div>
         </div>
       </a>
+      <!--// -->
 
-      <a
-        class="projectLink"
-        id="InventorySystem"
-        href="https://github.com/Box-Analyst/InventorySystem"
-      >
-        <div class="project">
-          <div class="projectImg">
-            <img
-              src="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/160/microsoft/209/hospital_1f3e5.png"
-              alt=""
-            />
-          </div>
-          <div class="projectInfo">
-            <h3>
-              InventorySystem
-              <span class="projectOther">UWP, AGPLv3</span>
-            </h3>
-            <p>🏥 University project for COMS-4043.</p>
+      <!-- More Vanilla Mobs -->
+      <a href="https://github.com/AnalogCyan/More-Vanilla-Mobs">
+        <div
+          class="
+            flex-col
+            items-center
+            p-6
+            bg-gray-900
+            rounded-3xl
+            hover:shadow-glow
+            shadow-md
+            cursor-pointer
+            overflow-hidden
+            transform
+            hover:scale-105
+            transition
+            duration-500
+          "
+        >
+          <div>
+            <h1 class="mb-2 text-gray-50 text-xl font-bold">
+              🎮 More Vanilla Mobs
+              <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
+                <div
+                  class="
+                    flex-auto
+                    items-center
+                    justify-center
+                    float-right
+                    m-1
+                    px-2
+                    py-1
+                    w-min
+                    text-blue-700
+                    font-medium
+                    bg-blue-100 bg-white
+                    border border-blue-700
+                    rounded-full
+                    sm:float-none
+                  "
+                >
+                  <div
+                    class="
+                      flex-initial
+                      max-w-full
+                      text-xs
+                      font-normal
+                      leading-none
+                    "
+                  >
+                    mcfunction
+                  </div>
+                </div>
+                <div
+                  class="
+                    flex-auto
+                    items-center
+                    justify-center
+                    float-right
+                    m-1
+                    px-2
+                    py-1
+                    w-min
+                    text-blue-700
+                    font-medium
+                    bg-blue-100 bg-white
+                    border border-blue-700
+                    rounded-full
+                    sm:float-none
+                  "
+                >
+                  <div
+                    class="
+                      flex-initial
+                      max-w-full
+                      text-xs
+                      font-normal
+                      leading-none
+                    "
+                  >
+                    GPLv3
+                  </div>
+                </div>
+              </div>
+            </h1>
+            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+              Minecraft 1.17+ data pack that implements some of the mobs that
+              technically exist in the game, but don't appear in survival.
+            </p>
           </div>
         </div>
       </a>
-    </main>
+      <!--// -->
 
-    <footer>
-      <br /><br /><br />
-      <div id="footer-span">
-        <div>
-          <i class="far fa-copyright" id="copy"></i>
-          <span id="cDate">2021</span> JD "Cyan" Thayn
+      <!-- InventorySystem -->
+      <a href="https://github.com/Box-Analyst/InventorySystem">
+        <div
+          class="
+            flex-col
+            items-center
+            p-6
+            bg-gray-900
+            rounded-3xl
+            hover:shadow-glow
+            shadow-md
+            cursor-pointer
+            overflow-hidden
+            transform
+            hover:scale-105
+            transition
+            duration-500
+          "
+        >
+          <h1 class="mb-2 text-gray-50 text-xl font-bold">
+            🏥 InventorySystem
+            <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
+              <div
+                class="
+                  flex-auto
+                  items-center
+                  justify-center
+                  float-right
+                  m-1
+                  px-2
+                  py-1
+                  w-min
+                  text-blue-700
+                  font-medium
+                  bg-blue-100 bg-white
+                  border border-blue-700
+                  rounded-full
+                  sm:float-none
+                "
+              >
+                <div
+                  class="
+                    flex-initial
+                    max-w-full
+                    text-xs
+                    font-normal
+                    leading-none
+                  "
+                >
+                  UWP
+                </div>
+              </div>
+              <div
+                class="
+                  flex-auto
+                  items-center
+                  justify-center
+                  float-right
+                  m-1
+                  px-2
+                  py-1
+                  w-min
+                  text-blue-700
+                  font-medium
+                  bg-blue-100 bg-white
+                  border border-blue-700
+                  rounded-full
+                  sm:float-none
+                "
+              >
+                <div
+                  class="
+                    flex-initial
+                    max-w-full
+                    text-xs
+                    font-normal
+                    leading-none
+                  "
+                >
+                  AGPLv3
+                </div>
+              </div>
+            </div>
+          </h1>
+          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+            Medical sample inventory management system, created as our senior
+            project in the COMS 4043 course at Arkansas Tech University.
+          </p>
         </div>
-        <div id="quoteDisplay">
-          <!--fallback quote-->
-          Are you ready to embrace uncertainty?
+      </a>
+      <!--// -->
+      <!--// -->
+
+      <!-- Test
+      <a href="https://github.com/Box-Analyst/InventorySystem">
+        <div
+          class="flex items-center p-6 space-x-6 overflow-hidden transition duration-500 transform bg-white shadow-md cursor-pointer rounded-3xl hover:scale-105"
+        >
+          <div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-20 h-20"
+              fill="none"
+              viewBox="0 0 500 500"
+              stroke="currentColor"
+            >
+              <defs>
+                <clipPath clipPathUnits="userSpaceOnUse" id="a">
+                  <path
+                    style="
+                      fill: #8ab460;
+                      fill-opacity: 1;
+                      stroke-width: 0.225482;
+                    "
+                    d="M160.011 68.532h100v100h-100z"
+                  />
+                </clipPath>
+              </defs>
+              <g
+                aria-label="_____ / ___/ \__ \_ __ ___/ / | / / /____/| | /| / / | |/ |/ / |__/|__/"
+                transform="matrix(4.97952 0 0 5 -794.73 -400.113)"
+                clip-path="url(#a)"
+                style="
+                  font-size: 10.0887px;
+                  line-height: 1.25;
+                  font-family: 'CaskaydiaCove Nerd Font Mono';
+                  -inkscape-font-specification: 'CaskaydiaCove Nerd Font Mono';
+                  stroke: #000;
+                "
+              >
+                <path
+                  d="M178.237 91.513h4.926v.867h-4.926zM184.148 91.513h4.927v.867h-4.927zM190.06 91.513h4.926v.867h-4.926zM195.971 91.513h4.926v.867h-4.926zM201.882 91.513h4.927v.867h-4.927zM176.257 96.637h.995l-4.01 8.867h-.995zM184.148 104.124h4.927v.867h-4.927zM190.06 104.124h4.926v.867h-4.926zM195.971 104.124h4.926v.867h-4.926zM205.814 96.637h.995l-4.01 8.867h-.995zM172.326 109.247h.995l4.01 8.867h-.995zM179.124 116.735h9.064v.867h-9.064zM195.971 109.247h.995l4.01 8.867h-.995zM201.882 116.735h4.927v.867h-4.927zM250.06 116.735h9.064v.867h-9.064zM166.414 129.346h4.926v.867h-4.926zM172.326 129.346h4.926v.867h-4.926zM178.237 129.346h4.926v.867h-4.926zM188.08 121.858h.995l-4.01 8.867h-.995zM199.902 121.858h.995l-4.01 8.867h-.995zM209.764 120.676h.985v10.05h-.985zM247.193 121.858h.995l-4.01 8.867h-.995zM259.016 121.858h.995l-4.01 8.867h-.995zM164.434 134.47h.995l-4.01 8.866h-.995zM166.414 141.957h4.926v.867h-4.926zM172.326 141.957h4.926v.867h-4.926zM178.237 141.957h4.926v.867h-4.926zM184.148 141.957h4.927v.867h-4.927zM193.99 134.47h.996l-4.01 8.866h-.995zM197.942 133.287h.985v10.05h-.985zM209.764 133.287h.985v10.05h-.985zM223.548 134.47h.995l-4.01 8.866h-.995zM227.498 133.287h.986v10.05h-.986zM241.282 134.47h.995l-4.01 8.866h-.995zM253.104 134.47h.995l-4.01 8.866h-.995zM197.942 145.898h.985v10.05h-.985zM209.764 145.898h.985v10.05h-.985zM217.636 147.08h.995l-4.01 8.867h-.995zM227.498 145.898h.986v10.05h-.986zM235.37 147.08h.995l-4.01 8.867h-.995zM247.193 147.08h.995l-4.01 8.867h-.995zM197.942 158.509h.985v10.049h-.985zM202.77 167.179h9.063v.867h-9.064zM217.636 159.69h.995l-4.01 8.868h-.995zM221.587 158.509h.985v10.049h-.985zM226.415 167.179h9.064v.867h-9.064zM241.282 159.69h.995l-4.01 8.868h-.995z"
+                />
+              </g>
+            </svg>
+          </div>
+          <div>
+            <h1 class="mb-2 text-xl font-bold text-gray-700">
+              🏥 InventorySystem
+              <div class="flex sm:float-right w-min">
+                <div
+                  class="items-center justify-center flex-auto px-2 py-1 m-1 font-medium text-blue-700 bg-white bg-blue-100 border border-blue-300 rounded-full w-min"
+                >
+                  <div
+                    class="flex-initial max-w-full text-xs font-normal leading-none "
+                  >
+                    WIP
+                  </div>
+                </div>
+                <div
+                  class="items-center justify-center flex-auto px-2 py-1 m-1 font-medium text-blue-700 bg-white bg-blue-100 border border-blue-300 rounded-full w-min"
+                >
+                  <div
+                    class="flex-initial max-w-full text-xs font-normal leading-none "
+                  >
+                    PowerShell
+                  </div>
+                </div>
+                <div
+                  class="items-center justify-center flex-auto px-2 py-1 m-1 font-medium text-blue-700 bg-white bg-blue-100 border border-blue-300 rounded-full w-min"
+                >
+                  <div
+                    class="flex-initial max-w-full text-xs font-normal leading-none "
+                  >
+                    GPLv3
+                  </div>
+                </div>
+              </div>
+            </h1>
+            <p class="text-sm text-gray-600 min-w-prose max-w-prose sm:w-80">
+              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Dicta
+              cupiditate ut laboriosam!
+            </p>
+          </div>
         </div>
-      </div>
-    </footer>
+      </a>
+ -->
+      <footer class="m-1 text-gray-400 text-xs">
+        <div
+          id="footer-span"
+          class="
+            flex flex-col-reverse
+            place-items-center
+            sm:flex-row sm:justify-between
+          "
+        >
+          <div>
+            <i class="far fa-copyright" id="copy"></i>
+            <span id="cDate">2021</span> JD "Cyan" Thayn
+          </div>
+          <div id="quoteDisplay">
+            <!--fallback quote-->
+            Are you ready to embrace uncertainty?
+          </div>
+        </div>
+      </footer>
+    </div>
   </body>
-
   <div id="broken-green-pixel"></div>
 </html>

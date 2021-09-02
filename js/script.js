@@ -3,14 +3,9 @@
 // at https://thayn.me/media/quotes.txt
 
 window.onload = function load() {
-  //randAvatar();
   copyDate();
   newQuote();
   deadPixel();
-
-  //setInterval(() => {
-  //  randAvatar();
-  //}, 2500);
 };
 
 function loadFile(filePath) {
@@ -26,11 +21,6 @@ function loadFile(filePath) {
 
 function copyDate() {
   document.getElementById("cDate").innerHTML = new Date().getFullYear();
-}
-
-function randAvatar() {
-  var randomNumber = Math.floor(Math.random() * 2) + 1;
-  document.getElementById("avatar").src = `./media/${randomNumber}.jpg`;
 }
 
 function newQuote() {
