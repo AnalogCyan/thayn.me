@@ -12,7 +12,6 @@
     "copy-uuid": "cp -a node_modules/uuid/ js/uuid/"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.4",
-    "uuid": "^8.3.2"
+    "@fortawesome/fontawesome-free": "^5.15.4"
   }
 }
