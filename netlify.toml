@@ -107,8 +107,6 @@ package = "netlify-plugin-checklinks"
   # from ever attempting to execute them.
   # skipPatterns is an array of strings you can match against failing reports
   skipPatterns = [
-    "https://boole.thayn.me/",
-    "http://boole.cs.atu.edu/*",
     "https://twitter.com/AnalogCyan",
     "https://fonts.gstatic.com"
   ]
