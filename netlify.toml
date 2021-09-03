@@ -18,8 +18,8 @@
 
 [[redirects]]
   from = "https://mail.thayn.me/"
-  to = "mailto:JD Thayn<cyan@mail.thayn.me>"
-  status = 301
+  to = "https://thayn.me/mail.html"
+  status = 200
   force = true
 
 [[redirects]]
@@ -34,7 +34,7 @@
   status = 301
   force = true
 
-  [[redirects]]
+[[redirects]]
   from = "https://xn--nl8h.thayn.me/*"
   to = "https://open.spotify.com/user/fsy82d6sk34ice2jffwxgmxfh/playlists/:splat"
   status = 301
