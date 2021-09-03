@@ -77,7 +77,7 @@
 
 [build]
   environment = { NODE_VERSION = "16.7.0" }
-  command = "npm run build-css && npm run copy-fa && npm run copy-uuid"
+  command = "npm run build-css && npm run copy-fa"
 
 [[plugins]]
 package = "netlify-plugin-checklinks"
