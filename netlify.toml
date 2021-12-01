@@ -65,6 +65,12 @@
   force = true
 
 [[redirects]]
+  from = "https://notes.thayn.me/*"
+  to = "https://analogcyan.gitbook.io/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "https://badui.thayn.me/*"
   to = "https://thayn.me/badui/:splat"
   status = 200
