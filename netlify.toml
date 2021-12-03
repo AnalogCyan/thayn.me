@@ -2,7 +2,7 @@
   for = "/*"
     [headers.values]
         X-Frame-Options = "sameorigin"
-        Content-Security-Policy = "default-src 'self' fonts.gstatic.com d33wubrfki0l68.cloudfront.net; connect-src 'self'; img-src 'self' itadakimasu.app emojipedia-us.s3.dualstack.us-west-1.amazonaws.com d33wubrfki0l68.cloudfront.net; manifest-src 'self'; font-src 'self' fonts.gstatic.com d33wubrfki0l68.cloudfront.net; style-src-elem 'self' fonts.googleapis.com d33wubrfki0l68.cloudfront.net; script-src-elem 'self' d33wubrfki0l68.cloudfront.net; report-uri https://thayn.report-uri.com/r/d/csp/wizard"
+        Content-Security-Policy = "default-src 'self' fonts.gstatic.com fonts.googleapis.com d33wubrfki0l68.cloudfront.net; connect-src 'self'; img-src 'self' itadakimasu.app emojipedia-us.s3.dualstack.us-west-1.amazonaws.com d33wubrfki0l68.cloudfront.net; manifest-src 'self'; font-src 'self' fonts.gstatic.com d33wubrfki0l68.cloudfront.net; style-src-elem 'self' fonts.googleapis.com d33wubrfki0l68.cloudfront.net; script-src-elem 'self' d33wubrfki0l68.cloudfront.net; report-uri https://thayn.report-uri.com/r/d/csp/wizard"
 
 [[redirects]]
   from = "https://cyan.thayn.me/*"
