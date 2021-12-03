@@ -6,6 +6,10 @@ window.onload = function load() {
   copyDate();
   newQuote();
   deadPixel();
+
+  setInterval(() => {
+    randPhoto();
+  }, 2500);
 };
 
 function loadFile(filePath) {
@@ -17,6 +21,11 @@ function loadFile(filePath) {
     result = xmlhttp.responseText;
   }
   return result;
+}
+
+function randPhoto() {
+  let num = Math.floor(Math.random() * 3) + 1;
+  document.getElementById("profile").src = `./media/profile${num}.jpg`;
 }
 
 function copyDate() {
