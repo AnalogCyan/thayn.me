@@ -42,13 +42,13 @@
 
 [[redirects]]
   from = "https://archive.live.thayn.me/*"
-  to = "https://www.youtube.com/channel/UCHLeNBitZ7EJswbHR--33aA/:splat"
+  to = "https://www.youtube.com/channel/UCxz2QVzdY0geXgTgzPopImA/:splat"
   status = 301
   force = true
 
 [[redirects]]
   from = "https://live.thayn.me/archive/*"
-  to = "https://www.youtube.com/channel/UCHLeNBitZ7EJswbHR--33aA/:splat"
+  to = "https://www.youtube.com/channel/UCxz2QVzdY0geXgTgzPopImA/:splat"
   status = 301
   force = true
 
