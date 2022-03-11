@@ -8,9 +8,9 @@
   },
   "scripts": {
     "build-css": "tailwindcss build -i css/tailwind.css -o css/generated/styles.css",
-    "copy-fa": "cp -a node_modules/@fortawesome/ css/generated/@fortawesome/"
+    "copy-fa": "cp -r node_modules/@fortawesome/ css/generated/"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.4"
+    "@fortawesome/fontawesome-free": "^6.0.0"
   }
 }
