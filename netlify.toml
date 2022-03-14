@@ -3,6 +3,13 @@
     [headers.values]
         X-Frame-Options = "sameorigin"
         Content-Security-Policy = "default-src 'self' fonts.gstatic.com fonts.googleapis.com d33wubrfki0l68.cloudfront.net; connect-src 'self'; img-src 'self' itadakimasu.app emojipedia-us.s3.dualstack.us-west-1.amazonaws.com d33wubrfki0l68.cloudfront.net; manifest-src 'self'; font-src 'self' fonts.gstatic.com d33wubrfki0l68.cloudfront.net; style-src-elem 'self' fonts.googleapis.com d33wubrfki0l68.cloudfront.net; script-src-elem 'self' d33wubrfki0l68.cloudfront.net; report-uri https://thayn.report-uri.com/r/d/csp/wizard"
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = '''
+    max-age=63072000;
+    includeSubDomains;
+    preload'''
 
 [[redirects]]
   from = "https://cyan.thayn.me/*"
