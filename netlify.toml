@@ -24,6 +24,12 @@
   force = true
 
 [[redirects]]
+  from = "https://thayn.gay/*"
+  to = "https://thayn.me/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "https://git.thayn.me/*"
   to = "https://www.github.com/AnalogCyan/:splat"
   status = 301
