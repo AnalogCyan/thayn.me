@@ -1,5 +1,6 @@
 <a href="./js/script.js" target="_blank" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Now with JavaScript!</a>
 <a href="./media/quotes.txt" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Some of these are links!</a>
+<a href="https://asifyoureneverhurt.bandcamp.com/album/as-if-youre-never-hurt" target="_blank" rel="noopener" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">You Belong, Always.</a>
 <a href="https://slimegirls.bandcamp.com/album/vacation-wasteland-ep" target="_blank" rel="noopener" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Please listen kindly.</a>
 <a href="https://youtu.be/Yw6u6YkTgQ4" target="_blank" rel="noopener" class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500">Hello, World!</a>
 <i class="fab fa-html5"></i> <i class="fab fa-css3-alt"></i> <i class="fab fa-js-square"></i> <i class="fab fa-font-awesome"></i>
@@ -23,4 +24,3 @@ nyanbinary
 Run by humans (probably).
 The universe is cruelly indifferent.
 You belong, always.
-You Belong, Always.
