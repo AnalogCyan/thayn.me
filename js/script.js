@@ -7,9 +7,9 @@ window.onload = function load() {
   newQuote();
   deadPixel();
 
-  setInterval(() => {
-    randPhoto();
-  }, 2500);
+  //setInterval(() => {
+  //  randPhoto();
+  //}, 2500);
 };
 
 function loadFile(filePath) {
