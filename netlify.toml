@@ -24,6 +24,12 @@
   force = true
 
 [[redirects]]
+  from = "https://notes.thayn.me/*"
+  to = "https://publish.obsidian.md/serve?url=notes.thayn.me/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "https://thayn.gay/*"
   to = "https://thayn.me/:splat"
   status = 301
