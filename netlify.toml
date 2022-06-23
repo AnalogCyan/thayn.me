@@ -25,7 +25,7 @@
 
 [[redirects]]
   from = "https://notes.thayn.me/*"
-  to = "https://thayn.wiki/:splat"
+  to = "https://thayn.wiki/"
   status = 301
   force = true
 
