@@ -25,7 +25,13 @@
 
 [[redirects]]
   from = "https://notes.thayn.me/*"
-  to = "https://publish.obsidian.md/serve?url=notes.thayn.me/:splat"
+  to = "https://thayn.wiki/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://thayn.wiki/*"
+  to = "https://publish.obsidian.md/serve?url=thayn.wiki/:splat"
   status = 200
   force = true
 
