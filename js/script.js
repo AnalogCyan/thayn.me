@@ -6,30 +6,7 @@ window.onload = function load() {
   copyDate();
   newQuote();
   deadPixel();
-
-  setInterval(() => {
-    subHead();
-  }, 5000);
 };
-
-const sub = [
-  "test1",
-  "test2",
-  "test3",
-  "test4",
-  "test5",
-  "test6",
-  "test7",
-  "test8",
-];
-
-function subHead() {
-  var elem = document.getElementById("subhead");
-
-  elem.classList.toggle("fade");
-  elem.innerText = sub[Math.floor(Math.random() * sub.length)];
-  elem.classList.toggle("fade");
-}
 
 function loadFile(filePath) {
   var result = null;
