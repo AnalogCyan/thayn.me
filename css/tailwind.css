@@ -21,6 +21,13 @@
     pointer-events: none;
     overflow: hidden;
   }
+  #subhead {
+    opacity: 1;
+    transition: opacity 1s;
+  }
+  #subhead.fade {
+    opacity: 0;
+  }
 }
 
 @layer utilities {
