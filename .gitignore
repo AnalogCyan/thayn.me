@@ -159,6 +159,7 @@ old
 
 css/generated
 js/uuid
+.DS_STORE
 
 # Local Netlify folder
 
