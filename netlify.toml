@@ -36,8 +36,14 @@
   force = true
 
 [[redirects]]
-  from = "https://thayn.gay/*"
-  to = "https://thayn.me/:splat"
+  from = "https://thayn.email/*"
+  to = "mailto:webcontact@thayn.email?subject=:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://contact.thayn.me/*"
+  to = "mailto:webcontact@thayn.email?subject=:splat"
   status = 301
   force = true
 
