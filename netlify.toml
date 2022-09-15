@@ -36,18 +36,6 @@
   force = true
 
 [[redirects]]
-  from = "https://thayn.email/*"
-  to = "mailto:webcontact@thayn.email"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "https://contact.thayn.me/*"
-  to = "mailto:webcontact@thayn.email"
-  status = 301
-  force = true
-
-[[redirects]]
   from = "https://git.thayn.me/*"
   to = "https://www.github.com/AnalogCyan/:splat"
   status = 301
