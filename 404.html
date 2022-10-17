@@ -3,37 +3,7 @@
   <head>
     <title>404 Not Found</title>
     <!-- Icons -->
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="/media/icons/apple-touch-icon.png?v=yyQWnR42BE"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="/media/icons/favicon-32x32.png?v=yyQWnR42BE"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="/media/icons/favicon-16x16.png?v=yyQWnR42BE"
-    />
-    <link rel="manifest" href="/media/icons/site.webmanifest?v=yyQWnR42BE" />
-    <link
-      rel="mask-icon"
-      href="/media/icons/safari-pinned-tab.svg?v=yyQWnR42BE"
-      color="#009688"
-    />
-    <link rel="shortcut icon" href="/media/icons/favicon.ico?v=yyQWnR42BE" />
-    <meta name="apple-mobile-web-app-title" content="thayn.me" />
-    <meta name="application-name" content="thayn.me" />
-    <meta name="msapplication-TileColor" content="#009688" />
-    <meta
-      name="msapplication-config"
-      content="/media/icons/browserconfig.xml?v=yyQWnR42BE"
-    />
+    <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#009688" />
     <!--Imports, etc.-->
     <meta charset="UTF-8" />
@@ -55,37 +25,12 @@
   </head>
   <body class="h-screen font-sans bg-black">
     <div
-      class="
-        grid
-        gap-6
-        items-center
-        justify-center
-        place-content-center
-        p-6
-        min-h-full
-        bg-transparent
-        overflow-hidden
-      "
+      class="grid gap-6 items-center justify-center place-content-center p-6 min-h-full bg-transparent overflow-hidden"
     >
       <!-- Error Message -->
       <a href="https://thayn.me/">
         <div
-          class="
-            flex-col
-            items-center
-            p-6
-            bg-red-900 bg-opacity-40
-            rounded-3xl
-            shadow-error
-            cursor-pointer
-            overflow-hidden
-            transform
-            motion-reduce:transform-none
-            hover:scale-105
-            transition
-            motion-reduce:transition-none
-            duration-500
-          "
+          class="flex-col items-center p-6 bg-red-900 bg-opacity-40 rounded-3xl shadow-error cursor-pointer overflow-hidden transform motion-reduce:transform-none hover:scale-105 transition motion-reduce:transition-none duration-500"
         >
           <h1 class="mb-2 text-gray-50 text-xl font-bold">🚫 404 Not Found</h1>
           <p class="min-w-prose max-w-prose text-gray-100 text-sm">
@@ -99,11 +44,7 @@
       <footer class="m-1 text-gray-400 text-xs">
         <div
           id="footer-span"
-          class="
-            flex flex-col-reverse
-            place-items-center
-            sm:flex-row sm:justify-between
-          "
+          class="flex flex-col-reverse place-items-center sm:flex-row sm:justify-between"
         >
           <div>
             <i class="far fa-copyright" id="copy"></i>
