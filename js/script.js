@@ -3,7 +3,6 @@
 // at https://thayn.me/media/quotes.txt
 
 window.onload = function load() {
-  copyDate();
   newQuote();
   deadPixel();
 };
@@ -22,10 +21,6 @@ function loadFile(filePath) {
 function randPhoto() {
   let num = Math.floor(Math.random() * 3) + 1;
   document.getElementById("profile").src = `./media/profile${num}.jpg`;
-}
-
-function copyDate() {
-  document.getElementById("cDate").innerHTML = new Date().getFullYear();
 }
 
 function newQuote() {
