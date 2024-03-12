@@ -10,6 +10,91 @@
     background-color: #eb4888;
     color: black;
   }
+  .floating-btn {
+    width: 30px;
+    height: 30px;
+    background: #d32f2f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    position: fixed;
+    right: 15px;
+    bottom: 15px;
+    cursor: pointer;
+    color: white;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+    padding: 10px;
+  }
+
+  .floating-btn:not(.active):hover {
+    border-radius: 10px;
+    justify-content: space-between;
+    width: 100px;
+  }
+
+  .label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: clip;
+    transition: width 0.3s ease-in-out;
+    width: 0;
+  }
+
+  .floating-btn:hover .label {
+    width: fit-content;
+  }
+
+  .label,
+  .fas.fa-times {
+    display: none;
+  }
+
+  .floating-btn:hover .label,
+  .floating-btn.active .fas.fa-times {
+    display: inline;
+  }
+
+  .floating-btn.active {
+    width: 350px;
+    height: 150px;
+    background: none;
+    padding: 0;
+    border-radius: 10px;
+  }
+
+  .floating-btn.active .music-iframe {
+    display: block;
+    border-radius: 10px;
+    height: 150px;
+  }
+
+  .floating-btn.active .fas.fa-music,
+  .floating-btn.active .label {
+    display: none;
+  }
+
+  .music-iframe {
+    display: none;
+    width: 100%;
+    position: relative;
+  }
+
+  .fas.fa-times {
+    display: none;
+    position: absolute;
+    right: -15px;
+    top: -15px;
+    color: white;
+    background: #d32f2f;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 18px;
+  }
   #broken-green-pixel {
     background-color: #f0f;
     width: 1px;

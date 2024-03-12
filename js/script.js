@@ -43,3 +43,21 @@ function deadPixel() {
   document.getElementById("broken-green-pixel").style.top = randomTop + "px";
   document.getElementById("broken-green-pixel").style.left = randomLeft + "px";
 }
+
+const myBtn = document.getElementById("myBtn");
+const closeBtn = myBtn.querySelector(".fa-times");
+
+myBtn.addEventListener("click", function (event) {
+  if (
+    !this.classList.contains("active") &&
+    !event.target.classList.contains("fa-times")
+  ) {
+    this.classList.add("active");
+  }
+});
+
+closeBtn.addEventListener("click", function () {
+  if (myBtn.classList.contains("active")) {
+    myBtn.classList.remove("active");
+  }
+});
