@@ -6,10 +6,12 @@
   html {
     -webkit-tap-highlight-color: transparent;
   }
+
   ::selection {
     background-color: #eb4888;
     color: black;
   }
+
   .floating-btn {
     width: 30px;
     height: 30px;
@@ -95,6 +97,7 @@
     text-align: center;
     font-size: 18px;
   }
+
   #broken-green-pixel {
     background-color: #f0f;
     width: 1px;
