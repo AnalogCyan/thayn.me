@@ -4,7 +4,6 @@
 
 window.onload = function load() {
   newQuote();
-  onRepeat();
   deadPixel();
 };
 
@@ -35,26 +34,6 @@ function newQuote() {
     document.getElementById("footer-span").style.justifyContent =
       "space-between";
   }
-}
-
-function onRepeat() {
-  const myBtn = document.getElementById("myBtn");
-  const closeBtn = myBtn.querySelector(".fa-times");
-
-  myBtn.addEventListener("click", function (event) {
-    if (
-      !this.classList.contains("active") &&
-      !event.target.classList.contains("fa-times")
-    ) {
-      this.classList.add("active");
-    }
-  });
-
-  closeBtn.addEventListener("click", function () {
-    if (myBtn.classList.contains("active")) {
-      myBtn.classList.remove("active");
-    }
-  });
 }
 
 // ...but I went and made it more evil!

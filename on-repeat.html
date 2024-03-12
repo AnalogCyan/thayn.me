@@ -1,0 +1,124 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+    <style>
+      .floating-btn {
+          width: 40px;
+          height: 40px;
+          background: #D32F2F;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 50%;
+          position: fixed;
+          right: 15px;
+          bottom: 15px;
+          cursor: pointer;
+          box-shadow: 2px 2px 5px rgba(0, 0, 0, .1);
+          transition: all 0.3s ease-in-out;
+          padding: 10px;
+      }
+  
+      .floating-btn:not(.active):hover {
+          border-radius: 10px;
+          justify-content: space-between;
+          width: 100px;
+      }
+  
+      .label {
+          white-space: nowrap;
+          overflow: hidden;
+          transition: width 0.3s ease-in-out;
+          width: 0;
+      }
+  
+      .floating-btn:hover .label {
+          width: min-content;
+      }
+  
+      .fas.fa-times {
+          display: none;
+      }
+  
+      .floating-btn:hover .label, .floating-btn.active .fas.fa-times {
+          display: inline;
+      }
+  
+      .floating-btn.active {
+          width: 350px;
+          height: 150px;
+          border-radius: 10px;
+          background: none;
+          padding: 0;
+      }
+  
+      .floating-btn.active .music-iframe {
+          display: block;
+          border-radius: 10px;
+          height: 150px;  
+      }
+  
+      .floating-btn.active .fas.fa-music, .floating-btn.active .label {
+          display: none;
+      }
+  
+      .music-iframe {
+          display: none;
+          width: 100%;
+          position: relative;
+      }
+  
+      .fas.fa-times {
+          display: none;
+          position: absolute;
+          right: -15px;
+          top: -15px;
+          color: white;
+          background: #D32F2F;
+          border-radius: 50%;
+          width: 30px;
+          height: 30px;
+          line-height: 30px;
+          text-align: center;
+          font-size: 18px;
+      }
+  </style>
+  
+      </head>
+
+      <body>
+        <div id="myBtn" class="floating-btn">
+          <i class="fas fa-music"></i>
+          <div class="label">On Repeat</div>
+          <iframe
+            class="music-iframe"
+            src="https://odesli.co/embed/?url=https%3A%2F%2Falbum.link%2Fi%2F1668569834&theme=dark"
+            frameborder="0"
+            allow="autoplay;"
+          ></iframe>
+          <i class="fas fa-times"></i>
+        </div>
+
+        <script>
+          const myBtn = document.getElementById("myBtn");
+          const closeBtn = myBtn.querySelector(".fa-times");
+
+          myBtn.addEventListener("click", function (event) {
+            if (
+              !this.classList.contains("active") &&
+              !event.target.classList.contains("fa-times")
+            ) {
+              this.classList.add("active");
+            }
+          });
+
+          closeBtn.addEventListener("click", function () {
+            if (myBtn.classList.contains("active")) {
+              myBtn.classList.remove("active");
+            }
+          });
+        </script>
+      </body>
+    </html>
+  </head>
+</html>
