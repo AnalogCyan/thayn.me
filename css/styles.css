@@ -76,7 +76,7 @@ body {
 /* Container styles */
 .container {
   max-width: 700px;
-  width: 90%;
+  width: 80%;
   margin: 2rem auto;
   padding: 1.5em; /* Use em units for padding */
   background: var(--container-background-color);
@@ -209,10 +209,9 @@ body {
 /* Main and Footer sections */
 main,
 footer {
-  width: 90%;
-  max-width: 700px;
+  max-width: 80%;
   margin: 2rem auto;
-  padding: 1.5em; /* Use em units for padding */
+  padding: 1em; /* Use em units for padding */
   background: var(--container-background-color);
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -239,9 +238,9 @@ footer {
   .container,
   main,
   footer {
-    max-width: 100%; /* Ensure the container fits within the viewport */
+    max-width: 80%; /* Ensure the container fits within the viewport */
     padding: 1em; /* Use em units for padding */
-    margin: 1rem auto; /* Adjust margin for small screens */
+    margin: 2rem auto; /* Adjust margin for small screens */
   }
 
   .header-content {
