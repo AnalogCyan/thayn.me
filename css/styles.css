@@ -1,38 +1,45 @@
 :root {
   /* Dark mode colors */
   --dark-background-color: #121212;
-  --dark-container-background-color: #1f2937; /* Container background */
+  --dark-container-background-color: #1f2937;
+  /* Container background */
   --dark-text-color: #ffffff;
-  --dark-link-color: #f78ab8; /* Slightly lighter pink */
-  --dark-link-hover-color: #ec4899; /* Updated to match pink-500 */
-
-  /* Light mode colors */
+  --dark-link-color: #f78ab8;
+  /* Slightly lighter pink
+  */
+  --dark-link-hover-color: #ec4899;
+  /* Updated to match pink-500 */
+  /* Light
+  mode colors */
   --light-background-color: #ffffff;
-  --light-container-background-color: #f3f4f6; /* Light container background */
+  --light-container-background-color: #f3f4f6;
+  /* Light container background */
   --light-text-color: #000000;
-  --light-link-color: #f78ab8; /* Slightly lighter pink */
-  --light-link-hover-color: #ec4899; /* Updated to match pink-500 */
-
-  /* Default colors */
-  --background-color: var(
-    --dark-background-color
-  ); /* Default to dark mode background */
-  --container-background-color: var(
-    --dark-container-background-color
-  ); /* Default to dark mode container background */
+  --light-link-color: #f78ab8;
+  /* Slightly lighter
+  pink */
+  --light-link-hover-color: #ec4899;
+  /* Updated to match pink-500 */
+  /*
+  Default colors */
+  --background-color: var(--dark-background-color);
+  /* Default
+  to dark mode background */
+  --container-background-color: var(--dark-container-background-color);
+  /* Default to dark mode container
+  background */
   --text-color: var(--dark-text-color);
   --link-color: var(--dark-link-color);
   --link-hover-color: var(--dark-link-hover-color);
-
-  /* Primary color */
-  --primary-color: #4682b4; /* Steel blue */
-
+  /*
+  Primary color */
+  --primary-color: #4682b4;
+  /* Steel blue */
   /* Glow color */
-  --glow-color: rgba(135, 206, 250, 0.5); /* Light sky blue */
-
+  --glow-color: rgba(135, 206, 250, 0.5);
+  /* Light sky blue */
   /* Theme color */
   --theme-color: var(--primary-color);
-
   /* Layout variables */
   --header-flex-direction: row;
   --header-align-items: center;
@@ -42,13 +49,11 @@
   --info-align-items: flex-start;
   --info-text-align: left;
   --social-icons-justify-content: flex-start;
-
   /* Font variables */
   --font-family: "Tilt Neon", sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
-
   /* Typography variables */
   --font-header: var(--font-family);
   --font-header-weight: var(--font-weight-bold);
@@ -66,9 +71,9 @@
     --text-color: var(--light-text-color);
     --link-color: var(--light-link-color);
     --link-hover-color: var(--light-link-hover-color);
-    --theme-color: var(
-      --light-link-color
-    ); /* Use light link color as theme color */
+    --theme-color: var(--light-link-color);
+    /* Use
+  light link color as theme color */
   }
 
   body {
@@ -78,13 +83,13 @@
 
   .container,
   .header,
-  main,
   footer {
     background: var(--container-background-color);
   }
 }
 
-/* Apply dark mode colors by default */
+/* Apply dark mode colors
+  by default */
 body {
   background-color: var(--background-color);
   color: var(--text-color);
@@ -92,9 +97,13 @@ body {
   font-weight: var(--font-body-weight);
   font-optical-sizing: auto;
   font-variation-settings: "XROT" 0, "YROT" 0;
-  font-size: 16px; /* Ensure consistent base font size */
-  line-height: 1.5; /* Ensure consistent line height */
-  letter-spacing: normal; /* Ensure consistent letter spacing */
+  font-size: 16px;
+  /* Ensure consistent base font size */
+  line-height: 1.5;
+  /* Ensure consistent line height */
+  letter-spacing: normal;
+  /*
+  Ensure consistent letter spacing */
   margin: 0;
   padding: 0;
   display: flex;
@@ -103,35 +112,45 @@ body {
   min-height: 100vh;
 }
 
-/* Container styles */
+/* Container
+  styles */
 .container {
   max-width: 700px;
   width: 80%;
   margin: 2rem auto;
-  padding: 1.5em; /* Use em units for padding */
+  padding: 1.5em;
+  /* Use em units for padding */
   background: var(--container-background-color);
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.5s ease; /* Add transition */
+  transition: all 0.5s ease;
+  /* Add transition */
 }
 
-/* Header styles */
+/* Header
+  styles */
 .header {
   display: flex;
   flex-direction: column;
   background: var(--container-background-color);
   border-radius: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color); /* Use the CSS variable for the glow effect */
-  padding: 1.5em; /* Use em units for padding */
-  transition: all 0.5s ease; /* Add transition */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color);
+  /* Use the CSS variable for the
+  glow effect */
+  padding: 1.5em;
+  /* Use em units for padding */
+  transition: all 0.5s ease;
+  /* Add transition */
 }
 
 .header-content {
   display: flex;
   align-items: var(--header-align-items);
   justify-content: space-between;
-  flex-direction: var(--header-flex-direction); /* Use CSS variable */
-  transition: flex-direction 0.5s ease, align-items 0.5s ease; /* Add transition */
+  flex-direction: var(--header-flex-direction);
+  /* Use CSS variable */
+  transition: flex-direction 0.5s ease, align-items 0.5s ease;
+  /* Add transition */
 }
 
 .profile-pic {
@@ -140,77 +159,102 @@ body {
   border-radius: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   object-fit: cover;
-  margin-left: var(--profile-pic-margin-left); /* Use CSS variable */
-  margin-bottom: var(--profile-pic-margin-bottom); /* Use CSS variable */
-  order: var(--profile-pic-order); /* Use CSS variable */
-  transition: margin-left 0.5s ease, margin-bottom 0.5s ease, order 0.5s ease; /* Add transition */
+  margin-left: var(--profile-pic-margin-left);
+  /* Use CSS
+  variable */
+  margin-bottom: var(--profile-pic-margin-bottom);
+  /* Use CSS variable
+  */
+  order: var(--profile-pic-order);
+  /* Use CSS variable */
+  transition: margin-left 0.5s ease, margin-bottom 0.5s ease, order 0.5s ease;
+  /* Add
+  transition */
 }
 
 .info {
   display: flex;
   flex-direction: column;
-  align-items: var(--info-align-items); /* Use CSS variable */
-  text-align: var(--info-text-align); /* Use CSS variable */
+  align-items: var(--info-align-items);
+  /* Use CSS variable */
+  text-align: var(--info-text-align);
+  /* Use CSS variable */
   flex: 1;
-  transition: align-items 0.5s ease, text-align 0.5s ease; /* Add transition */
+  transition: align-items 0.5s ease, text-align 0.5s ease;
+  /* Add transition */
 }
 
 .name {
   color: var(--text-color);
-  font-size: 1.75rem; /* 28px */
+  font-size: 1.75rem;
+  /* 28px */
   font-weight: var(--font-header-weight);
-  line-height: 1.1; /* Reduced line height */
+  line-height: 1.1;
+  /* Reduced line height */
 }
 
 .subhead {
   margin: 0.5rem 0;
-  color: #9ca3af; /* text-gray-400 */
-  font-size: 1.125rem; /* 18px */
-  font-weight: var(--font-subheader-weight);
-  line-height: 1.2; /* Reduced line height */
+  color: #9ca3af;
+  /* text-gray-400 */
+  font-size: 1.125rem;
+  /* 18px */
+  font-weight: var (--font-subheader-weight);
+  line-height: 1.2;
+  /* Reduced line height */
 }
 
 .social-icons {
   display: flex;
   gap: 1rem;
-  font-size: 1.5rem; /* 24px */
-  justify-content: var(--social-icons-justify-content); /* Use CSS variable */
-  transition: justify-content 0.5s ease; /* Add transition */
+  font-size: 1.5rem;
+  /* 24px */
+  justify-content: var(--social-icons-justify-content);
+  /* Use CSS variable */
+  transition: justify-content 0.5s ease;
+  /* Add transition */
 }
 
 .social-icons a {
   transition: color 0.5s;
-  text-decoration: none; /* Remove underline */
+  text-decoration: none;
+  /* Remove underline */
 }
 
 .social-icons a#pronounis {
-  color: #f9a8d4; /* text-pink-200 */
+  color: #f9a8d4;
+  /* text-pink-200 */
 }
 
 .social-icons a#github {
-  color: #ffffff; /* text-white */
+  color: #ffffff;
+  /* text-white */
 }
 
 .social-icons a#mastodon {
-  color: #3b82f6; /* text-blue-500 */
+  color: #3b82f6;
+  /*
+  text-blue-500 */
 }
 
 .social-icons a#notes {
-  color: #a855f7; /* text-purple-500 */
+  color: #a855f7;
+  /* text-purple-500 */
 }
 
 .social-icons a#email {
-  color: #1d4ed8; /* text-blue-700 */
+  color: #1d4ed8;
+  /* text-blue-700 */
 }
 
 .social-icons a#pgp {
-  color: #2563eb; /* text-blue-600 */
+  color: #2563eb;
+  /* text-blue-600 */
 }
 
 .social-icons a:hover {
-  color: var(
-    --link-hover-color
-  ) !important; /* Ensure the hover color is applied */
+  color: var(--link-hover-color) !important;
+  /* Ensure the hover color is applied */
 }
 
 /* About and Projects sections */
@@ -223,27 +267,41 @@ body {
 .about h2,
 .projects h2 {
   margin-bottom: 0.5rem;
-  font-size: 1.25rem; /* 20px */
-  color: #f9fafb; /* text-gray-50 */
+  font-size: 1.25rem;
+  /*
+  20px */
+  color: #f9fafb;
+  /* text-gray-50 */
   font-weight: var(--font-header-weight);
-  line-height: 1.3; /* Ensure consistent line height */
+  line-height: 1.3;
+  /* Ensure consistent line height */
 }
 
 .about p,
 .projects p {
-  color: #f3f4f6; /* text-gray-100 */
-  font-size: 0.875rem; /* 14px */
+  color: #f3f4f6;
+  /* text-gray-100 */
+  font-size: 0.875rem;
+  /* 14px */
   font-weight: var(--font-body-weight);
-  line-height: 1.5; /* Ensure consistent line height */
-  margin: 0.5rem 0; /* Minimal vertical padding */
+  line-height: 1.5;
+  /*
+  Ensure consistent line height */
+  margin: 0.5rem 0;
+  /* Minimal vertical padding
+  */
 }
 
 .about a,
 .projects a,
 .custom-link {
-  color: var(--link-color); /* Updated to use the new link color */
+  color: var(--link-color);
+  /* Updated
+  to use the new link color */
   transition: color 0.5s;
-  text-decoration: none; /* Remove underline */
+  text-decoration: none;
+  /*
+  Remove underline */
 }
 
 .about a:hover,
@@ -252,37 +310,140 @@ body {
   color: var(--link-hover-color);
 }
 
-/* Main and Footer sections */
-main,
-footer {
-  max-width: 80%;
-  margin: 2rem auto;
-  padding: 1em; /* Use em units for padding */
-  background: var(--container-background-color);
+/* Projects list */
+.project {
+  background: #1a1f2e;
   border-radius: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.5s ease; /* Add transition */
+  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+  transition: all 0.5s ease;
+  margin: 1rem 0;
+  padding: none;
 }
 
-footer {
+.project a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.project:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color);
+}
+
+.project-content {
+  padding: 0;
+  margin: 0;
+}
+
+.project-header {
+  margin-top: -1rem;
+  display: flex;
+  justify-content: space-between;
+  /* Ensure the tags are on the same line as the title */
+  align-items: center;
+}
+
+.project-content h3 {
+  font-size: 1.25rem;
+  /* 20px */
+  color: #f9fafb;
+  /* text-gray-50 */
+  font-weight: var(--font-weight-bold);
+  line-height: 1.3;
+  /* Ensure consistent line height */
+}
+
+.project-content p {
+  color: #f3f4f6;
+  /* text-gray-100 */
+  font-size: 0.875rem;
+  /*
+  14px */
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tag {
+  background: #e0e7ff;
+  /* bg-blue-100 */
+  color: #1e40af;
+  /* text-blue-700 */
+  font-size: 0.75rem;
+  /* 12px */
+  font-weight: var(--font-weight-medium);
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  /* Fully rounded edges */
+  display: inline-block;
+}
+
+.tag.wip {
+  background: #ffedd5;
+  /* bg-orange-100 */
+  color: #d97706;
+  /*
+  text-orange-600 */
+}
+
+/* Footer Section */
+.footer {
   text-align: center;
+  margin-top: auto;
+  background: transparent;
+  box-shadow: none;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-link {
+  color: var(--text-color);
+  text-decoration: none;
+  transition: color 0.5s;
+}
+
+.footer-link:hover {
+  color: var(--link-hover-color);
+}
+
+@media (min-width: 576px) {
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }
 
 /* Font size classes */
 .text-sm {
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.875rem;
+  /* 14px */
 }
 
 .text-lg {
-  font-size: 1.125rem; /* 18px */
+  font-size: 1.125rem;
+  /*
+  18px */
 }
 
 .text-xl {
-  font-size: 1.25rem; /* 20px */
+  font-size: 1.25rem;
+  /* 20px */
 }
 
 .text-2xl {
-  font-size: 1.5rem; /* 24px */
+  font-size: 1.5rem;
+  /* 24px */
 }
 
 /* Font weight classes */
@@ -310,7 +471,8 @@ footer {
   }
 }
 
-/* Responsive layout for small screens */
+/* Responsive
+  layout for small screens */
 @media (max-width: 576px) {
   :root {
     --header-flex-direction: column;
@@ -324,10 +486,17 @@ footer {
   }
 
   .container,
-  main,
   footer {
-    max-width: 80%; /* Ensure the container fits within the viewport */
-    padding: 1em; /* Use em units for padding */
-    margin: 2rem auto; /* Adjust margin for small screens */
+    max-width: 80%;
+    /* Ensure the container fits within the viewport */
+    padding: 1em;
+    /* Use em units for padding */
+    margin: 2rem auto;
+    /* Adjust margin
+  for small screens */
+  }
+
+  .project {
+    margin: 0.5rem 0;
   }
 }
