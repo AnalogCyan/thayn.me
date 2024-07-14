@@ -3,14 +3,14 @@
   --dark-background-color: #121212;
   --dark-container-background-color: #1f2937; /* Container background */
   --dark-text-color: #ffffff;
-  --dark-link-color: #f472b6; /* Updated to match pink-300 */
+  --dark-link-color: #f78ab8; /* Slightly lighter pink */
   --dark-link-hover-color: #ec4899; /* Updated to match pink-500 */
 
   /* Light mode colors */
   --light-background-color: #ffffff;
   --light-container-background-color: #f3f4f6; /* Light container background */
   --light-text-color: #000000;
-  --light-link-color: #f472b6; /* Updated to match pink-300 */
+  --light-link-color: #f78ab8; /* Slightly lighter pink */
   --light-link-hover-color: #ec4899; /* Updated to match pink-500 */
 
   /* Default colors */
@@ -42,6 +42,20 @@
   --info-align-items: flex-start;
   --info-text-align: left;
   --social-icons-justify-content: flex-start;
+
+  /* Font variables */
+  --font-family: "Tilt Neon", sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Typography variables */
+  --font-header: var(--font-family);
+  --font-header-weight: var(--font-weight-bold);
+  --font-subheader: var(--font-family);
+  --font-subheader-weight: var(--font-weight-medium);
+  --font-body: var(--font-family);
+  --font-body-weight: var(--font-weight-regular);
 }
 
 /* Light mode styles */
@@ -74,7 +88,13 @@
 body {
   background-color: var(--background-color);
   color: var(--text-color);
-  font-family: "Source Code Pro", monospace;
+  font-family: var(--font-body);
+  font-weight: var(--font-body-weight);
+  font-optical-sizing: auto;
+  font-variation-settings: "XROT" 0, "YROT" 0;
+  font-size: 16px; /* Ensure consistent base font size */
+  line-height: 1.5; /* Ensure consistent line height */
+  letter-spacing: normal; /* Ensure consistent letter spacing */
   margin: 0;
   padding: 0;
   display: flex;
@@ -137,20 +157,23 @@ body {
 
 .name {
   color: var(--text-color);
-  font-size: 2rem;
-  font-weight: bold;
+  font-size: 1.75rem; /* 28px */
+  font-weight: var(--font-header-weight);
+  line-height: 1.1; /* Reduced line height */
 }
 
 .subhead {
   margin: 0.5rem 0;
   color: #9ca3af; /* text-gray-400 */
-  font-size: 1.125rem;
+  font-size: 1.125rem; /* 18px */
+  font-weight: var(--font-subheader-weight);
+  line-height: 1.2; /* Reduced line height */
 }
 
 .social-icons {
   display: flex;
   gap: 1rem;
-  font-size: 2rem;
+  font-size: 1.5rem; /* 24px */
   justify-content: var(--social-icons-justify-content); /* Use CSS variable */
   transition: justify-content 0.5s ease; /* Add transition */
 }
@@ -200,14 +223,18 @@ body {
 .about h2,
 .projects h2 {
   margin-bottom: 0.5rem;
-  font-size: 1.25rem;
+  font-size: 1.25rem; /* 20px */
   color: #f9fafb; /* text-gray-50 */
+  font-weight: var(--font-header-weight);
+  line-height: 1.3; /* Ensure consistent line height */
 }
 
 .about p,
 .projects p {
   color: #f3f4f6; /* text-gray-100 */
-  font-size: 0.875rem;
+  font-size: 0.875rem; /* 14px */
+  font-weight: var(--font-body-weight);
+  line-height: 1.5; /* Ensure consistent line height */
   margin: 0.5rem 0; /* Minimal vertical padding */
 }
 
@@ -239,6 +266,36 @@ footer {
 
 footer {
   text-align: center;
+}
+
+/* Font size classes */
+.text-sm {
+  font-size: 0.875rem; /* 14px */
+}
+
+.text-lg {
+  font-size: 1.125rem; /* 18px */
+}
+
+.text-xl {
+  font-size: 1.25rem; /* 20px */
+}
+
+.text-2xl {
+  font-size: 1.5rem; /* 24px */
+}
+
+/* Font weight classes */
+.font-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.font-medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.font-normal {
+  font-weight: var(--font-weight-regular);
 }
 
 /* Reduced motion preference */
