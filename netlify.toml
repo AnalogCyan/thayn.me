@@ -1,16 +1,56 @@
-[[headers]]
-  for = "/*"
-    [headers.values]
-        X-Frame-Options = "sameorigin"
-        Content-Security-Policy = "default-src 'self' fonts.gstatic.com fonts.googleapis.com d33wubrfki0l68.cloudfront.net; connect-src 'self'; img-src 'self' itadakimasu.app emojipedia-us.s3.dualstack.us-west-1.amazonaws.com d33wubrfki0l68.cloudfront.net; manifest-src 'self'; font-src 'self' fonts.gstatic.com d33wubrfki0l68.cloudfront.net; style-src-elem 'self' fonts.googleapis.com d33wubrfki0l68.cloudfront.net; script-src-elem 'self' d33wubrfki0l68.cloudfront.net; report-uri https://thayn.report-uri.com/r/d/csp/wizard"
+# Netlify configuration file
+
+[build]
+  # Directory to publish
+  publish = "."
+
+# Redirects configuration
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Custom headers for security
 [[headers]]
   for = "/*"
   [headers.values]
-    Strict-Transport-Security = '''
-    max-age=63072000;
-    includeSubDomains;
-    preload'''
+    # Prevent clickjacking
+    X-Frame-Options = "DENY"
+    # Enable HSTS with a max age of 1 year
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    # Prevent MIME type sniffing
+    X-Content-Type-Options = "nosniff"
+    # Enable XSS protection
+    X-XSS-Protection = "1; mode=block"
+    # Content Security Policy
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
 
-[build]
-  environment = { NODE_VERSION = "16.7.0" }
-  command = "npm run build-css"
+# Context-specific settings
+# Settings for the production environment
+[context.production]
+  [context.production.environment]
+    URL = "https://thayn.me"
+
+# Settings for the deploy-preview environment
+[context.deploy-preview]
+  [context.deploy-preview.environment]
+    URL = "https://thayn.netlify.app"
+
+# Headers for specific paths
+[[headers]]
+  for = "/media/*"
+  [headers.values]
+    # Cache images for 1 year
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    # Cache CSS for 1 year
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    # Cache JavaScript for 1 year
+    Cache-Control = "public, max-age=31536000"
