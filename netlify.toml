@@ -36,6 +36,11 @@
   [context.deploy-preview.environment]
     URL = "https://thayn.netlify.app"
 
+# Settings for the v3-rewrite branch
+[context.v3-rewrite]
+  [context.v3-rewrite.environment]
+    URL = "https://thayn.netlify.app"
+
 # Headers for specific paths
 [[headers]]
   for = "/media/*"
