@@ -32,6 +32,16 @@
 
   /* Theme color */
   --theme-color: var(--primary-color);
+
+  /* Layout variables */
+  --header-flex-direction: row;
+  --header-align-items: center;
+  --profile-pic-order: 0;
+  --profile-pic-margin-left: 1.5em;
+  --profile-pic-margin-bottom: 0;
+  --info-align-items: flex-start;
+  --info-text-align: left;
+  --social-icons-justify-content: flex-start;
 }
 
 /* Light mode styles */
@@ -82,6 +92,7 @@ body {
   background: var(--container-background-color);
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease; /* Add transition */
 }
 
 /* Header styles */
@@ -92,13 +103,15 @@ body {
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color); /* Use the CSS variable for the glow effect */
   padding: 1.5em; /* Use em units for padding */
+  transition: all 0.5s ease; /* Add transition */
 }
 
 .header-content {
   display: flex;
-  align-items: center;
+  align-items: var(--header-align-items);
   justify-content: space-between;
-  transition: all 0.5s ease;
+  flex-direction: var(--header-flex-direction); /* Use CSS variable */
+  transition: flex-direction 0.5s ease, align-items 0.5s ease; /* Add transition */
 }
 
 .profile-pic {
@@ -107,15 +120,19 @@ body {
   border-radius: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   object-fit: cover;
-  margin-left: 1.5em; /* Use em units for margin */
+  margin-left: var(--profile-pic-margin-left); /* Use CSS variable */
+  margin-bottom: var(--profile-pic-margin-bottom); /* Use CSS variable */
+  order: var(--profile-pic-order); /* Use CSS variable */
+  transition: margin-left 0.5s ease, margin-bottom 0.5s ease, order 0.5s ease; /* Add transition */
 }
 
 .info {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
+  align-items: var(--info-align-items); /* Use CSS variable */
+  text-align: var(--info-text-align); /* Use CSS variable */
   flex: 1;
+  transition: align-items 0.5s ease, text-align 0.5s ease; /* Add transition */
 }
 
 .name {
@@ -134,6 +151,8 @@ body {
   display: flex;
   gap: 1rem;
   font-size: 2rem;
+  justify-content: var(--social-icons-justify-content); /* Use CSS variable */
+  transition: justify-content 0.5s ease; /* Add transition */
 }
 
 .social-icons a {
@@ -215,6 +234,7 @@ footer {
   background: var(--container-background-color);
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.5s ease; /* Add transition */
 }
 
 footer {
@@ -235,31 +255,22 @@ footer {
 
 /* Responsive layout for small screens */
 @media (max-width: 576px) {
+  :root {
+    --header-flex-direction: column;
+    --header-align-items: center;
+    --profile-pic-order: -1;
+    --profile-pic-margin-left: 0;
+    --profile-pic-margin-bottom: 1rem;
+    --info-align-items: center;
+    --info-text-align: center;
+    --social-icons-justify-content: center;
+  }
+
   .container,
   main,
   footer {
     max-width: 80%; /* Ensure the container fits within the viewport */
     padding: 1em; /* Use em units for padding */
     margin: 2rem auto; /* Adjust margin for small screens */
-  }
-
-  .header-content {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .profile-pic {
-    margin-left: 0;
-    margin-bottom: 1rem;
-    order: -1; /* Move profile picture to the top */
-  }
-
-  .info {
-    align-items: center;
-    text-align: center;
-  }
-
-  .social-icons {
-    justify-content: center;
   }
 }
