@@ -23,7 +23,7 @@
     # Enable XSS protection
     X-XSS-Protection = "1; mode=block"
     # Content Security Policy
-    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self';"
     # Disable caching for development
     Cache-Control = "no-store"
 
