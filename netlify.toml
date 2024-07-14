@@ -25,22 +25,6 @@
     # Content Security Policy
     Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
 
-# Context-specific settings
-# Settings for the production environment
-[context.production]
-  [context.production.environment]
-    URL = "https://thayn.me"
-
-# Settings for the deploy-preview environment
-[context.deploy-preview]
-  [context.deploy-preview.environment]
-    URL = "https://thayn.netlify.app"
-
-# Settings for the v3-rewrite branch
-[context.v3-rewrite]
-  [context.v3-rewrite.environment]
-    URL = "https://thayn.netlify.app"
-
 # Headers for specific paths
 [[headers]]
   for = "/media/*"
