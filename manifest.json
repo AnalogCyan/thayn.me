@@ -1,16 +1,5 @@
 {
-  "icons": [
-    {
-      "src": "./media/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "./media/icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
+  "start_url": "/",
   "display": "standalone",
   "theme_color": "#4682b4",
   "lang": "en-US",
@@ -20,5 +9,16 @@
   "description": "Cyan Thayn's personal website showcasing her projects, interests, and contact information.",
   "orientation": "any",
   "name": "Cyan Thayn",
-  "start_url": "/"
+  "icons": [
+    {
+      "src": "./media/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "./media/profile.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
 }
