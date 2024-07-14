@@ -1,29 +1,69 @@
-/* Define CSS variables for colors */
 :root {
-  --primary-color: #009688;
-  --secondary-color: #ff9800;
-  --background-color: #121212;
-  --text-color: #ffffff;
-  --link-color: #80cbc4;
-  --link-hover-color: #ffb74d;
-
-  /* Dark mode specific colors (default) */
+  /* Dark mode colors */
   --dark-background-color: #121212;
+  --dark-container-background-color: #1f2937; /* Container background */
   --dark-text-color: #ffffff;
-  --dark-link-color: #80cbc4;
-  --dark-link-hover-color: #ffb74d;
+  --dark-link-color: #f472b6; /* Updated to match pink-300 */
+  --dark-link-hover-color: #ec4899; /* Updated to match pink-500 */
 
-  /* Light mode specific colors */
+  /* Light mode colors */
   --light-background-color: #ffffff;
+  --light-container-background-color: #f3f4f6; /* Light container background */
   --light-text-color: #000000;
-  --light-link-color: #009688;
-  --light-link-hover-color: #ff9800;
+  --light-link-color: #f472b6; /* Updated to match pink-300 */
+  --light-link-hover-color: #ec4899; /* Updated to match pink-500 */
+
+  /* Default colors */
+  --background-color: var(
+    --dark-background-color
+  ); /* Default to dark mode background */
+  --container-background-color: var(
+    --dark-container-background-color
+  ); /* Default to dark mode container background */
+  --text-color: var(--dark-text-color);
+  --link-color: var(--dark-link-color);
+  --link-hover-color: var(--dark-link-hover-color);
+
+  /* Primary color */
+  --primary-color: #4682b4; /* Steel blue */
+
+  /* Glow color */
+  --glow-color: rgba(135, 206, 250, 0.5); /* Light sky blue */
+
+  /* Theme color */
+  --theme-color: var(--primary-color);
+}
+
+/* Light mode styles */
+@media (prefers-color-scheme: light) {
+  :root {
+    --background-color: var(--light-background-color);
+    --container-background-color: var(--light-container-background-color);
+    --text-color: var(--light-text-color);
+    --link-color: var(--light-link-color);
+    --link-hover-color: var(--light-link-hover-color);
+    --theme-color: var(
+      --light-link-color
+    ); /* Use light link color as theme color */
+  }
+
+  body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+
+  .container,
+  .header,
+  main,
+  footer {
+    background: var(--container-background-color);
+  }
 }
 
 /* Apply dark mode colors by default */
 body {
-  background-color: var(--dark-background-color);
-  color: var(--dark-text-color);
+  background-color: var(--background-color);
+  color: var(--text-color);
   font-family: "Source Code Pro", monospace;
   margin: 0;
   padding: 0;
@@ -39,7 +79,7 @@ body {
   width: 90%;
   margin: 2rem auto;
   padding: 1.5em; /* Use em units for padding */
-  background: #1f2937; /* bg-gray-800 */
+  background: var(--container-background-color);
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -48,9 +88,9 @@ body {
 .header {
   display: flex;
   flex-direction: column;
-  background: #1f2937; /* bg-gray-800 */
+  background: var(--container-background-color);
   border-radius: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color); /* Use the CSS variable for the glow effect */
   padding: 1.5em; /* Use em units for padding */
 }
 
@@ -97,13 +137,38 @@ body {
 }
 
 .social-icons a {
-  color: inherit;
   transition: color 0.5s;
   text-decoration: none; /* Remove underline */
 }
 
+.social-icons a#pronounis {
+  color: #f9a8d4; /* text-pink-200 */
+}
+
+.social-icons a#github {
+  color: #ffffff; /* text-white */
+}
+
+.social-icons a#mastodon {
+  color: #3b82f6; /* text-blue-500 */
+}
+
+.social-icons a#notes {
+  color: #a855f7; /* text-purple-500 */
+}
+
+.social-icons a#email {
+  color: #1d4ed8; /* text-blue-700 */
+}
+
+.social-icons a#pgp {
+  color: #2563eb; /* text-blue-600 */
+}
+
 .social-icons a:hover {
-  color: var(--link-hover-color);
+  color: var(
+    --link-hover-color
+  ) !important; /* Ensure the hover color is applied */
 }
 
 /* About and Projects sections */
@@ -130,7 +195,7 @@ body {
 .about a,
 .projects a,
 .custom-link {
-  color: #fbcfe8; /* text-pink-300 */
+  color: var(--link-color); /* Updated to use the new link color */
   transition: color 0.5s;
   text-decoration: none; /* Remove underline */
 }
@@ -138,7 +203,7 @@ body {
 .about a:hover,
 .projects a:hover,
 .custom-link:hover {
-  color: #ec4899; /* hover:text-pink-500 */
+  color: var(--link-hover-color);
 }
 
 /* Main and Footer sections */
@@ -148,7 +213,7 @@ footer {
   max-width: 700px;
   margin: 2rem auto;
   padding: 1.5em; /* Use em units for padding */
-  background: #1f2937; /* bg-gray-800 */
+  background: var(--container-background-color);
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -169,51 +234,6 @@ footer {
   }
 }
 
-/* Light mode styles */
-@media (prefers-color-scheme: light) {
-  body {
-    background-color: var(--light-background-color);
-    color: var(--light-text-color);
-  }
-
-  .container,
-  .header,
-  main,
-  footer {
-    background: #ffffff; /* light background */
-  }
-
-  .name {
-    color: var(--light-text-color);
-  }
-
-  .subhead {
-    color: #6b7280; /* text-gray-500 */
-  }
-
-  .about h2,
-  .projects h2 {
-    color: #1f2937; /* text-gray-800 */
-  }
-
-  .about p,
-  .projects p {
-    color: #1f2937; /* text-gray-800 */
-  }
-
-  .about a,
-  .projects a,
-  .custom-link {
-    color: var(--light-link-color);
-  }
-
-  .about a:hover,
-  .projects a:hover,
-  .custom-link:hover {
-    color: var(--light-link-hover-color);
-  }
-}
-
 /* Responsive layout for small screens */
 @media (max-width: 576px) {
   .container,
@@ -221,6 +241,7 @@ footer {
   footer {
     max-width: 100%; /* Ensure the container fits within the viewport */
     padding: 1em; /* Use em units for padding */
+    margin: 1rem auto; /* Adjust margin for small screens */
   }
 
   .header-content {
