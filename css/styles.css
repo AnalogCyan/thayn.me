@@ -24,22 +24,143 @@
 body {
   background-color: var(--dark-background-color);
   color: var(--dark-text-color);
+  font-family: "Source Code Pro", monospace;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
 }
 
-a {
-  color: var(--dark-link-color);
+/* Container styles */
+.container {
+  max-width: 700px;
+  width: 90%;
+  margin: 2rem auto;
+  padding: 1.5em; /* Use em units for padding */
+  background: #1f2937; /* bg-gray-800 */
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styles */
+.header {
+  display: flex;
+  flex-direction: column;
+  background: #1f2937; /* bg-gray-800 */
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5em; /* Use em units for padding */
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.5s ease;
+}
+
+.profile-pic {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+  margin-left: 1.5em; /* Use em units for margin */
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  flex: 1;
+}
+
+.name {
+  color: var(--text-color);
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.subhead {
+  margin: 0.5rem 0;
+  color: #9ca3af; /* text-gray-400 */
+  font-size: 1.125rem;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+  font-size: 2rem;
+}
+
+.social-icons a {
+  color: inherit;
   transition: color 0.5s;
 }
 
-a:hover {
-  color: var(--dark-link-hover-color);
+.social-icons a:hover {
+  color: var(--link-hover-color);
+}
+
+/* About and Projects sections */
+.about,
+.projects {
+  margin-top: 1rem;
+  padding: 0;
+}
+
+.about h2,
+.projects h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  color: #f9fafb; /* text-gray-50 */
+}
+
+.about p,
+.projects p {
+  color: #f3f4f6; /* text-gray-100 */
+  font-size: 0.875rem;
+  margin: 0.5rem 0; /* Minimal vertical padding */
+}
+
+.about a,
+.projects a {
+  color: #fbcfe8; /* text-pink-300 */
+  transition: color 0.5s;
+}
+
+.about a:hover,
+.projects a:hover {
+  color: #ec4899; /* hover:text-pink-500 */
+}
+
+/* Main and Footer sections */
+main,
+footer {
+  width: 90%;
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 1.5em; /* Use em units for padding */
+  background: #1f2937; /* bg-gray-800 */
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+  text-align: center;
 }
 
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-  a {
-    transform: none;
+  .header-content,
+  .social-icons a,
+  .about a,
+  .projects a {
     transition: none;
+    transform: none;
   }
 }
 
@@ -50,77 +171,60 @@ a:hover {
     color: var(--light-text-color);
   }
 
-  a {
-    color: var(--light-link-color);
-  }
-
-  a:hover {
-    color: var(--light-link-hover-color);
-  }
-}
-
-/* Example styles for other elements */
-header,
-footer {
-  background-color: var(--primary-color);
-  color: var(--dark-text-color);
-  padding: 1rem;
-  text-align: center;
-}
-
-main {
-  padding: 2rem;
-}
-
-nav ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-nav ul li {
-  display: inline;
-  margin-right: 1rem;
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: inherit;
-}
-
-/* Light mode specific styles for header and footer */
-@media (prefers-color-scheme: light) {
-  header,
+  .container,
+  .header,
+  main,
   footer {
-    background-color: var(--primary-color);
+    background: #ffffff; /* light background */
+  }
+
+  .name {
     color: var(--light-text-color);
   }
-}
 
-/* Custom link class for specific styles */
-a.custom-link {
-  color: var(--dark-link-color);
-  transition: color 0.5s;
-}
-
-a.custom-link:hover {
-  color: var(--dark-link-hover-color);
-}
-
-/* Reduced motion preference for custom links */
-@media (prefers-reduced-motion: reduce) {
-  a.custom-link {
-    transform: none;
-    transition: none;
+  .subhead {
+    color: #6b7280; /* text-gray-500 */
   }
-}
 
-/* Light mode styles for custom links */
-@media (prefers-color-scheme: light) {
-  a.custom-link {
+  .about h2,
+  .projects h2 {
+    color: #1f2937; /* text-gray-800 */
+  }
+
+  .about p,
+  .projects p {
+    color: #1f2937; /* text-gray-800 */
+  }
+
+  .about a,
+  .projects a {
     color: var(--light-link-color);
   }
 
-  a.custom-link:hover {
+  .about a:hover,
+  .projects a:hover {
     color: var(--light-link-hover-color);
+  }
+}
+
+/* Responsive layout for small screens */
+@media (max-width: 576px) {
+  .header-content {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .profile-pic {
+    margin-left: 0;
+    margin-bottom: 1rem;
+  }
+
+  .info {
+    align-items: center;
+    text-align: center;
+  }
+
+  .social-icons {
+    justify-content: center;
   }
 }

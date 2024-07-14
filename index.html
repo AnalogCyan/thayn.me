@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="A brief description of the page content"
+      content="Cyan Thayn's personal website showcasing her projects, interests, and contact information."
     />
     <meta name="theme-color" content="#009688" />
 
@@ -14,13 +14,13 @@
     <meta property="og:title" content="Cyan Thayn" />
     <meta
       property="og:description"
-      content="A brief description of the page content"
+      content="Cyan Thayn's personal website showcasing her projects and interests."
     />
-    <meta property="og:image" content="https://example.com/image.jpg" />
-    <meta property="og:url" content="https://example.com" />
+    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
+    <meta property="og:url" content="https://thayn.me/" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@YourTwitterHandle" />
-    <meta name="twitter:creator" content="@YourTwitterHandle" />
+    <meta name="twitter:site" content="@AnalogCyan" />
+    <meta name="twitter:creator" content="@AnalogCyan" />
 
     <!-- Link to manifest.json -->
     <link rel="manifest" href="manifest.json" />
@@ -31,6 +31,16 @@
 
     <!-- CSS files -->
     <link rel="stylesheet" href="./css/styles.css" />
+    <link
+    href="https://cdn.jsdelivr.net/npm/remixicon@3.0.0/fonts/remixicon.css"
+    rel="stylesheet"
+  />
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;700&display=swap"
+    crossorigin="anonymous"
+    rel="stylesheet"
+  />
 
     <!-- JavaScript files -->
     <script src="./js/chrome_bug_fix.js" defer></script>
@@ -38,20 +48,130 @@
 
     <title>Cyan Thayn</title>
   </head>
+
   <body>
     <!-- Header section -->
-    <header>
-      <p>Placeholder header content.</p>
+    <header class="container header">
+      <div class="header-content">
+        <div class="info">
+          <div class="name">Cyan Thayn</div>
+          <div class="subhead">Technician/Programmer</div>
+          <div class="social-icons">
+            <a
+              href="https://en.pronouns.page/@AnalogCyan"
+              target="_blank"
+              rel="noreferrer noopener"
+              id="pronounis"
+              title="Pronouns"
+              tabindex="1"
+            >
+              <i class="ri-genderless-line"></i>
+            </a>
+            <a
+              href="https://github.com/AnalogCyan"
+              target="_blank"
+              rel="noreferrer noopener"
+              id="github"
+              title="GitHub"
+              tabindex="2"
+            >
+              <i class="ri-github-line"></i>
+            </a>
+            <a
+              href="https://tech.lgbt/@AnalogCyan"
+              target="_blank"
+              rel="me"
+              id="mastodon"
+              title="Mastodon"
+              tabindex="3"
+            >
+              <i class="ri-mastodon-line"></i>
+            </a>
+            <a
+              href="https://thayn.wiki/"
+              target="_blank"
+              rel="noreferrer noopener"
+              id="notes"
+              title="Notes"
+              tabindex="4"
+            >
+              <i class="ri-notion-line"></i>
+            </a>
+            <a
+              href="mailto:webcontact@thayn.email"
+              target="_blank"
+              rel="noreferrer noopener"
+              id="email"
+              title="Email"
+              tabindex="5"
+            >
+              <i class="ri-mail-send-line"></i>
+            </a>
+            <a
+              href="https://thayn.me/.well-known/pgp-key.asc"
+              target="_self"
+              rel="noreferrer noopener"
+              id="pgp"
+              title="PGP Key"
+              tabindex="6"
+            >
+              <i class="ri-folder-keyhole-line"></i>
+            </a>
+          </div>
+        </div>
+        <img
+          src="./media/Cyan2.png"
+          id="profile"
+          alt="Profile Picture"
+          class="profile-pic"
+        />
+      </div>
+      <div class="about">
+        <h2>👋 <span>About</span></h2>
+        <p>
+          Hey there, I'm Cyan! You may also know me as AnalogCyan.<br /><br />
+          My pronouns are
+          <em><a href="https://en.pronouns.page/@AnalogCyan">she/her</a></em
+          >. I am also <em>very neurodivergent</em>, so please be patient with
+          me!<br /><br />
+          I work at a small company where I repair tech for a living. In my free
+          time, I enjoy programming and tinkering with my own tech!<br /><br />
+          I have a passion for technology, both new and old. Some of my other
+          interests include linguistics, retro video games, speedrunning, and
+          collecting
+          <a
+            href="https://www.discogs.com/user/AnalogCyan/collection?folder=4319456"
+            >cassette tapes</a
+          >.<br /><br />
+          I'm also a strong advocate of proper security in technology---remember
+          to use <a href="https://how2factor.info">2FA</a> and a
+          <a>password manager</a>, or
+          <a href="https://www.future.1password.com/passkeys/">passkeys</a> if
+          available! (I personally recommend
+          <a href="https://www.1password.com/">1Password</a> for all of these.)
+        </p>
+      </div>
+      <div class="projects">
+        <h2>👩‍💻 <span>Projects</span></h2>
+        <p>
+          Below are some miscellaneous things I've either made personally, or
+          have been closely involved in. You can click on any of them to learn
+          more! You can also browse my GitHub (linked above) for more things not
+          listed here.<br /><br />
+          Unless otherwise noted, content on this website is licensed under
+          <a href="https://choosealicense.com/licenses/gpl-3.0/">GPLv3</a>.
+        </p>
+      </div>
     </header>
 
     <!-- Main content section -->
-    <main>
+    <main class="container">
       <h1>Welcome to the Page</h1>
       <p>This is a skeleton HTML page with standard elements.</p>
     </main>
 
     <!-- Footer section -->
-    <footer>
+    <footer class="container">
       <p>Placeholder footer message.</p>
     </footer>
   </body>
