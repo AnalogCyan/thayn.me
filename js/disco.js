@@ -14,8 +14,8 @@ document.getElementById('quoteDisplay').addEventListener('click', function () {
       this.style.color = color;
     }, 50);
 
-    // Change the text of the element
     this.textContent = "🪩 Disco mode enabled!";
+    quoteDisplay.removeEventListener('click', handleClick);
   }
 });
 
