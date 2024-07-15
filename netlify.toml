@@ -6,6 +6,12 @@
 
 # Redirects configuration
 [[redirects]]
+  from = "https://git.thayn.me/*"
+  to = "https://github.com/AnalogCyan"
+  status = 301
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
