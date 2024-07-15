@@ -63,7 +63,7 @@
   --font-body-weight: var(--font-weight-regular);
 }
 
-/* Light mode styles */
+/* Light mode styles -- disabled until fixed
 @media (prefers-color-scheme: light) {
   :root {
     --background-color: var(--light-background-color);
@@ -72,8 +72,6 @@
     --link-color: var(--light-link-color);
     --link-hover-color: var(--light-link-hover-color);
     --theme-color: var(--light-link-color);
-    /* Use
-  light link color as theme color */
   }
 
   body {
@@ -86,10 +84,9 @@
   footer {
     background: var(--container-background-color);
   }
-}
+}*/
 
-/* Apply dark mode colors
-  by default */
+/* Apply dark mode colors by default */
 body {
   background-color: var(--background-color);
   color: var(--text-color);
@@ -98,12 +95,8 @@ body {
   font-optical-sizing: auto;
   font-variation-settings: "XROT" 0, "YROT" 0;
   font-size: 16px;
-  /* Ensure consistent base font size */
   line-height: 1.5;
-  /* Ensure consistent line height */
   letter-spacing: normal;
-  /*
-  Ensure consistent letter spacing */
   margin: 0;
   padding: 0;
   display: flex;
@@ -112,35 +105,27 @@ body {
   min-height: 100vh;
 }
 
-/* Container
-  styles */
+/* Container styles */
 .container {
   max-width: 700px;
   width: 80%;
   margin: 2rem auto;
   padding: 1.5em;
-  /* Use em units for padding */
   background: var(--container-background-color);
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.5s ease;
-  /* Add transition */
 }
 
-/* Header
-  styles */
+/* Header styles */
 .header {
   display: flex;
   flex-direction: column;
   background: var(--container-background-color);
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color);
-  /* Use the CSS variable for the
-  glow effect */
   padding: 1.5em;
-  /* Use em units for padding */
   transition: all 0.5s ease;
-  /* Add transition */
 }
 
 .header-content {
