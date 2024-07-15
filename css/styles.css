@@ -2,43 +2,40 @@
   /* Dark mode colors */
   --dark-background-color: #121212;
   --dark-container-background-color: #1f2937;
-  /* Container background */
   --dark-text-color: #ffffff;
   --dark-link-color: #f78ab8;
-  /* Slightly lighter pink
-  */
   --dark-link-hover-color: #ec4899;
-  /* Updated to match pink-500 */
+  --dark-glow-color: rgba(255, 182, 193, 0.5);
+  --dark-shadow-color: rgba(216, 216, 216, 0.1);
+
   /* Light mode colors */
   --light-background-color: #f0f0f0;
-  --light-container-background-color: #f3f4f6;
-  /* Light container background */
+  --light-container-background-color: #ffffff;
   --light-text-color: #000000;
-  --light-link-color: #f78ab8;
-  /* Slightly lighter
-  pink */
+  --light-link-color: #4682b4;
   --light-link-hover-color: #ec4899;
-  /* Updated to match pink-500 */
-  /*
-  Default colors */
+  --light-glow-color: rgba(135, 206, 250, 0.5);
+  --light-shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* Default colors */
   --background-color: var(--dark-background-color);
-  /* Default
-  to dark mode background */
   --container-background-color: var(--dark-container-background-color);
-  /* Default to dark mode container
-  background */
   --text-color: var(--dark-text-color);
   --link-color: var(--dark-link-color);
   --link-hover-color: var(--dark-link-hover-color);
-  /*
-  Primary color */
+
+  /* Primary color */
   --primary-color: #4682b4;
-  /* Steel blue */
+
   /* Glow color */
-  --glow-color: rgba(135, 206, 250, 0.5);
-  /* Light sky blue */
+  --glow-color: var(--dark-glow-color);
+
+  /* Shadow color */
+  --shadow-color: var(--dark-shadow-color);
+
   /* Theme color */
   --theme-color: var(--primary-color);
+
   /* Layout variables */
   --header-flex-direction: row;
   --header-align-items: center;
@@ -48,11 +45,13 @@
   --info-align-items: flex-start;
   --info-text-align: left;
   --social-icons-justify-content: flex-start;
+
   /* Font variables */
   --font-family: "Tilt Neon", sans-serif;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
+
   /* Typography variables */
   --font-header: var(--font-family);
   --font-header-weight: var(--font-weight-bold);
@@ -62,7 +61,7 @@
   --font-body-weight: var(--font-weight-regular);
 }
 
-/* Light mode styles -- disabled until fixed
+/* Light mode styles */
 @media (prefers-color-scheme: light) {
   :root {
     --background-color: var(--light-background-color);
@@ -71,21 +70,12 @@
     --link-color: var(--light-link-color);
     --link-hover-color: var(--light-link-hover-color);
     --theme-color: var(--light-link-color);
+    --glow-color: var(--light-glow-color);
+    --shadow-color: var(--light-shadow-color);
   }
+}
 
-  body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-  }
-
-  .container,
-  .header,
-  footer {
-    background: var(--container-background-color);
-  }
-}*/
-
-/* Apply dark mode colors by default */
+/* Apply colors based on the theme */
 body {
   background-color: var(--background-color);
   color: var(--text-color);
@@ -132,9 +122,7 @@ body {
   align-items: var(--header-align-items);
   justify-content: space-between;
   flex-direction: var(--header-flex-direction);
-  /* Use CSS variable */
   transition: flex-direction 0.5s ease, align-items 0.5s ease;
-  /* Add transition */
 }
 
 .profile-pic {
@@ -144,101 +132,74 @@ body {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   object-fit: cover;
   margin-left: var(--profile-pic-margin-left);
-  /* Use CSS
-  variable */
   margin-bottom: var(--profile-pic-margin-bottom);
-  /* Use CSS variable
-  */
   order: var(--profile-pic-order);
-  /* Use CSS variable */
   transition: margin-left 0.5s ease, margin-bottom 0.5s ease, order 0.5s ease;
-  /* Add
-  transition */
 }
 
 .info {
   display: flex;
   flex-direction: column;
   align-items: var(--info-align-items);
-  /* Use CSS variable */
   text-align: var(--info-text-align);
-  /* Use CSS variable */
   flex: 1;
   transition: align-items 0.5s ease, text-align 0.5s ease;
-  /* Add transition */
 }
 
 .name {
   color: var(--text-color);
   font-size: 1.75rem;
-  /* 28px */
   font-weight: var(--font-header-weight);
   line-height: 1.1;
-  /* Reduced line height */
 }
 
 .subhead {
   margin: 0.5rem 0;
   color: #9ca3af;
-  /* text-gray-400 */
   font-size: 1.125rem;
-  /* 18px */
-  font-weight: var (--font-subheader-weight);
+  font-weight: var(--font-subheader-weight);
   line-height: 1.2;
-  /* Reduced line height */
 }
 
 .social-icons {
   display: flex;
   gap: 1rem;
   font-size: 1.5rem;
-  /* 24px */
   justify-content: var(--social-icons-justify-content);
-  /* Use CSS variable */
   transition: justify-content 0.5s ease;
-  /* Add transition */
 }
 
 .social-icons a {
   transition: color 0.5s;
   text-decoration: none;
-  /* Remove underline */
 }
 
 .social-icons a#pronounis {
   color: #f9a8d4;
-  /* text-pink-200 */
 }
 
 .social-icons a#github {
-  color: #ffffff;
-  /* text-white */
+  color: var(--text-color);
 }
 
 .social-icons a#mastodon {
   color: #3b82f6;
-  /*
-  text-blue-500 */
 }
 
 .social-icons a#notes {
   color: #a855f7;
-  /* text-purple-500 */
 }
 
 .social-icons a#email {
   color: #1d4ed8;
-  /* text-blue-700 */
 }
 
 .social-icons a#pgp {
   color: #2563eb;
-  /* text-blue-600 */
 }
 
 .social-icons a:hover {
   color: var(--link-hover-color) !important;
-  /* Ensure the hover color is applied */
 }
 
 /* About and Projects sections */
@@ -252,40 +213,26 @@ body {
 .projects h2 {
   margin-bottom: 0.5rem;
   font-size: 1.25rem;
-  /*
-  20px */
-  color: #f9fafb;
-  /* text-gray-50 */
+  color: var(--text-color);
   font-weight: var(--font-header-weight);
   line-height: 1.3;
-  /* Ensure consistent line height */
 }
 
 .about p,
 .projects p {
-  color: #f3f4f6;
-  /* text-gray-100 */
+  color: var(--text-color);
   font-size: 0.875rem;
-  /* 14px */
   font-weight: var(--font-body-weight);
   line-height: 1.5;
-  /*
-  Ensure consistent line height */
   margin: 0.5rem 0;
-  /* Minimal vertical padding
-  */
 }
 
 .about a,
 .projects a,
 .custom-link {
   color: var(--link-color);
-  /* Updated
-  to use the new link color */
   transition: color 0.5s;
   text-decoration: none;
-  /*
-  Remove underline */
 }
 
 .about a:hover,
@@ -296,9 +243,9 @@ body {
 
 /* Projects list */
 .project {
-  background: #1a1f2e;
+  background: var(--container-background-color);
   border-radius: 1.5rem;
-  box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 6px var(--shadow-color);
   transition: all 0.5s ease;
   margin: 1rem 0;
   padding: none;
@@ -323,26 +270,19 @@ body {
   margin-top: -1rem;
   display: flex;
   justify-content: space-between;
-  /* Ensure the tags are on the same line as the title */
   align-items: center;
 }
 
 .project-content h3 {
   font-size: 1.25rem;
-  /* 20px */
-  color: #f9fafb;
-  /* text-gray-50 */
+  color: var(--text-color);
   font-weight: var(--font-weight-bold);
   line-height: 1.3;
-  /* Ensure consistent line height */
 }
 
 .project-content p {
-  color: #f3f4f6;
-  /* text-gray-100 */
+  color: var(--text-color);
   font-size: 0.875rem;
-  /*
-  14px */
   font-weight: var(--font-weight-regular);
   line-height: 1.5;
   margin: 0;
@@ -356,24 +296,17 @@ body {
 
 .tag {
   background: #e0e7ff;
-  /* bg-blue-100 */
   color: #1e40af;
-  /* text-blue-700 */
   font-size: 0.75rem;
-  /* 12px */
   font-weight: var(--font-weight-medium);
   padding: 0.25rem 0.5rem;
   border-radius: 9999px;
-  /* Fully rounded edges */
   display: inline-block;
 }
 
 .tag.wip {
   background: #ffedd5;
-  /* bg-orange-100 */
   color: #d97706;
-  /*
-  text-orange-600 */
 }
 
 /* Footer Section */
@@ -411,23 +344,18 @@ body {
 /* Font size classes */
 .text-sm {
   font-size: 0.875rem;
-  /* 14px */
 }
 
 .text-lg {
   font-size: 1.125rem;
-  /*
-  18px */
 }
 
 .text-xl {
   font-size: 1.25rem;
-  /* 20px */
 }
 
 .text-2xl {
   font-size: 1.5rem;
-  /* 24px */
 }
 
 /* Font weight classes */
@@ -455,8 +383,7 @@ body {
   }
 }
 
-/* Responsive
-  layout for small screens */
+/* Responsive layout for small screens */
 @media (max-width: 576px) {
   :root {
     --header-flex-direction: column;
@@ -472,12 +399,8 @@ body {
   .container,
   footer {
     max-width: 80%;
-    /* Ensure the container fits within the viewport */
     padding: 1em;
-    /* Use em units for padding */
     margin: 2rem auto;
-    /* Adjust margin
-  for small screens */
   }
 
   .project {
