@@ -1,3 +1,5 @@
+console.log('disco.js script loaded');
+
 document.getElementById('quoteDisplay').addEventListener('click', function () {
   const motion = window.matchMedia("(prefers-reduced-motion: no-preference)");
 
