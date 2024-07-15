@@ -8,8 +8,10 @@ document.getElementById('quoteDisplay').addEventListener('click', function () {
 
     setInterval(() => {
       color = `hsl(${hue += 5} 50% 30%)`;
-      // Change the --glow-color CSS variable
       document.documentElement.style.setProperty('--glow-color', color);
+      document.documentElement.style.setProperty('--link-color', color);
+      document.querySelector('.name').style.color = color;
+      this.style.color = color;
     }, 50);
 
     // Change the text of the element
