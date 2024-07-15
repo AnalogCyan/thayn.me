@@ -1,4 +1,9 @@
-document.getElementById('quoteDisplay').addEventListener('click', function () {
+const quoteDisplay = document.getElementById('quoteDisplay');
+let isClicked = false;
+
+quoteDisplay.addEventListener('click', function handleClick() {
+  if (isClicked) return;
+
   const motion = window.matchMedia("(prefers-reduced-motion: no-preference)");
 
   // Check if users don't have a preference for reduced motion
@@ -11,13 +16,14 @@ document.getElementById('quoteDisplay').addEventListener('click', function () {
       document.documentElement.style.setProperty('--glow-color', color);
       document.documentElement.style.setProperty('--link-color', color);
       document.querySelector('.name').style.color = color;
-      this.style.color = color;
+      quoteDisplay.style.color = color;
     }, 50);
 
-    this.textContent = "🪩 Disco mode enabled!";
-    quoteDisplay.removeEventListener('click', handleClick);
+    quoteDisplay.textContent = "🪩 Disco mode enabled!";
   }
+
+  isClicked = true;
 });
 
 // Add pointer cursor on hover
-document.getElementById('quoteDisplay').style.cursor = 'pointer';
+quoteDisplay.style.cursor = 'pointer';
