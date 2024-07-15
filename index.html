@@ -1,509 +1,321 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!-- Basic meta data -->
+    <!-- Basic meta tags -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/x-icon" href="./media/logo.ico" />
-    <link rel="icon" type="image/png" href="./media/logo.png" />
-    <link rel="apple-touch-icon" type="image/png" href="./media/logo.png" />
-    <meta name="Description" content="Cyan Thayn" />
-    <meta name="theme-color" content="#009688" />
-    <link rel="manifest" href="manifest.json" />
-    <title>Cyan Thayn</title>
+    <meta
+      name="description"
+      content="Cyan Thayn's personal website showcasing her projects, interests, and contact information."
+    />
+    <meta name="theme-color" content="#4682b4" />
 
-    <!-- Social data -->
-    <meta name="twitter:card" content="summary" />
+    <!-- Social graph data -->
+    <meta property="og:title" content="Cyan Thayn" />
+    <meta
+      property="og:description"
+      content="Cyan Thayn's personal website showcasing her projects and interests."
+    />
+    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
+    <meta property="og:url" content="https://thayn.me/" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@AnalogCyan" />
     <meta name="twitter:creator" content="@AnalogCyan" />
-    <meta property="og:url" content="https://thayn.me/" />
-    <meta property="og:title" content="Cyan Thayn" />
-    <meta property="og:description" content="Cyan Thayn" />
-    <meta property="og:image" content="https://thayn.me/media/Cyan2.png" />
 
-    <!-- CSS -->
-    <link href="./css/generated/styles.css" rel="stylesheet" />
+    <!-- Link to manifest.json -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Favicon and touch icons -->
+    <link rel="icon" type="image/svg+xml" href="./media/logo.svg" />
+    <link rel="alternate icon" href="./media/profile.svg" />
+    <link rel="apple-touch-icon" href="./media/logo.svg" />
+
+    <!-- CSS files -->
+    <link rel="stylesheet" href="./css/styles.css" />
     <link
       href="https://cdn.jsdelivr.net/npm/remixicon@3.0.0/fonts/remixicon.css"
       rel="stylesheet"
     />
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;700&display=swap"
-      crossorigin="anonymous"
+      href="https://fonts.googleapis.com/css2?family=Tilt+Neon:XROT,YROT@-45..45,-45..45&display=swap"
       rel="stylesheet"
     />
 
-    <!-- JavaScript -->
-    <script src="./js/script.js" async></script>
-    <script src="./js/chrome_bug_fix.js"></script>
+    <!-- JavaScript files -->
+    <script src="./js/chrome_bug_fix.js" defer></script>
+    <script src="./js/scripts.js" defer></script>
+
+    <title>Cyan Thayn</title>
   </head>
 
-  <body class="font-sans bg-black">
-    <div
-      class="grid gap-6 items-center justify-center place-content-center p-6 min-h-full bg-transparent overflow-hidden"
-    >
-      <!-- Header -->
-      <header
-        class="flex-col bg-gradient-to-b rounded-3xl shadow-glow from-gray-800 to-gray-800"
-      >
-        <div
-          class="flex flex-none flex-col items-center justify-center p-6 overflow-hidden duration-500 sm:flex sm:flex-row-reverse sm:justify-between"
-        >
-          <img
-            src="./media/Cyan2.png"
-            id="profile"
-            alt=""
-            class="flex mb-3 w-40 h-40 rounded-2xl shadow object-cover sm:mb-0"
-          />
-          <div class="flex flex-col items-center sm:items-start">
-            <div class="text-gray-200 text-2xl font-bold leading-none">
-              Cyan Thayn
-            </div>
-            <div class="my-1 text-gray-400 text-lg">
-              <span id="subhead">Technician/Programmer</span>
-            </div>
-            <div class="inline-flex text-2xl space-x-4">
-              <a
-                href="https://en.pronouns.page/@AnalogCyan"
-                target="_blank"
-                rel="noreferrer noopener"
-                id="pronounis"
-                title="Pronouns"
-                tabindex="1"
-                class="text-pink-200 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-                ><i class="ri-genderless-line"></i
-              ></a>
-              <a
-                href="https://github.com/AnalogCyan"
-                target="_blank"
-                rel="noreferrer noopener"
-                id="github"
-                title="GitHub"
-                tabindex="2"
-                class="hover:text-pink-500 text-white motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-                ><i class="ri-github-line"></i
-              ></a>
-              <a
-                href="https://tech.lgbt/@AnalogCyan"
-                target="_blank"
-                rel="me"
-                id="mastodon"
-                title="Mastodon"
-                tabindex="3"
-                class="text-blue-500 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-                ><i class="ri-mastodon-line"></i
-              ></a>
-              <a
-                href="https://thayn.wiki/"
-                target="_blank"
-                rel="noreferrer noopener"
-                id="notes"
-                title="Notes"
-                tabindex="4"
-                class="hover:text-pink-500 text-purple-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-                ><i class="ri-notion-line"></i
-              ></a>
-              <a
-                href="mailto:webcontact@thayn.email"
-                target="_blank"
-                rel="noreferrer noopener"
-                id="email"
-                title="Email"
-                tabindex="5"
-                class="text-blue-700 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-                ><i class="ri-mail-send-line"></i
-              ></a>
-              <a
-                href="https://thayn.me/.well-known/pgp-key.asc"
-                target="_self"
-                rel="noreferrer noopener"
-                id="pgp"
-                title="PGP Key"
-                tabindex="6"
-                class="text-blue-600 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-                ><i class="ri-folder-keyhole-line"></i
-              ></a>
-            </div>
-            <div class="inline-flex text-2xl space-x-4"></div>
-          </div>
+  <body>
+    <!-- Header section -->
+    <header class="container header">
+      <div class="header-content">
+        <div class="info">
+          <div class="name">Cyan Thayn</div>
+          <div class="subhead">Technician/Programmer</div>
+          <nav class="social-icons">
+            <a
+              href="https://en.pronouns.page/@AnalogCyan"
+              target="_blank"
+              rel="noreferrer noopener"
+              id="pronounis"
+              title="Pronouns"
+              tabindex="1"
+              aria-label="Pronouns"
+            >
+              <i class="ri-genderless-line"></i>
+            </a>
+            <a
+              href="https://github.com/AnalogCyan"
+              target="_blank"
+              rel="noreferrer noopener"
+              id="github"
+              title="GitHub"
+              tabindex="2"
+              aria-label="GitHub"
+            >
+              <i class="ri-github-line"></i>
+            </a>
+            <a
+              href="https://tech.lgbt/@AnalogCyan"
+              target="_blank"
+              rel="me"
+              id="mastodon"
+              title="Mastodon"
+              tabindex="3"
+              aria-label="Mastodon"
+            >
+              <i class="ri-mastodon-line"></i>
+            </a>
+            <a
+              href="https://thayn.wiki/"
+              target="_blank"
+              rel="noreferrer noopener"
+              id="notes"
+              title="Notes"
+              tabindex="4"
+              aria-label="Notes"
+            >
+              <i class="ri-notion-line"></i>
+            </a>
+            <a
+              href="mailto:webcontact@thayn.email"
+              target="_blank"
+              rel="noreferrer noopener"
+              id="email"
+              title="Email"
+              tabindex="5"
+              aria-label="Email"
+            >
+              <i class="ri-mail-send-line"></i>
+            </a>
+            <a
+              href="https://thayn.me/.well-known/pgp-key.asc"
+              target="_self"
+              rel="noreferrer noopener"
+              id="pgp"
+              title="PGP Key"
+              tabindex="6"
+              aria-label="PGP Key"
+            >
+              <i class="ri-folder-keyhole-line"></i>
+            </a>
+          </nav>
         </div>
-        <div class="flex-col items-center -mt-4 p-6 overflow-hidden sm:-mt-8">
-          <h2 class="mb-2 text-xl">
-            👋 <span class="text-gray-50 font-bold">About</span>
-          </h2>
-          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
-            Hey there, I'm Cyan! You may also know me as AnalogCyan.<br /><br />
-            My pronouns are
-            <em
-              ><a
-                class="text-pink-300 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-                href="https://en.pronouns.page/@AnalogCyan"
-                >she/they</a
-              ></em
-            >, and I prefer neutral-to-feminine terminology. I am also
-            <em>very neurodivergent</em>, so please be patient with me!<br /><br />
-            I work at a small company where I repair tech for a living. In my
-            free time, I enjoy programming and tinkering with my own tech!<br /><br />
-            I have a passion for technology, both new and old. Some of my other
-            interests include linguistics, retro video games, speedrunning, and
-            collecting
-            <a
-              class="text-pink-300 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-              href="https://www.discogs.com/user/AnalogCyan/collection?folder=4319456"
-              >cassette tapes</a
-            >
-            .<br /><br />
-            I'm also a strong advocate of proper security in
-            technology---remember to use
-            <a
-              class="text-pink-300 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-              href="https://how2factor.info"
-              >2FA</a
-            >
-            and a <a>password manager</a>, or
-            <a
-              class="text-pink-300 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-              href="https://www.future.1password.com/passkeys/"
-              >passkeys</a
-            >
-            if available! (I personally recommend
-            <a
-              class="text-pink-300 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-              href="https://www.1password.com/"
-              >1Password</a
-            >
-            for all of these.)
-          </p>
-        </div>
-        <div class="flex-col items-center -mt-4 p-6 overflow-hidden">
-          <h2 class="mb-2 text-xl">
-            👩‍💻 <span class="text-gray-50 font-bold">Projects</span>
-          </h2>
-          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
-            Below are some miscellaneous things I've either made personally, or
-            have been closely involved in. You can click on any of them to learn
-            more! You can also browse my GitHub (linked above) for more things
-            not listed here.<br /><br />
-            Unless otherwise noted, content on this website is licensed under
-            <a
-              class="text-pink-300 hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-              href="https://choosealicense.com/licenses/gpl-3.0/"
-              >GPLv3</a
-            >.
-          </p>
-        </div>
-      </header>
-      <!--// -->
+        <img
+          src="./media/profile.svg"
+          id="profile"
+          alt="Profile Picture"
+          class="profile-pic"
+        />
+      </div>
+      <div class="about">
+        <h2>👋 <span>About</span></h2>
+        <p>
+          Hey there, I'm Cyan, also known as AnalogCyan.<br /><br />
+          My pronouns are
+          <em><a href="https://en.pronouns.page/@AnalogCyan">she/her</a></em
+          >. I am proudly neurodivergent, so your patience is appreciated!<br /><br />
+          By day, I repair tech at a small company. By night, I dive into
+          programming and tech tinkering.<br /><br />
+          My love for technology spans both the cutting-edge and the nostalgic.
+          I also have a deep interest in linguistics, retro video games,
+          speedrunning, and collecting
+          <a
+            href="https://www.discogs.com/user/AnalogCyan/collection?folder=4319456"
+            >cassette tapes</a
+          >.<br /><br />
+          I'm a staunch advocate for robust tech security---always use
+          <a href="https://how2factor.info">2FA</a> and a
+          <a>password manager</a>, or
+          <a href="https://www.future.1password.com/passkeys/">passkeys</a> when
+          possible! Personally, I recommend
+          <a href="https://www.1password.com/">1Password</a> for all your
+          security needs.
+        </p>
+      </div>
+      <div class="projects">
+        <h2>👩‍💻 <span>Projects</span></h2>
+        <p>
+          Explore some of the projects I've created or contributed to. Click on
+          any to learn more! For additional projects, visit my GitHub (linked
+          above).<br /><br />
+          Unless otherwise noted, content on this website is licensed under
+          <a href="https://choosealicense.com/licenses/gpl-3.0/">GPLv3</a>.
+        </p>
+      </div>
+    </header>
 
-      <!-- Projects -->
-      <!-- Sticky Paws -->
+    <!-- Main content section -->
+    <article class="container project">
       <a href="https://www.jonnil.games/sticky-paws">
-        <div
-          class="flex-col items-center p-6 bg-gray-900 rounded-3xl hover:shadow-glow shadow-md cursor-pointer overflow-hidden transform motion-reduce:transform-none hover:scale-105 transition motion-reduce:transition-none duration-500"
-        >
-          <h1 class="mb-2 text-xl">
-            🐾 <span class="text-gray-50 font-bold">Sticky Paws</span>
-            <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
-              <div
-                class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-              >
-                <div
-                  class="flex-initial max-w-full whitespace-nowrap text-xs font-normal leading-none"
-                >
-                  GML
-                </div>
-              </div>
-              <div
-                class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-              >
-                <div
-                  class="flex-initial max-w-full whitespace-nowrap text-xs font-normal leading-none"
-                >
-                  Python
-                </div>
-              </div>
-              <div
-                class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-              >
-                <div
-                  class="flex-initial max-w-full whitespace-nowrap text-xs font-normal leading-none"
-                >
-                  Apache 2.0
-                </div>
-              </div>
+        <div class="project-content">
+          <div class="project-header">
+            <h3>🐾 Sticky Paws</h3>
+            <div class="tags">
+              <span class="tag">GML</span>
+              <span class="tag">Python</span>
+              <span class="tag">Apache 2.0</span>
             </div>
-          </h1>
-          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+          </div>
+          <p>
             A 2D platformer game about a cat that can climb anything! Main game
             by Jonnil; server code by me.
           </p>
         </div>
       </a>
-      <!--//-->
+    </article>
 
-      <!-- SwiftWin -->
+    <article class="container project">
       <a href="https://github.com/AnalogCyan/SwiftWin">
-        <div
-          class="flex-col items-center p-6 bg-gray-900 rounded-3xl hover:shadow-glow shadow-md cursor-pointer overflow-hidden transform motion-reduce:transform-none hover:scale-105 transition motion-reduce:transition-none duration-500"
-        >
-          <h1 class="mb-2 text-xl">
-            🔮 <span class="text-gray-50 font-bold">SwiftWin</span>
-            <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
-              <div
-                class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-yellow-800 font-medium bg-yellow-100 border border-yellow-800 rounded-full sm:float-none"
-              >
-                <div
-                  class="flex-initial max-w-full text-xs font-normal leading-none"
-                >
-                  WIP
-                </div>
-              </div>
-              <div
-                class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-              >
-                <div
-                  class="flex-initial max-w-full text-xs font-normal leading-none"
-                >
-                  PowerShell
-                </div>
-              </div>
-              <div
-                class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-              >
-                <div
-                  class="flex-initial max-w-full text-xs font-normal leading-none"
-                >
-                  GPLv3
-                </div>
-              </div>
+        <div class="project-content">
+          <div class="project-header">
+            <h3>🔮 SwiftWin</h3>
+            <div class="tags">
+              <span class="tag wip">WIP</span>
+              <span class="tag">PowerShell</span>
+              <span class="tag">GPLv3</span>
             </div>
-          </h1>
-          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+          </div>
+          <p>
             PowerShell utility for performing a series of Windows maintenance
             tasks I commonly use when cleaning up and optimizing a system.
           </p>
         </div>
       </a>
-      <!--// -->
+    </article>
 
-      <!-- Itadakimasu -->
+    <article class="container project">
       <a href="https://itadakimasu.app/">
-        <div
-          class="flex-col items-center p-6 bg-gray-900 rounded-3xl hover:shadow-glow shadow-md cursor-pointer overflow-hidden transform hover:scale-105 transition duration-500"
-        >
-          <div>
-            <h1 class="mb-2 text-xl">
-              🔑 <span class="text-gray-50 font-bold">Itadakimasu</span>
-              <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
-                <div
-                  class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-                >
-                  <div
-                    class="flex-initial max-w-full text-xs font-normal leading-none"
-                  >
-                    PWA
-                  </div>
-                </div>
-                <div
-                  class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-                >
-                  <div
-                    class="flex-initial max-w-full text-xs font-normal leading-none"
-                  >
-                    GPLv3
-                  </div>
-                </div>
-              </div>
-            </h1>
-            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
-              Random recipe password generator web app inspired by episode 'Nice
-              Security Hollywood Terror' of the Random but Memorable podcast
-              from 1Password.
-            </p>
-          </div>
-        </div>
-      </a>
-      <!--// -->
-
-      <!-- thayn.cc -->
-      <a href="https://github.com/AnalogCyan/thayn.cc">
-        <div
-          class="flex-col items-center p-6 bg-gray-900 rounded-3xl hover:shadow-glow shadow-md cursor-pointer overflow-hidden transform hover:scale-105 transition duration-500"
-        >
-          <div>
-            <h1 class="mb-2 text-xl">
-              🔗 <span class="text-gray-50 font-bold">thayn.cc</span>
-              <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
-                <div
-                  class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-                >
-                  <div
-                    class="flex-initial max-w-full text-xs font-normal leading-none"
-                  >
-                    Python
-                  </div>
-                </div>
-                <div
-                  class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-                >
-                  <div
-                    class="flex-initial max-w-full text-xs font-normal leading-none"
-                  >
-                    GPLv3
-                  </div>
-                </div>
-              </div>
-            </h1>
-            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
-              A simple from-scratch private link shortener API.
-            </p>
-          </div>
-        </div>
-      </a>
-
-      <!-- DoR -->
-      <a href="https://github.com/AnalogCyan/DoR">
-        <div
-          class="flex-col items-center p-6 bg-gray-900 rounded-3xl hover:shadow-glow shadow-md cursor-pointer overflow-hidden transform hover:scale-105 transition duration-500"
-        >
-          <div>
-            <h1 class="mb-2 text-xl">
-              🔗 <span class="text-gray-50 font-bold">DNS-over-RNG</span>
-              <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
-                <div
-                  class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-                >
-                  <div
-                    class="flex-initial max-w-full text-xs font-normal leading-none"
-                  >
-                    Python
-                  </div>
-                </div>
-                <div
-                  class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-                >
-                  <div
-                    class="flex-initial max-w-full text-xs font-normal leading-none"
-                  >
-                    GPLv3
-                  </div>
-                </div>
-              </div>
-            </h1>
-            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
-              A very cursed DNS server implementation inspired by the various
-              DNS-over-protocol standards.
-            </p>
-          </div>
-        </div>
-      </a>
-      <!--// -->
-
-      <!-- More Vanilla Mobs -->
-      <a href="https://github.com/AnalogCyan/More-Vanilla-Mobs">
-        <div
-          class="flex-col items-center p-6 bg-gray-900 rounded-3xl hover:shadow-glow shadow-md cursor-pointer overflow-hidden transform hover:scale-105 transition duration-500"
-        >
-          <div>
-            <h1 class="mb-2 text-xl">
-              🎮 <span class="text-gray-50 font-bold">More Vanilla Mobs</span>
-              <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
-                <div
-                  class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-                >
-                  <div
-                    class="flex-initial max-w-full text-xs font-normal leading-none"
-                  >
-                    mcfunction
-                  </div>
-                </div>
-                <div
-                  class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-                >
-                  <div
-                    class="flex-initial max-w-full text-xs font-normal leading-none"
-                  >
-                    GPLv3
-                  </div>
-                </div>
-              </div>
-            </h1>
-            <p class="min-w-prose max-w-prose text-gray-100 text-sm">
-              Minecraft 1.17+ data pack that implements some of the mobs that
-              technically exist in the game, but don't appear in survival.
-            </p>
-          </div>
-        </div>
-      </a>
-      <!--// -->
-
-      <!-- InventorySystem -->
-      <a href="https://github.com/Box-Analyst/InventorySystem">
-        <div
-          class="flex-col items-center p-6 bg-gray-900 rounded-3xl hover:shadow-glow shadow-md cursor-pointer overflow-hidden transform hover:scale-105 transition duration-500"
-        >
-          <h1 class="mb-2 text-xl">
-            🏥 <span class="text-gray-50 font-bold">InventorySystem</span>
-            <div class="float-right pl-2 w-min font-mono sm:flex sm:pl-0">
-              <div
-                class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-              >
-                <div
-                  class="flex-initial max-w-full text-xs font-normal leading-none"
-                >
-                  UWP
-                </div>
-              </div>
-              <div
-                class="flex-auto items-center justify-center float-right m-1 px-2 py-1 w-min text-blue-700 font-medium bg-blue-100 bg-white border border-blue-700 rounded-full sm:float-none"
-              >
-                <div
-                  class="flex-initial max-w-full text-xs font-normal leading-none"
-                >
-                  AGPLv3
-                </div>
-              </div>
+        <div class="project-content">
+          <div class="project-header">
+            <h3>🔑 Itadakimasu</h3>
+            <div class="tags">
+              <span class="tag">PWA</span>
+              <span class="tag">GPLv3</span>
             </div>
-          </h1>
-          <p class="min-w-prose max-w-prose text-gray-100 text-sm">
+          </div>
+          <p>
+            Random recipe password generator web app inspired by episode 'Nice
+            Security Hollywood Terror' of the Random but Memorable podcast from
+            1Password.
+          </p>
+        </div>
+      </a>
+    </article>
+
+    <article class="container project">
+      <a href="https://github.com/AnalogCyan/thayn.cc">
+        <div class="project-content">
+          <div class="project-header">
+            <h3>🔗 thayn.cc</h3>
+            <div class="tags">
+              <span class="tag">Python</span>
+              <span class="tag">GPLv3</span>
+            </div>
+          </div>
+          <p>A simple from-scratch private link shortener API.</p>
+        </div>
+      </a>
+    </article>
+
+    <article class="container project">
+      <a href="https://github.com/AnalogCyan/DoR">
+        <div class="project-content">
+          <div class="project-header">
+            <h3>🔗 DNS-over-RNG</h3>
+            <div class="tags">
+              <span class="tag">Python</span>
+              <span class="tag">GPLv3</span>
+            </div>
+          </div>
+          <p>
+            A very cursed DNS server implementation inspired by the various
+            DNS-over-protocol standards.
+          </p>
+        </div>
+      </a>
+    </article>
+
+    <article class="container project">
+      <a href="https://github.com/AnalogCyan/More-Vanilla-Mobs">
+        <div class="project-content">
+          <div class="project-header">
+            <h3>🎮 More Vanilla Mobs</h3>
+            <div class="tags">
+              <span class="tag">mcfunction</span>
+              <span class="tag">GPLv3</span>
+            </div>
+          </div>
+          <p>
+            Minecraft 1.17+ data pack that implements some of the mobs that
+            technically exist in the game, but don't appear in survival.
+          </p>
+        </div>
+      </a>
+    </article>
+
+    <article class="container project">
+      <a href="https://github.com/Box-Analyst/InventorySystem">
+        <div class="project-content">
+          <div class="project-header">
+            <h3>🏥 InventorySystem</h3>
+            <div class="tags">
+              <span class="tag">UWP</span>
+              <span class="tag">AGPLv3</span>
+            </div>
+          </div>
+          <p>
             Medical sample inventory management system, created as our senior
             project in the COMS 4043 course at Arkansas Tech University.
           </p>
         </div>
       </a>
-      <!--// -->
-      <!--// -->
+    </article>
 
-      <footer class="m-1 text-gray-400 text-xs">
-        <div
-          id="footer-span"
-          class="flex flex-col place-items-center sm:flex-row sm:justify-between"
-        >
-          <div>
-            <a
-              href="https://fediring.net/previous?host=thayn.me"
-              class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-              >←</a
-            >
-            <a
-              href="https://fediring.net/"
-              class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-              >Fediring</a
-            >
-            <a
-              href="https://fediring.net/next?host=thayn.me"
-              class="hover:text-pink-500 motion-reduce:transform-none motion-reduce:transition-none sm:transition sm:duration-500"
-              >→</a
-            >
-          </div>
-          <div id="quoteDisplay">
-            <!--fallback quote-->
-            Are you ready to embrace uncertainty?
-          </div>
+    <!-- Footer section -->
+    <footer class="container footer">
+      <div id="footer-span" class="footer-content">
+        <div>
+          <a
+            href="https://fediring.net/previous?host=thayn.me"
+            class="footer-link"
+            >←</a
+          >
+          <a href="https://fediring.net/" class="footer-link">Fediring</a>
+          <a href="https://fediring.net/next?host=thayn.me" class="footer-link"
+            >→</a
+          >
         </div>
-      </footer>
-    </div>
+        <div id="quoteDisplay">
+          <!--fallback quote-->
+          Are you ready to embrace uncertainty?
+        </div>
+      </div>
+    </footer>
   </body>
-  <div id="broken-green-pixel"></div>
 </html>
