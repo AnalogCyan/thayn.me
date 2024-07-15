@@ -12,7 +12,11 @@ quoteDisplay.addEventListener('click', function handleClick() {
     let color;
 
     setInterval(() => {
-      color = `hsl(${hue += 5} 50% 30%)`;
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+        color = `hsl(${hue += 5} 50% 40%)`;
+      } else {
+        color = `hsl(${hue += 5} 50% 50%)`;
+      }
       document.documentElement.style.setProperty('--glow-color', color);
       document.documentElement.style.setProperty('--link-color', color);
       document.querySelector('.name').style.color = color;
