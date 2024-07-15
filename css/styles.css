@@ -9,9 +9,8 @@
   */
   --dark-link-hover-color: #ec4899;
   /* Updated to match pink-500 */
-  /* Light
-  mode colors */
-  --light-background-color: #ffffff;
+  /* Light mode colors */
+  --light-background-color: #f0f0f0;
   --light-container-background-color: #f3f4f6;
   /* Light container background */
   --light-text-color: #000000;
