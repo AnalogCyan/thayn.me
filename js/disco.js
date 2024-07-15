@@ -13,7 +13,7 @@ document.getElementById('quoteDisplay').addEventListener('click', function () {
     }, 50);
 
     // Change the text of the element
-    this.textContent = "✨ Disco mode enabled!";
+    this.textContent = "🪩 Disco mode enabled!";
   }
 });
 
