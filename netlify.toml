@@ -7,7 +7,7 @@
 # Redirects configuration
 [[redirects]]
   from = "https://git.thayn.me/*"
-  to = "https://github.com/AnalogCyan"
+  to = "https://github.com/AnalogCyan/:splat"
   status = 301
   force = true
 
