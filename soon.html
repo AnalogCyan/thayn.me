@@ -17,15 +17,15 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #121212; /* Darker warm gray, almost black */
+        background-color: #121212;
         overflow: hidden;
       }
 
       .glow-text {
         font-family: "Comfortaa", cursive;
-        font-size: 8em; /* Larger text size */
+        font-size: 8em;
         font-weight: bold;
-        color: #121212; /* Same color as the background, but darker */
+        color: #121212;
         position: relative;
         text-align: center;
         line-height: 1.2;
@@ -34,10 +34,7 @@
       .glow-text::before {
         content: "soon™";
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        padding: 25vh;
         background: linear-gradient(
           45deg,
           red,
@@ -52,7 +49,7 @@
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
-        filter: blur(12px); /* Slightly more blur for a stronger glow */
+        filter: blur(12px);
         animation: glow 10s infinite linear;
         z-index: 1;
       }
@@ -60,11 +57,8 @@
       .glow-text::after {
         content: "soon™";
         position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        color: #121212; /* Same color as the background, but darker */
+        padding: 25vh;
+        color: #121212;
         z-index: 2;
       }
 
@@ -78,7 +72,5 @@
       }
     </style>
   </head>
-  <body>
-    <div class="glow-text">soon™</div>
-  </body>
+  <body class="glow-text"></body>
 </html>
