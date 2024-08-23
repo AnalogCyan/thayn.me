@@ -6,22 +6,25 @@
 
 # Redirects configuration
 [[redirects]]
-  from = "https://git.thayn.me/*"
+  from = "/*"
   to = "https://github.com/AnalogCyan/:splat"
   status = 301
   force = true
+  conditions = { Host = "git.thayn.me" }
 
 [[redirects]]
-  from = "https://git.thayn.gay/*"
+  from = "/*"
   to = "https://github.com/AnalogCyan/:splat"
   status = 301
   force = true
+  conditions = { Host = "git.thayn.gay" }
 
 [[redirects]]
-  from = "https://soon.thayn.gay/*"
+  from = "/*"
   to = "https://thayn.gay/soon.html"
   status = 301
   force = true
+  conditions = { Host = "soon.thayn.gay" }
 
 [[redirects]]
   from = "/*"
