@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>soon™</title>
-    <theme-color content="#000310" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -18,7 +17,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        background-color: #000310;
+        background-color: #121212;
         overflow: hidden;
       }
 
@@ -26,10 +25,22 @@
         font-family: "Comfortaa", cursive;
         font-size: 8em;
         font-weight: bold;
-        color: #000310;
+        color: #121212;
         position: relative;
         text-align: center;
         line-height: 1.2;
+      }
+
+      @media (max-width: 768px) {
+        .glow-text {
+          font-size: 5em;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .glow-text {
+          font-size: 3em;
+        }
       }
 
       .glow-text::before {
@@ -59,7 +70,7 @@
         content: "soon™";
         position: absolute;
         padding: 25vh;
-        color: #000310;
+        color: #121212;
         z-index: 2;
       }
 
