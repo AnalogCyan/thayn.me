@@ -20,7 +20,8 @@
 [[redirects]]
   from = "https://soon.thayn.gay/*"
   to = "/soon.html"
-  status = 301
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/*"
