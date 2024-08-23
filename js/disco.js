@@ -1,7 +1,7 @@
 const quoteDisplay = document.getElementById('quoteDisplay');
 let isClicked = false;
 
-quoteDisplay.addEventListener('click', function handleClick() {
+function activateDiscoMode() {
   if (isClicked) return;
 
   const motion = window.matchMedia("(prefers-reduced-motion: no-preference)");
@@ -23,11 +23,19 @@ quoteDisplay.addEventListener('click', function handleClick() {
       quoteDisplay.style.color = color;
     }, 50);
 
-    quoteDisplay.textContent = "🪩 Disco mode enabled!";
+    quoteDisplay.textContent = "🏳️‍🌈 Gay mode enabled!";
   }
 
   isClicked = true;
-});
+}
+
+// Automatically activate Disco mode if visiting via thayn.gay
+if (window.location.hostname === 'thayn.gay') {
+  activateDiscoMode();
+}
+
+// Allow users to manually activate Disco mode by clicking
+quoteDisplay.addEventListener('click', activateDiscoMode);
 
 // Add pointer cursor on hover
 quoteDisplay.style.cursor = 'pointer';
