@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>soon™</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #121212; /* Darker warm gray, almost black */
+        overflow: hidden;
+      }
+
+      .glow-text {
+        font-family: "Comfortaa", cursive;
+        font-size: 8em; /* Larger text size */
+        font-weight: bold;
+        color: #121212; /* Same color as the background, but darker */
+        position: relative;
+        text-align: center;
+        line-height: 1.2;
+      }
+
+      .glow-text::before {
+        content: "soon™";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(
+          45deg,
+          red,
+          orange,
+          yellow,
+          green,
+          blue,
+          indigo,
+          violet
+        );
+        background-size: 400%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        filter: blur(12px); /* Slightly more blur for a stronger glow */
+        animation: glow 10s infinite linear;
+        z-index: 1;
+      }
+
+      .glow-text::after {
+        content: "soon™";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        color: #121212; /* Same color as the background, but darker */
+        z-index: 2;
+      }
+
+      @keyframes glow {
+        0% {
+          background-position: 0% 50%;
+        }
+        100% {
+          background-position: 400% 50%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="glow-text">soon™</div>
+  </body>
+</html>
