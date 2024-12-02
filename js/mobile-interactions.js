@@ -33,11 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const duration = parseFloat(
           getComputedStyle(document.documentElement)
             .getPropertyValue('--transition-duration')
-        ) * 1000;
+        ) * 2000;
 
         setTimeout(() => {
           window.location.href = href;
-        }, duration + 100);
+        }, duration);
       });
     });
   }
