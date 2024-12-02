@@ -120,7 +120,7 @@ body {
   padding: 1.5em;
   background: var(--container-background-color);
   border-radius: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--shadow-color);
   transition: all var(--transition-duration) ease;
 }
 
@@ -130,7 +130,7 @@ body {
   flex-direction: column;
   background: var(--container-background-color);
   border-radius: 1.5rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color);
+  box-shadow: 0 4px 6px var(--shadow-color), 0 0 20px var(--glow-color);
   padding: 1.5em;
   transition: all var(--transition-duration) ease;
 }
@@ -148,7 +148,7 @@ body {
   width: 10rem;
   height: 10rem;
   border-radius: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px var(--shadow-color);
   object-fit: cover;
   margin-left: var(--profile-pic-margin-left);
   margin-bottom: var(--profile-pic-margin-bottom);
@@ -551,5 +551,72 @@ body {
 
   .tags {
     margin-top: 0.5rem;
+  }
+}
+
+/* Ensure animations play fully on touch devices */
+@media (hover: none) {
+  .social-icons a,
+  .project,
+  .about a,
+  .projects a,
+  .custom-link,
+  .tag,
+  .footer-link {
+    /* Prevent any hover states from getting "stuck" */
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Force animation to complete before reset */
+  .social-icons a.animating,
+  .project.animating,
+  .about a.animating,
+  .projects a.animating,
+  .custom-link.animating,
+  .tag.animating,
+  .footer-link.animating {
+    /* Ensure transform completes */
+    transition: transform var(--transition-duration) ease,
+      color var(--transition-duration) ease;
+  }
+}
+
+@media (hover: none) {
+  /* Base styles for touch devices */
+  .social-icons a,
+  .project,
+  .about a,
+  .projects a,
+  .custom-link,
+  .tag,
+  .footer-link {
+    -webkit-tap-highlight-color: transparent;
+    /* Delay link activation using animation-delay */
+    animation-delay: var(--transition-duration);
+  }
+
+  /* Add .js-enabled class when JavaScript loads */
+  body:not(.js-enabled) .social-icons a:active,
+  body:not(.js-enabled) .project:active,
+  body:not(.js-enabled) .about a:active,
+  body:not(.js-enabled) .projects a:active,
+  body:not(.js-enabled) .custom-link:active,
+  body:not(.js-enabled) .tag:active,
+  body:not(.js-enabled) .footer-link:active {
+    /* CSS-only animation completion handling */
+    animation: touchAnimation var(--transition-duration) ease forwards;
+  }
+}
+
+/* Animation for the touch interaction */
+@keyframes touchAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1) translateY(-2px);
+  }
+  100% {
+    transform: scale(1.1) translateY(-2px);
   }
 }
