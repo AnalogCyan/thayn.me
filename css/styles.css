@@ -318,6 +318,9 @@ body {
   position: relative;
   overflow: hidden;
   transform: scale(1) rotate(0deg);
+  transition: transform 0.3s ease, box-shadow 0.3s ease,
+    background-color 0.3s ease;
+  transform-origin: center center;
 }
 
 .project::before {
@@ -342,6 +345,7 @@ body {
 }
 
 .project:hover {
+  transform: scale(1.05);
   box-shadow: 0 var(--card-hover-elevation) var(--card-shadow-blur)
       var(--card-shadow-spread) var(--shadow-color),
     0 0 20px var(--glow-color);
@@ -516,6 +520,29 @@ body {
 
   .profile-pic.dangling:hover {
     transform: rotate(13deg);
+  }
+}
+
+/* Override icon styles when JavaScript is disabled */
+@media (scripting: none) {
+  .social-icons a#pronounis::after {
+    content: "⚧️";
+  }
+
+  .social-icons a#github::after {
+    content: "👩‍💻";
+  }
+
+  .social-icons a#mastodon::after {
+    content: "🔗"; /* Mastodon icon */
+  }
+
+  .social-icons a#bsky::after {
+    content: "🦋"; /* Envelope icon */
+  }
+
+  .social-icons a#instagram::after {
+    content: "📷"; /* Instagram icon */
   }
 }
 
