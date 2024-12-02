@@ -36,6 +36,24 @@
   /* Theme color */
   --theme-color: var(--primary-color);
 
+  /* Animation variables */
+  --transition-duration: 0.3s;
+  --hover-scale: 1.05;
+  --hover-rotation: 2deg;
+  --link-underline-height: 2px;
+  --card-hover-elevation: 8px;
+
+  /* Gradient variables */
+  --gradient-start: rgba(70, 130, 180, 0.1);
+  --gradient-end: rgba(236, 72, 153, 0.1);
+  --gradient-angle: 135deg;
+
+  /* Project card variables */
+  --card-padding: 1.5rem;
+  --card-border-radius: 1.5rem;
+  --card-shadow-blur: 20px;
+  --card-shadow-spread: 0;
+
   /* Layout variables */
   --header-flex-direction: row;
   --header-align-items: center;
@@ -103,7 +121,7 @@ body {
   background: var(--container-background-color);
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.5s ease;
+  transition: all var(--transition-duration) ease;
 }
 
 /* Header styles */
@@ -114,7 +132,7 @@ body {
   border-radius: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color);
   padding: 1.5em;
-  transition: all 0.5s ease;
+  transition: all var(--transition-duration) ease;
 }
 
 .header-content {
@@ -122,7 +140,8 @@ body {
   align-items: var(--header-align-items);
   justify-content: space-between;
   flex-direction: var(--header-flex-direction);
-  transition: flex-direction 0.5s ease, align-items 0.5s ease;
+  transition: flex-direction var(--transition-duration) ease,
+    align-items var(--transition-duration) ease;
 }
 
 .profile-pic {
@@ -134,7 +153,20 @@ body {
   margin-left: var(--profile-pic-margin-left);
   margin-bottom: var(--profile-pic-margin-bottom);
   order: var(--profile-pic-order);
-  transition: margin-left 0.5s ease, margin-bottom 0.5s ease, order 0.5s ease;
+  cursor: pointer;
+  transition: transform var(--transition-duration) ease;
+  transform-origin: center center;
+}
+
+.profile-pic:hover {
+  transform: scale(1.02) rotate(1deg);
+}
+
+/* Dangling state */
+.profile-pic.dangling {
+  transform-origin: top left;
+  transition: none; /* Remove transition for physics simulation */
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
 }
 
 .info {
@@ -143,7 +175,8 @@ body {
   align-items: var(--info-align-items);
   text-align: var(--info-text-align);
   flex: 1;
-  transition: align-items 0.5s ease, text-align 0.5s ease;
+  transition: align-items var(--transition-duration) ease,
+    text-align var(--transition-duration) ease;
 }
 
 .name {
@@ -151,6 +184,7 @@ body {
   font-size: 1.75rem;
   font-weight: var(--font-header-weight);
   line-height: 1.1;
+  transition: color var(--transition-duration) ease;
 }
 
 .subhead {
@@ -159,6 +193,7 @@ body {
   font-size: 1.125rem;
   font-weight: var(--font-subheader-weight);
   line-height: 1.2;
+  transition: color var(--transition-duration) ease;
 }
 
 .social-icons {
@@ -166,12 +201,35 @@ body {
   gap: 1rem;
   font-size: 1.5rem;
   justify-content: var(--social-icons-justify-content);
-  transition: justify-content 0.5s ease;
+  transition: justify-content var(--transition-duration) ease;
 }
 
 .social-icons a {
-  transition: color 0.5s;
+  position: relative;
+  transition: color var(--transition-duration) ease,
+    transform var(--transition-duration) ease;
   text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Create larger hover area */
+.social-icons a::before {
+  content: "";
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  right: -12px;
+  bottom: -12px;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+/* Ensure the icon stays on top */
+.social-icons a svg {
+  position: relative;
+  z-index: 2;
 }
 
 .social-icons a#pronounis {
@@ -186,20 +244,17 @@ body {
   color: #3b82f6;
 }
 
-.social-icons a#notes {
-  color: #a855f7;
+.social-icons a#bsky {
+  color: #0085ff;
 }
 
-.social-icons a#email {
-  color: #1d4ed8;
-}
-
-.social-icons a#pgp {
-  color: #2563eb;
+.social-icons a#instagram {
+  color: #e4405f;
 }
 
 .social-icons a:hover {
   color: var(--link-hover-color) !important;
+  transform: translateY(-2px) scale(1.1);
 }
 
 /* About and Projects sections */
@@ -216,6 +271,7 @@ body {
   color: var(--text-color);
   font-weight: var(--font-header-weight);
   line-height: 1.3;
+  transition: color var(--transition-duration) ease;
 }
 
 .about p,
@@ -225,45 +281,84 @@ body {
   font-weight: var(--font-body-weight);
   line-height: 1.5;
   margin: 0.5rem 0;
+  transition: color var(--transition-duration) ease;
 }
 
 .about a,
 .projects a,
 .custom-link {
   color: var(--link-color);
-  transition: color 0.5s;
-  text-decoration: none;
+  transition: color var(--transition-duration) ease,
+    transform var(--transition-duration) ease,
+    text-decoration-color var(--transition-duration) ease;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: var(--link-underline-height);
+  display: inline-block;
 }
 
 .about a:hover,
 .projects a:hover,
 .custom-link:hover {
   color: var(--link-hover-color);
+  transform: translateY(-1px);
+  text-decoration-color: currentColor;
 }
 
 /* Projects list */
 .project {
   background: var(--container-background-color);
-  border-radius: 1.5rem;
+  border-radius: var(--card-border-radius);
   box-shadow: 0 4px 6px var(--shadow-color);
-  transition: all 0.5s ease;
+  transition: transform var(--transition-duration) ease,
+    box-shadow var(--transition-duration) ease,
+    background-color var(--transition-duration) ease;
   margin: 1rem 0;
-  padding: none;
+  padding: var(--card-padding);
+  position: relative;
+  overflow: hidden;
+  transform: scale(1) rotate(0deg);
+}
+
+.project::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    var(--gradient-angle),
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+  opacity: 0;
+  transition: opacity var(--transition-duration) ease;
+  z-index: 0;
+}
+
+.project:hover::before {
+  opacity: 1;
+}
+
+.project:hover {
+  box-shadow: 0 var(--card-hover-elevation) var(--card-shadow-blur)
+      var(--card-shadow-spread) var(--shadow-color),
+    0 0 20px var(--glow-color);
 }
 
 .project a {
   color: inherit;
   text-decoration: none;
-}
-
-.project:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 0 20px var(--glow-color);
+  position: relative;
+  z-index: 1;
 }
 
 .project-content {
   padding: 0;
   margin: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .project-header {
@@ -278,6 +373,7 @@ body {
   color: var(--text-color);
   font-weight: var(--font-weight-bold);
   line-height: 1.3;
+  transition: color var(--transition-duration) ease;
 }
 
 .project-content p {
@@ -286,6 +382,7 @@ body {
   font-weight: var(--font-weight-regular);
   line-height: 1.5;
   margin: 0;
+  transition: color var(--transition-duration) ease;
 }
 
 .tags {
@@ -302,6 +399,12 @@ body {
   padding: 0.25rem 0.5rem;
   border-radius: 9999px;
   display: inline-block;
+  transition: transform var(--transition-duration) ease,
+    background-color var(--transition-duration) ease;
+}
+
+.tag:hover {
+  transform: scale(1.05);
 }
 
 .tag.wip {
@@ -327,18 +430,13 @@ body {
 .footer-link {
   color: var(--text-color);
   text-decoration: none;
-  transition: color 0.5s;
+  transition: color var(--transition-duration) ease,
+    transform var(--transition-duration) ease;
 }
 
 .footer-link:hover {
   color: var(--link-hover-color);
-}
-
-@media (min-width: 576px) {
-  .footer-content {
-    flex-direction: row;
-    justify-content: space-between;
-  }
+  transform: translateY(-1px);
 }
 
 /* Font size classes */
@@ -371,15 +469,53 @@ body {
   font-weight: var(--font-weight-regular);
 }
 
+/* Media Queries */
+@media (min-width: 576px) {
+  .footer-content {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
 /* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-duration: 0.001s;
+    --hover-scale: 1;
+    --hover-rotation: 0deg;
+    --card-hover-elevation: 4px;
+  }
+
   .header-content,
   .social-icons a,
   .about a,
   .projects a,
-  .custom-link {
+  .custom-link,
+  .project,
+  .project::before {
     transition: none;
     transform: none;
+    animation: none;
+  }
+
+  .profile-pic:hover,
+  .social-icons a:hover,
+  .about a:hover,
+  .projects a:hover,
+  .custom-link:hover,
+  .project:hover,
+  .tag:hover,
+  .footer-link:hover {
+    transform: none;
+  }
+
+  .profile-pic.dangling {
+    transform: rotate(15deg);
+    transition: transform 0.1s ease;
+  }
+
+  .profile-pic.dangling:hover {
+    transform: rotate(13deg);
   }
 }
 
@@ -405,5 +541,15 @@ body {
 
   .project {
     margin: 0.5rem 0;
+  }
+
+  .project-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .tags {
+    margin-top: 0.5rem;
   }
 }
