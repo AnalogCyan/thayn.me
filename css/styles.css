@@ -523,27 +523,8 @@ body {
   }
 }
 
-/* Override icon styles when JavaScript is disabled */
+/* Options for browsers w/o JS */
 @media (scripting: none) {
-  .social-icons a#pronounis::after {
-    content: "⚧️";
-  }
-
-  .social-icons a#github::after {
-    content: "👩‍💻";
-  }
-
-  .social-icons a#mastodon::after {
-    content: "🔗"; /* Mastodon icon */
-  }
-
-  .social-icons a#bsky::after {
-    content: "🦋"; /* Envelope icon */
-  }
-
-  .social-icons a#instagram::after {
-    content: "📷"; /* Instagram icon */
-  }
 }
 
 /* Responsive layout for small screens */
