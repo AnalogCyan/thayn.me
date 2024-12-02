@@ -552,16 +552,6 @@ body {
   .tags {
     margin-top: 0.5rem;
   }
-
-  .profile-pic {
-    cursor: auto;
-    transition: none;
-    transform: none;
-  }
-
-  .profile-pic:hover {
-    transform: none;
-  }
 }
 
 /* Ensure animations play fully on touch devices */

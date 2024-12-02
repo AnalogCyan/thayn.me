@@ -1,5 +1,9 @@
 document.addEventListener('DOMContentLoaded', () => {
   const profilePic = document.querySelector('.profile-pic');
+
+  // Check if it's a mobile device
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
   let isDangling = false;
   let currentAngle = 0;
   let currentVelocity = 0;
@@ -36,6 +40,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle click to start dangling
   profilePic.addEventListener('click', () => {
+    if (isMobile) return; // Disable on mobile devices
+
     if (isDangling) return;
 
     isDangling = true;
@@ -50,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Handle hover when dangling
   profilePic.addEventListener('mouseenter', () => {
+    if (isMobile) return; // Disable on mobile devices
+
     if (!isDangling) return;
 
     // Add a small impulse to create a swinging effect
@@ -62,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Reset on double click
   profilePic.addEventListener('dblclick', () => {
+    if (isMobile) return; // Disable on mobile devices
+
     if (!isDangling) return;
 
     isDangling = false;
