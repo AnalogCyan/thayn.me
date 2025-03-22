@@ -19,7 +19,7 @@ force = true
 
 [[redirects]]
 from = "https://music.thayn.me/*"
-to = "/music.html"
+to = "/music/:splat"
 status = 200
 force = true
 
