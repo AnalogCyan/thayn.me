@@ -1,59 +1,65 @@
 # Netlify configuration file
 
 [build]
-  # Directory to publish
-  publish = "."
+# Directory to publish
+publish = "."
 
 # Redirects configuration
 [[redirects]]
-  from = "https://git.thayn.me/*"
-  to = "https://github.com/AnalogCyan/:splat"
-  status = 301
-  force = true
+from = "https://git.thayn.me/*"
+to = "https://github.com/AnalogCyan/:splat"
+status = 301
+force = true
 
 [[redirects]]
-  from = "https://git.thayn.gay/*"
-  to = "https://github.com/AnalogCyan/:splat"
-  status = 301
-  force = true
+from = "https://git.thayn.gay/*"
+to = "https://github.com/AnalogCyan/:splat"
+status = 301
+force = true
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+from = "https://music.thayn.me/*"
+to = "/music.html"
+status = 200
+force = true
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
 
 # Custom headers for security
 [[headers]]
-  for = "/*"
-  [headers.values]
-    # Prevent clickjacking
-    X-Frame-Options = "DENY"
-    # Enable HSTS with a max age of 1 year
-    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
-    # Prevent MIME type sniffing
-    X-Content-Type-Options = "nosniff"
-    # Enable XSS protection
-    X-XSS-Protection = "1; mode=block"
-    # Content Security Policy
-    Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; connect-src 'self';"
-    # Disable caching for development
-    Cache-Control = "no-store"
+for = "/*"
+[headers.values]
+# Prevent clickjacking
+X-Frame-Options = "DENY"
+# Enable HSTS with a max age of 1 year
+Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+# Prevent MIME type sniffing
+X-Content-Type-Options = "nosniff"
+# Enable XSS protection
+X-XSS-Protection = "1; mode=block"
+# Content Security Policy
+Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; connect-src 'self';"
+# Disable caching for development
+Cache-Control = "no-store"
 
 # Headers for specific paths
 [[headers]]
-  for = "/media/*"
-  [headers.values]
-    # Disable caching for development
-    Cache-Control = "no-store"
+for = "/media/*"
+[headers.values]
+# Disable caching for development
+Cache-Control = "no-store"
 
 [[headers]]
-  for = "/css/*"
-  [headers.values]
-    # Disable caching for development
-    Cache-Control = "no-store"
+for = "/css/*"
+[headers.values]
+# Disable caching for development
+Cache-Control = "no-store"
 
 [[headers]]
-  for = "/js/*"
-  [headers.values]
-    # Disable caching for development
-    Cache-Control = "no-store"
+for = "/js/*"
+[headers.values]
+# Disable caching for development
+Cache-Control = "no-store"

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Basic meta tags -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Cyan Thayn's curated Apple Music playlists collection."
+    />
+    <meta
+      name="theme-color"
+      content="#121212"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#f0f0f0"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta name="theme-color" content="#4682b4" />
+
+    <!-- Social graph data -->
+    <meta property="og:title" content="Cyan Thayn - Music Playlists" />
+    <meta
+      property="og:description"
+      content="Cyan Thayn's curated Apple Music playlists collection."
+    />
+    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
+    <meta property="og:url" content="https://thayn.me/music.html" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@AnalogCyan" />
+    <meta name="twitter:creator" content="@AnalogCyan" />
+
+    <!-- Link to manifest.json -->
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Favicon and touch icons -->
+    <link rel="icon" type="image/svg+xml" href="./media/logo.svg" />
+    <link rel="alternate icon" href="./media/profile.svg" />
+    <link rel="apple-touch-icon" href="./media/logo.svg" />
+
+    <!-- CSS files -->
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tilt+Neon:XROT,YROT@-45..45,-45..45&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- JavaScript files -->
+    <script src="./js/chrome_bug_fix.js" defer></script>
+    <script src="./js/disco.js" defer></script>
+    <script src="./js/card-hover.js" defer></script>
+    <script src="./js/profile-physics.js" defer></script>
+    <script src="./js/mobile-interactions.js" defer></script>
+
+    <title>Cyan Thayn - Music Playlists</title>
+
+    <style>
+      /* Header styles */
+      .page-header {
+        max-width: 700px;
+        width: 80%;
+        margin: 2rem auto 3rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+      }
+
+      .back-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-color);
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: var(--font-weight-medium);
+        transition: transform var(--transition-duration) ease,
+          color var(--transition-duration) ease,
+          background-color var(--transition-duration) ease;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        background-color: var(--container-background-color);
+        box-shadow: 0 4px 6px var(--shadow-color);
+      }
+
+      .back-button:hover {
+        color: var(--link-hover-color);
+        transform: translateX(-3px);
+      }
+
+      .apple-music-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-color);
+        text-decoration: none;
+        transition: transform var(--transition-duration) ease;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        background-color: var(--container-background-color);
+        box-shadow: 0 4px 6px var(--shadow-color);
+      }
+
+      .apple-music-logo:hover {
+        transform: scale(1.1);
+      }
+
+      .apple-music-logo i {
+        font-size: 1.5rem;
+        color: #fa2f5a;
+      }
+
+      /* Playlist grid layout */
+      .playlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1.25rem;
+        width: 80%;
+        max-width: 700px;
+        margin: 0 auto 3rem;
+      }
+
+      .playlist-item {
+        position: relative;
+        transition: transform var(--transition-duration) ease,
+          box-shadow var(--transition-duration) ease;
+        overflow: hidden;
+        border-radius: 0.75rem;
+        width: 100%;
+        padding-bottom: 100%; /* Create a perfect square */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      }
+
+      .playlist-item:hover {
+        transform: translateY(-5px) scale(1.02);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      .playlist-image {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 0.75rem;
+        transition: transform var(--transition-duration) ease;
+      }
+
+      .playlist-item:hover .playlist-image {
+        transform: scale(1.05);
+      }
+
+      /* Play button overlay */
+      .play-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(0.8);
+        width: 3rem;
+        height: 3rem;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity var(--transition-duration) ease,
+          transform var(--transition-duration) ease;
+      }
+
+      .play-button i {
+        color: #fa2f5a;
+        font-size: 1.5rem;
+      }
+
+      .playlist-item:hover .play-button {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+
+      /* Media queries */
+      @media (max-width: 768px) {
+        .playlist-grid {
+          grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        }
+      }
+
+      @media (max-width: 576px) {
+        .page-header {
+          grid-template-columns: auto auto auto;
+          gap: 0.5rem;
+          margin: 1.5rem auto;
+          width: 90%;
+        }
+
+        .page-title {
+          font-size: 1.25rem;
+          padding: 0.5rem 1rem;
+        }
+
+        .back-button,
+        .apple-music-logo {
+          width: 2.5rem;
+          height: 2.5rem;
+        }
+
+        .playlist-grid {
+          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+          gap: 1rem;
+          width: 90%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Simplified header with only back and music buttons -->
+    <header class="page-header">
+      <a href="index.html" class="back-button" aria-label="Back to home page">
+        <i class="ri-arrow-left-line"></i>
+      </a>
+      <a
+        href="https://music.apple.com/profile/AnalogCyan"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="apple-music-logo"
+        aria-label="Open Apple Music"
+      >
+        <i class="ri-music-2-fill"></i>
+      </a>
+    </header>
+
+    <!-- Image-based playlist grid -->
+    <div class="playlist-grid">
+      <!-- Adventure -->
+      <a
+        href="https://music.apple.com/us/playlist/adventure/pl.u-pMZbIGdJJWy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Adventure.png"
+          alt="Adventure playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Badass Women -->
+      <a
+        href="https://music.apple.com/us/playlist/badass-women/pl.u-55jysPm5561"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Badass Women.png"
+          alt="Badass Women playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Childhood -->
+      <a
+        href="https://music.apple.com/us/playlist/childhood/pl.u-558KUPm5561"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Childhood.png"
+          alt="Childhood playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Chillout Vibes -->
+      <a
+        href="https://music.apple.com/us/playlist/chillout-vibes/pl.u-zYgCEG00e4"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Chillout Vibes.png"
+          alt="Chillout Vibes playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Cosmic Rebellion -->
+      <a
+        href="https://music.apple.com/us/playlist/cosmic-rebellion/pl.u-qLAls8Nmm3J"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Cosmic Rebellion.png"
+          alt="Cosmic Rebellion playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Cyan's 00s -->
+      <a
+        href="https://music.apple.com/us/playlist/cyans-00s/pl.u-r25kCdyXXRa"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Cyan's 2000s.png"
+          alt="Cyan's 00s playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Cyberspace Soundwaves -->
+      <a
+        href="https://music.apple.com/us/playlist/cyberspace-soundwaves/pl.u-XeqBToXPP2W"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Cyberspace Soundwaves.png"
+          alt="Cyberspace Soundwaves playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Emotional Vibes -->
+      <a
+        href="https://music.apple.com/us/playlist/emotional-vibes/pl.u-MDeqs2NMMAX"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Emotional Vibes.png"
+          alt="Emotional Vibes playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Ethereal Introspective -->
+      <a
+        href="https://music.apple.com/us/playlist/ethereal-introspective/pl.u-yga3iDbKKd6"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Ethereal Introspective.png"
+          alt="Ethereal Introspective playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Glitch -->
+      <a
+        href="https://music.apple.com/us/playlist/glitch/pl.u-pRGaCGdJJWy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/glitch.png"
+          alt="Glitch playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- High School -->
+      <a
+        href="https://music.apple.com/us/playlist/high-school/pl.u-06lxF24ggYy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/High School.png"
+          alt="High School playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Hungry -->
+      <a
+        href="https://music.apple.com/us/playlist/hungry/pl.u-06bgF24ggYy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Hungry.png"
+          alt="Hungry playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- It's 2013 Again -->
+      <a
+        href="https://music.apple.com/us/playlist/its-2013-again/pl.u-pRlRFGdJJWy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/It's 2013 Again.png"
+          alt="It's 2013 Again playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Journal Chronosonic -->
+      <a
+        href="https://music.apple.com/us/playlist/journal-chronosonic/pl.u-015ah24ggYy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Journal Chronosonic.png"
+          alt="Journal Chronosonic playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Lyrical Labyrinths -->
+      <a
+        href="https://music.apple.com/us/playlist/lyrical-labyrinths/pl.u-yeAHDbKKd6"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Lyrical Labyrinths.png"
+          alt="Lyrical Labyrinths playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- MindWave -->
+      <a
+        href="https://music.apple.com/us/playlist/mindwave/pl.u-y2KLuDbKKd6"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/MindWave.png"
+          alt="MindWave playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Monstercat -->
+      <a
+        href="https://music.apple.com/us/playlist/monstercat/pl.u-zPgXuEG00e4"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Monstercat.png"
+          alt="Monstercat playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Nostalgia -->
+      <a
+        href="https://music.apple.com/us/playlist/nostalgia/pl.u-4J2DIdRLLJy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Nostalgia.png"
+          alt="Nostalgia playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Pixel Party -->
+      <a
+        href="https://music.apple.com/us/playlist/pixel-party/pl.u-060zF24ggYy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Pixel Party.png"
+          alt="Pixel Party playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Rock Goddesses -->
+      <a
+        href="https://music.apple.com/us/playlist/rock-goddesses/pl.u-06vaF24ggYy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Rock Goddesses.png"
+          alt="Rock Goddesses playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Spring '16 -->
+      <a
+        href="https://music.apple.com/us/playlist/spring-16/pl.u-479mFdRLLJy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Spring '16.png"
+          alt="Spring '16 playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Summer '18 -->
+      <a
+        href="https://music.apple.com/us/playlist/summer-18/pl.u-pZRYFGdJJWy"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Summer '18.png"
+          alt="Summer '18 playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Tomorrow -->
+      <a
+        href="https://music.apple.com/us/playlist/tomorrow/pl.u-MRkWu2NMMAX"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Tomorrow.png"
+          alt="Tomorrow playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+
+      <!-- Yesterday -->
+      <a
+        href="https://music.apple.com/us/playlist/yesterday/pl.u-MRqjT2NMMAX"
+        target="_blank"
+        rel="noreferrer noopener"
+        class="playlist-item"
+      >
+        <img
+          src="./media/playlists/Yesterday.png"
+          alt="Yesterday playlist"
+          class="playlist-image"
+        />
+        <div class="play-button">
+          <i class="ri-play-fill"></i>
+        </div>
+      </a>
+    </div>
+
+    <!-- Footer section -->
+    <footer class="container footer">
+      <div id="footer-span" class="footer-content">
+        <div>
+          <a
+            href="https://fediring.net/previous?host=thayn.me"
+            class="footer-link"
+            >←</a
+          >
+          <a href="https://fediring.net/" class="footer-link">Fediring</a>
+          <a href="https://fediring.net/next?host=thayn.me" class="footer-link"
+            >→</a
+          >
+        </div>
+        <div id="quoteDisplay">Music is the soundtrack of your life.</div>
+      </div>
+    </footer>
+  </body>
+</html>
