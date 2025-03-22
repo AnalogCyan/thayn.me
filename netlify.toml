@@ -18,12 +18,6 @@ status = 301
 force = true
 
 [[redirects]]
-from = "https://music.thayn.me/*"
-to = "/music/:splat"
-status = 200
-force = true
-
-[[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200
