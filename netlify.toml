@@ -18,6 +18,12 @@ status = 301
 force = true
 
 [[redirects]]
+from = "https://fm.thayn.me/*"
+to = "https://camelia.tail794df.ts.net/:splat"
+status = 200
+force = true
+
+[[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200
