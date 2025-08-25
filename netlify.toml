@@ -18,7 +18,13 @@ status = 301
 force = true
 
 [[redirects]]
-from = "https://fm.thayn.me/*"
+from = "https://fm.thayn.me/camelia/*"
+to = "https://camelia.tail794df.ts.net/public/camelia/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "https://fm.thayn.me/admin/*"
 to = "https://camelia.tail794df.ts.net/:splat"
 status = 200
 force = true
