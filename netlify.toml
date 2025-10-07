@@ -29,6 +29,31 @@ status = 200
 force = true
 
 [[redirects]]
+from = "/code-of-conduct.txt"
+to = "/.well-known/code-of-conduct.txt"
+status = 301
+
+[[redirects]]
+from = "/humans.txt"
+to = "/.well-known/humans.txt"
+status = 301
+
+[[redirects]]
+from = "/pgp-key.asc"
+to = "/.well-known/pgp-key.asc"
+status = 301
+
+[[redirects]]
+from = "/robots.txt"
+to = "/.well-known/robots.txt"
+status = 301
+
+[[redirects]]
+from = "/security.txt"
+to = "/.well-known/security.txt"
+status = 301
+
+[[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200
