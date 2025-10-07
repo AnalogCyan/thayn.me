@@ -1,0 +1,24 @@
+/* TEAM */
+  Creator: Cyan Thayn
+  Role: Site designer & developer
+  Contact: security@thayn.me
+  Fediverse: https://tech.lgbt/@AnalogCyan/
+  Bluesky: https://bsky.app/profile/thayn.me
+
+/* SITE */
+  URL: https://thayn.me
+  Doctype: HTML5
+  Standards: HTML, CSS, JavaScript
+  Repository: https://github.com/AnalogCyan/thayn.me
+  Hosting: Netlify
+  Tooling: GitHub Actions (CodeQL), Codacy quality checks
+  Last update: 2025-10-07
+
+/* AI & ROBOTS */
+  Policy: AI scraping not permitted
+  Directives: X-Robots-Tag noai, noimageai; AI-Training none
+  Enforcement: Netlify edge function bots.ts blocks crawlers listed in netlify/edge-functions/agents.json
+  Robots: See /.well-known/robots.txt for disallowed agents
+
+/* THANKS */
+  Inspiration: humanstxt.org and the open web community

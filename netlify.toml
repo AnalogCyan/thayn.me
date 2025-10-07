@@ -4,6 +4,11 @@
 # Directory to publish
 publish = "."
 
+# Edge Functions
+[[edge_functions]]
+path = "/*"
+function = "bots"
+
 # Redirects configuration
 [[redirects]]
 from = "https://git.thayn.me/*"
@@ -28,7 +33,7 @@ from = "/*"
 to = "/index.html"
 status = 200
 
-# Custom headers for security
+# Custom headers for security and anti-AI directives
 [[headers]]
 for = "/*"
 [headers.values]
@@ -44,6 +49,10 @@ X-XSS-Protection = "1; mode=block"
 Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; connect-src 'self';"
 # Disable caching for development
 Cache-Control = "no-store"
+# Disallow AI model training reuse
+AI-Training = "none"
+# Hint LLM and image scrapers to respect opt-out
+X-Robots-Tag = "noai, noimageai"
 
 # Headers for specific paths
 [[headers]]
