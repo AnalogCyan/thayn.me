@@ -1,6 +1,0 @@
-# Allow all crawlers access to the entire site
-User-agent: *
-Disallow: /soon.html
-
-# Allow all other crawlers
-Allow: /
