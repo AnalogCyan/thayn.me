@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
-  projects.forEach(project => {
+  projects.forEach((project) => {
     // Add mouseenter event to apply a new random tilt each time
     project.addEventListener('mouseenter', () => {
       const randomTilt = getRandomTilt();
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function handleReducedMotion(e) {
     if (e.matches) {
-      projects.forEach(project => {
+      projects.forEach((project) => {
         project.style.transform = 'none';
         project.removeEventListener('mouseenter', null);
         project.removeEventListener('mouseleave', null);
