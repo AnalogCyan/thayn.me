@@ -23,8 +23,14 @@ status = 301
 force = true
 
 [[redirects]]
-from = "https://fm.thayn.me/*"
+from = "https://fm.thayn.gay/*"
 to = "https://camelia.tail794df.ts.net/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "https://cockpit.thayn.gay/*"
+to = "https://valkyrie.tail794df.ts.net/:splat"
 status = 200
 force = true
 
