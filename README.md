@@ -1,8 +1,50 @@
 # thayn.me
 
-My personal website & portfolio.
+Personal website & portfolio for Cyan.
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/1ebab9b0-26fa-4390-81d4-8f3a6e388630/deploy-status)](https://app.netlify.com/projects/thayn/deploys)
+<p>
+  <a href="https://app.netlify.com/projects/thayn/deploys">
+    <img alt="Netlify Status" src="https://api.netlify.com/api/v1/badges/1ebab9b0-26fa-4390-81d4-8f3a6e388630/deploy-status" />
+  </a>
+  <a href="./LICENSE">
+    <img alt="License: AGPL v3" src="https://img.shields.io/badge/Code-AGPL%20v3-blue.svg?style=flat-square" />
+  </a>
+  <a href="./LICENSE-CONTENT">
+    <img alt="License: CC BY-SA 4.0" src="https://img.shields.io/badge/Content-CC%20BY--SA%204.0-lightgrey.svg?style=flat-square" />
+  </a>
+</p>
 
-> [!WARNING]
-> This site is currently being redesigned and updated. Some content or pages may be incomplete or broken.
+[!WARNING]
+Redesign in progress — some pages may be incomplete or broken.
+
+What’s in here:
+
+• Source for my personal site, built and deployed via Netlify.
+
+• Code is open-source; content is share-alike (see Licensing).
+
+## Local development
+
+**Requirements:** Node.js **≥ v24**.
+
+```sh
+# install dependencies
+npm install
+
+# build + serve the site locally (builds to ./public)
+npm run dev
+
+# build only
+npm run build
+
+# format the repo
+npm run format
+```
+
+# Licensing
+
+This repository uses two licenses:
+• Code: GNU Affero General Public License v3.0 — see LICENSE￼
+• Content (text, images, media): Creative Commons Attribution–ShareAlike 4.0 — see LICENSE-CONTENT￼
+
+If you reuse content, please attribute and keep derivatives under CC BY-SA 4.0.
