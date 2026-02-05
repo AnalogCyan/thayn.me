@@ -89,10 +89,13 @@
     "empty": "No posts yet",
     "emptyBody": "Check back soon for updates.",
     "readMore": "Read More →",
-    "by": "By"
+    "by": "By",
+    "syndicated": "Syndicated",
+    "alsoOn": "Also on:"
   },
   "footer": {
     "ring": "Fediring",
+    "mentions": "mentions",
     "quote": "Are you ready to embrace uncertainty?",
     "prevLabel": "Previous site",
     "nextLabel": "Next site"

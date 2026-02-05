@@ -35,6 +35,58 @@ Handlebars.registerHelper("formatDate", function (date) {
   return utcDate.toLocaleDateString("en-US", options);
 });
 
+const SYNDICATION_SITES = {
+  bluesky: { label: "Bluesky" },
+  fediverse: { label: "Fediverse" },
+  instagram: { label: "Instagram" },
+  github: { label: "GitHub" },
+  musicbrainz: { label: "MusicBrainz" },
+  lastfm: { label: "Last.fm" },
+  discogs: { label: "Discogs" },
+  pronouns: { label: "Pronouns" },
+};
+
+function normalizeSyndication(raw) {
+  const links = [];
+  if (!raw) return links;
+
+  function addLink(site, url, labelOverride) {
+    if (!url || typeof url !== "string") return;
+    const trimmed = url.trim();
+    if (!trimmed) return;
+    const meta = site ? SYNDICATION_SITES[site] : null;
+    const label = labelOverride || (meta && meta.label);
+    if (!label) return;
+    links.push({ site, label, url: trimmed });
+  }
+
+  if (Array.isArray(raw)) {
+    for (const item of raw) {
+      if (!item) continue;
+      if (typeof item === "object") {
+        const site = item.site || item.network || item.service;
+        const url = item.url || item.href;
+        addLink(site, url, item.label);
+      }
+    }
+    return links;
+  }
+
+  if (typeof raw === "object") {
+    for (const [site, value] of Object.entries(raw)) {
+      if (Array.isArray(value)) {
+        value.forEach((url) => addLink(site, url));
+      } else if (typeof value === "string") {
+        addLink(site, value);
+      } else if (value && typeof value === "object") {
+        addLink(site, value.url || value.href, value.label);
+      }
+    }
+  }
+
+  return links;
+}
+
 async function pathExists(p) {
   try {
     await fs.access(p);
@@ -523,6 +575,7 @@ async function buildBlog(capsules, config, globalUsed) {
         excerpt,
         url: `/blog/${outputFileName}`,
         siteUrl: getSiteUrl(),
+        syndicationLinks: normalizeSyndication(attributes.syndication),
       };
 
       const filledTemplate = postTemplate(data);

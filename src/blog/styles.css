@@ -110,7 +110,36 @@
 
 .blog-post-footer {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.blog-syndication {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  color: var(--text-muted);
+}
+
+.blog-syndication-links {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.blog-syndication-links a {
+  color: var(--text);
+  text-decoration: underline;
+}
+
+.blog-syndication-links a + a::before {
+  content: "·";
+  margin: 0 var(--spacing-xs);
+  color: var(--text-muted);
+  text-decoration: none;
 }
 
 @media (max-width: 700px) {

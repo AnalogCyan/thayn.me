@@ -89,10 +89,13 @@
     "empty": "No posts yet",
     "emptyBody": "Check back soon for updates.",
     "readMore": "Read More →",
-    "by": "By"
+    "by": "By",
+    "syndicated": "Syndicated",
+    "alsoOn": "Also on:"
   },
   "footer": {
     "ring": "kulupu lipu Fediring",
+    "mentions": "mentions",
     "quote": "sina ken awen lon nasa ala nasa?",
     "prevLabel": "o tawa lipu pini",
     "nextLabel": "o tawa lipu sin"

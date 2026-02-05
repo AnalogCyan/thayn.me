@@ -7,6 +7,10 @@
       data-i18n-attr="aria-label:footer.prevLabel"
       >←</a
     >
+    <span class="footer-link webmention-count">
+      <span data-webmention-count data-url="">0</span>
+      <span data-i18n="footer.mentions">mentions</span>
+    </span>
     <a href="https://fediring.net/" class="footer-link" data-i18n="footer.ring"
       >Fediring</a
     >
@@ -21,4 +25,27 @@
   <div id="quoteDisplay" data-i18n="footer.quote">
     Are you ready to embrace uncertainty?
   </div>
+  <script>
+    (function () {
+      var counter = document.querySelector("[data-webmention-count]");
+      if (!counter) return;
+
+      var url = window.location.origin + window.location.pathname;
+      counter.setAttribute("data-url", url);
+
+      var endpoint =
+        "https://webmention.io/api/count?target=" + encodeURIComponent(url);
+
+      fetch(endpoint)
+        .then(function (response) {
+          if (!response.ok) throw new Error("Webmention count failed");
+          return response.json();
+        })
+        .then(function (data) {
+          var count = typeof data.count === "number" ? data.count : 0;
+          counter.textContent = String(count);
+        })
+        .catch(function () {});
+    })();
+  </script>
 </footer>

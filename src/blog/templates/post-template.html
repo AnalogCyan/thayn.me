@@ -30,6 +30,7 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
     <link rel="apple-touch-icon" href="/media/logo.svg" />
+    <link rel="webmention" href="https://webmention.io/thayn.me/webmention" />
 
     <!-- EXTERNAL_RESOURCES -->
 
@@ -73,6 +74,24 @@
         </header>
         <div class="blog-post-content">{{{content}}}</div>
         <footer class="blog-post-footer">
+          {{#if syndicationLinks.length}}
+          <div class="blog-syndication">
+            <span class="blog-syndication-label" data-i18n="blog.alsoOn"
+              >Also on:</span
+            >
+            <div class="blog-syndication-links">
+              {{#each syndicationLinks}}
+              <a
+                class="u-syndication"
+                href="{{url}}"
+                target="_blank"
+                rel="noreferrer noopener"
+                >{{label}}</a
+              >
+              {{/each}}
+            </div>
+          </div>
+          {{/if}}
           <a href="/blog/" class="button secondary">Back to Blog</a>
         </footer>
       </article>
