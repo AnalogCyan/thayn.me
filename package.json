@@ -14,7 +14,7 @@
     "marked": "^4.3.0"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=24"
   },
   "devDependencies": {
     "prettier": "^3.8.1"

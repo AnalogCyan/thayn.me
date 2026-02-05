@@ -5,6 +5,9 @@
 publish = "public"
 command = "node build.js"
 
+[build.environment]
+NODE_VERSION = "24"
+
 # Edge Functions
 [[edge_functions]]
 path = "/*"
