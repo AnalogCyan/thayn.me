@@ -6,7 +6,9 @@
   "scripts": {
     "build": "node build.js",
     "dev": "node build.js && npx serve public",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "syndicate": "node scripts/syndicate-bridgy.js",
+    "syndicate:remote": "node scripts/syndicate-remote.js"
   },
   "dependencies": {
     "front-matter": "^4.0.2",
