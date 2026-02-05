@@ -41,29 +41,6 @@ npm run build
 npm run format
 ```
 
-## Blog frontmatter
-
-Optional syndication links can be added per post. Use a `syndication` map keyed by site, with a single URL or a list:
-
-```yaml
----
-title: Example Post
-date: 2026-02-01
-syndication:
-  bluesky: https://bsky.app/profile/you/post/123
-  fediverse:
-    - https://tech.lgbt/@AnalogCyan/123456
-  instagram: https://www.instagram.com/p/ABC123/
-  github: https://github.com/AnalogCyan/example
-  musicbrainz: https://musicbrainz.org/release/...
-  lastfm: https://www.last.fm/user/AnalogCyan
-  discogs: https://www.discogs.com/release/...
-  pronouns: https://en.pronouns.page/@AnalogCyan
----
-```
-
-Supported sites match those linked elsewhere on the site: `bluesky`, `fediverse`, `instagram`, `github`, `musicbrainz`, `lastfm`, `discogs`, `pronouns`.
-
 # Licensing
 
 This repository uses two licenses:
