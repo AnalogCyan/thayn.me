@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="A curated list of Cyan Thayn's projects and experiments."
+    />
+    <meta
+      name="theme-color"
+      content="#0b1020"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#eef2ff"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta name="theme-color" content="#46b3ff" />
+
+    <meta property="og:title" content="Cyan Thayn — Projects" />
+    <meta
+      property="og:description"
+      content="A curated list of Cyan Thayn's projects and experiments."
+    />
+    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
+    <meta property="og:url" content="https://thayn.me/projects.html" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@AnalogCyan" />
+    <meta name="twitter:creator" content="@AnalogCyan" />
+
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
+    <link rel="alternate icon" href="/media/profile.svg" />
+    <link rel="apple-touch-icon" href="/media/logo.svg" />
+
+    <!-- EXTERNAL_RESOURCES -->
+
+    <script>
+      (function () {
+        try {
+          var m = localStorage.getItem("thayn_theme");
+          var d = document.documentElement;
+          if (m === "light") d.classList.add("light-theme");
+          else if (m === "dark") d.classList.add("dark-theme");
+          else if (m === "auto") {
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+              d.classList.add("dark-theme");
+            else d.classList.add("light-theme");
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./scripts.js" defer></script>
+
+    <title>Cyan Thayn — Projects</title>
+  </head>
+  <body>
+    <drop capsule="ambient-background"></drop>
+    <drop capsule="hero-card" data-hero="false" data-nav-page="projects"></drop>
+
+    <main>
+      <section class="glass section-card projects" id="projects">
+        <div class="section-title">
+          <h2>👩‍💻 <span>Projects</span></h2>
+        </div>
+        <p data-i18n="projects.intro">
+          Explore some of the projects I've created or contributed to. Click on
+          any to learn more! For additional projects, visit my GitHub (linked
+          above). Unless otherwise noted, content on this website is licensed
+          under
+          <a href="https://choosealicense.com/licenses/gpl-3.0/">GPLv3</a>.
+        </p>
+        <div class="hero-actions">
+          <a
+            class="button secondary"
+            href="https://github.com/AnalogCyan"
+            data-i18n="projects.github"
+            >GitHub →</a
+          >
+        </div>
+
+        <div class="project-grid">
+          <article class="project">
+            <a href="https://github.com/AnalogCyan/Sticky-Paws-Server">
+              <div class="project-header">
+                <h3>🐾 <span data-i18n="projects.items.sticky.title">Sticky Paws</span></h3>
+                <div class="tags">
+                  <span class="tag">GML</span>
+                  <span class="tag">Python</span>
+                  <span class="tag">Apache 2.0</span>
+                </div>
+              </div>
+              <p data-i18n="projects.items.sticky.desc">
+                A 2D platformer game about a cat that can climb anything! Main
+                game by Jonnil; server code by me.
+              </p>
+            </a>
+          </article>
+
+          <article class="project">
+            <a href="https://github.com/AnalogCyan/SwiftWin">
+              <div class="project-header">
+                <h3>🔮 <span data-i18n="projects.items.swiftwin.title">SwiftWin</span></h3>
+                <div class="tags">
+                  <span class="tag wip">WIP</span>
+                  <span class="tag">PowerShell</span>
+                  <span class="tag">GPLv3</span>
+                </div>
+              </div>
+              <p data-i18n="projects.items.swiftwin.desc">
+                PowerShell utility for performing a series of Windows
+                maintenance tasks I commonly use when cleaning up and optimizing
+                a system.
+              </p>
+            </a>
+          </article>
+
+          <article class="project">
+            <a href="https://github.com/AnalogCyan/itadakimasu">
+              <div class="project-header">
+                <h3>🔑 <span data-i18n="projects.items.itadakimasu.title">Itadakimasu</span></h3>
+                <div class="tags">
+                  <span class="tag">PWA</span>
+                  <span class="tag">GPLv3</span>
+                </div>
+              </div>
+              <p data-i18n="projects.items.itadakimasu.desc">
+                Random recipe password generator web app inspired by episode
+                "Nice Security Hollywood Terror" of the Random but Memorable
+                podcast from 1Password.
+              </p>
+            </a>
+          </article>
+
+          <article class="project">
+            <a href="https://github.com/AnalogCyan/thayn.cc">
+              <div class="project-header">
+                <h3>🔗 <span data-i18n="projects.items.thayncc.title">thayn.cc</span></h3>
+                <div class="tags">
+                  <span class="tag">Python</span>
+                  <span class="tag">GPLv3</span>
+                </div>
+              </div>
+              <p data-i18n="projects.items.thayncc.desc">
+                A simple from-scratch private link shortener API.
+              </p>
+            </a>
+          </article>
+
+          <article class="project">
+            <a href="https://github.com/AnalogCyan/DoR">
+              <div class="project-header">
+                <h3>🔗 <span data-i18n="projects.items.dor.title">DNS-over-RNG</span></h3>
+                <div class="tags">
+                  <span class="tag">Python</span>
+                  <span class="tag">GPLv3</span>
+                </div>
+              </div>
+              <p data-i18n="projects.items.dor.desc">
+                A very cursed DNS server implementation inspired by the various
+                DNS-over-protocol standards.
+              </p>
+            </a>
+          </article>
+
+          <article class="project">
+            <a href="https://github.com/AnalogCyan/More-Vanilla-Mobs">
+              <div class="project-header">
+                <h3>🎮 <span data-i18n="projects.items.mobs.title">More Vanilla Mobs</span></h3>
+                <div class="tags">
+                  <span class="tag">mcfunction</span>
+                  <span class="tag">GPLv3</span>
+                </div>
+              </div>
+              <p data-i18n="projects.items.mobs.desc">
+                Minecraft 1.17+ data pack that implements some of the mobs that
+                technically exist in the game, but don't appear in survival.
+              </p>
+            </a>
+          </article>
+
+          <article class="project">
+            <a href="https://github.com/Box-Analyst/InventorySystem">
+              <div class="project-header">
+                <h3>🏥 <span data-i18n="projects.items.inventory.title">InventorySystem</span></h3>
+                <div class="tags">
+                  <span class="tag">UWP</span>
+                  <span class="tag">AGPLv3</span>
+                </div>
+              </div>
+              <p data-i18n="projects.items.inventory.desc">
+                Medical sample inventory management system, created as our
+                senior project in the COMS 4043 course at Arkansas Tech
+                University.
+              </p>
+            </a>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <drop capsule="site-footer"></drop>
+  </body>
+</html>

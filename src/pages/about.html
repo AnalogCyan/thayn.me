@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="About Cyan Thayn — technician, programmer, and tinkerer."
+    />
+    <meta
+      name="theme-color"
+      content="#0b1020"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#eef2ff"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta name="theme-color" content="#46b3ff" />
+
+    <meta property="og:title" content="Cyan Thayn — About" />
+    <meta
+      property="og:description"
+      content="About Cyan Thayn — technician, programmer, and tinkerer."
+    />
+    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
+    <meta property="og:url" content="https://thayn.me/about.html" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@AnalogCyan" />
+    <meta name="twitter:creator" content="@AnalogCyan" />
+
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
+    <link rel="alternate icon" href="/media/profile.svg" />
+    <link rel="apple-touch-icon" href="/media/logo.svg" />
+
+    <!-- EXTERNAL_RESOURCES -->
+
+    <script>
+      (function () {
+        try {
+          var m = localStorage.getItem("thayn_theme");
+          var d = document.documentElement;
+          if (m === "light") d.classList.add("light-theme");
+          else if (m === "dark") d.classList.add("dark-theme");
+          else if (m === "auto") {
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+              d.classList.add("dark-theme");
+            else d.classList.add("light-theme");
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./scripts.js" defer></script>
+
+    <title>Cyan Thayn — About</title>
+  </head>
+  <body>
+    <drop capsule="ambient-background"></drop>
+    <drop capsule="hero-card" data-hero="false" data-nav-page="about"></drop>
+
+    <main>
+      <section class="glass section-card about" id="about">
+        <div class="section-title">
+          <h2>👋 <span data-i18n="about.title">About Me</span></h2>
+        </div>
+        <p data-i18n="about.intro">
+          Hi, I’m Cyan—online I go by <strong>AnalogCyan</strong>. I use
+          <em><a href="https://en.pronouns.page/@AnalogCyan">she/her</a></em>
+          pronouns, and I’m proudly neurodivergent. That means my brain takes
+          its own path sometimes, so I really appreciate your patience!
+        </p>
+        <p data-i18n="about.body1">
+          By day, you can find me fixing up broken tech. By night, I’m usually
+          programming, tinkering with gadgets, or chasing whatever random idea
+          has grabbed my attention. Outside of work, I’m into linguistics,
+          retro games, speedrunning, and collecting
+          <a
+            href="https://www.discogs.com/user/AnalogCyan/collection?folder=4319456"
+            >cassette tapes</a
+          >. They’re clunky yet charming!
+        </p>
+        <p data-i18n="about.body2">
+          Oh, and one last thing: take care of your digital security! If you’re
+          not already using a password manager, 2fa, or passkeys, now’s a great
+          time to start. I personally recommend
+          <a href="https://www.1password.com/">1Password</a>, but honestly,
+          anything’s better than using your pet’s name for every login.
+        </p>
+        <div class="section-title">
+          <h3 data-i18n="about.elsewhere">Elsewhere</h3>
+        </div>
+        <nav class="social-icons" aria-label="Social links">
+          <a
+            href="https://en.pronouns.page/@AnalogCyan"
+            target="_blank"
+            rel="noreferrer noopener"
+            id="pronounis"
+            title="Pronouns"
+            aria-label="Pronouns"
+          >
+            <i class="ri-genderless-line"></i>
+          </a>
+          <a
+            href="https://tech.lgbt/@AnalogCyan"
+            target="_blank"
+            rel="me"
+            id="fedi"
+            title="Fediverse"
+            aria-label="Fediverse"
+          >
+            <i class="ri-fediverse-line"></i>
+          </a>
+          <a
+            href="https://bsky.app/profile/thayn.me"
+            target="_blank"
+            rel="noreferrer noopener"
+            id="bsky"
+            title="Bluesky"
+            aria-label="Bluesky"
+          >
+            <i class="ri-bluesky-line"></i>
+          </a>
+        </nav>
+      </section>
+    </main>
+
+    <drop capsule="site-footer"></drop>
+  </body>
+</html>

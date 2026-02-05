@@ -2,7 +2,8 @@
 
 [build]
 # Directory to publish
-publish = "."
+publish = "public"
+command = "node build.js"
 
 # Edge Functions
 [[edge_functions]]

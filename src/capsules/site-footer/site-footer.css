@@ -1,0 +1,28 @@
+.site-footer {
+  padding-top: 0;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+  text-align: center;
+  opacity: 0.75;
+}
+
+.site-footer .footer-links {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  justify-content: center;
+}
+
+.site-footer .footer-link {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.site-footer #quoteDisplay {
+  color: var(--text);
+}

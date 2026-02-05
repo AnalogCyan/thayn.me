@@ -1,0 +1,176 @@
+.gradient-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+  background-color: hsl(var(--accent-hue, 205), 30%, 8%);
+  transition: background-color 0.5s ease;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not(.dark-theme) .gradient-background {
+    background-color: hsl(var(--accent-hue, 205), 30%, 95%);
+  }
+}
+
+:root.light-theme .gradient-background {
+  background-color: hsl(var(--accent-hue, 205), 30%, 95%);
+}
+
+.gradient-node {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.8;
+  will-change: transform;
+  transition: background-color 1s ease;
+  transform-origin: center;
+  transform: scale(1.5);
+}
+
+.gradient-node:nth-child(1) {
+  width: 40vh;
+  height: 40vh;
+  background-color: hsla(var(--accent-hue, 205), 90%, 70%, 0.8);
+  animation: float1 20s ease-in-out infinite;
+}
+
+.gradient-node:nth-child(2) {
+  width: 50vh;
+  height: 50vh;
+  background-color: hsla(calc(var(--accent-hue, 205) + 60), 90%, 72%, 0.8);
+  animation: float2 25s ease-in-out infinite;
+}
+
+.gradient-node:nth-child(3) {
+  width: 45vh;
+  height: 45vh;
+  background-color: hsla(calc(var(--accent-hue, 205) + 160), 90%, 75%, 0.7);
+  animation: float3 18s ease-in-out infinite;
+}
+
+.gradient-node:nth-child(4) {
+  width: 60vh;
+  height: 60vh;
+  background-color: hsla(calc(var(--accent-hue, 205) + 240), 90%, 65%, 0.7);
+  animation: float4 22s ease-in-out infinite;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not(.dark-theme) .gradient-node:nth-child(1) {
+    background-color: hsla(var(--accent-hue, 205), 80%, 70%, 0.7);
+  }
+
+  :root:not(.dark-theme) .gradient-node:nth-child(2) {
+    background-color: hsla(calc(var(--accent-hue, 205) + 60), 80%, 75%, 0.7);
+  }
+
+  :root:not(.dark-theme) .gradient-node:nth-child(3) {
+    background-color: hsla(calc(var(--accent-hue, 205) + 160), 80%, 80%, 0.6);
+  }
+
+  :root:not(.dark-theme) .gradient-node:nth-child(4) {
+    background-color: hsla(calc(var(--accent-hue, 205) + 240), 80%, 70%, 0.6);
+  }
+}
+
+:root.light-theme .gradient-node:nth-child(1) {
+  background-color: hsla(var(--accent-hue, 205), 80%, 70%, 0.7);
+}
+
+:root.light-theme .gradient-node:nth-child(2) {
+  background-color: hsla(calc(var(--accent-hue, 205) + 60), 80%, 75%, 0.7);
+}
+
+:root.light-theme .gradient-node:nth-child(3) {
+  background-color: hsla(calc(var(--accent-hue, 205) + 160), 80%, 80%, 0.6);
+}
+
+:root.light-theme .gradient-node:nth-child(4) {
+  background-color: hsla(calc(var(--accent-hue, 205) + 240), 80%, 70%, 0.6);
+}
+
+@keyframes float1 {
+  0%,
+  100% {
+    transform: translate(10%, 10%) scale(1.5);
+  }
+  25% {
+    transform: translate(15%, 30%) scale(1.6);
+  }
+  50% {
+    transform: translate(30%, 15%) scale(1.5);
+  }
+  75% {
+    transform: translate(20%, 25%) scale(1.7);
+  }
+}
+
+@keyframes float2 {
+  0%,
+  100% {
+    transform: translate(60%, 20%) scale(1.5);
+  }
+  25% {
+    transform: translate(40%, 30%) scale(1.7);
+  }
+  50% {
+    transform: translate(50%, 60%) scale(1.5);
+  }
+  75% {
+    transform: translate(70%, 45%) scale(1.6);
+  }
+}
+
+@keyframes float3 {
+  0%,
+  100% {
+    transform: translate(20%, 70%) scale(1.5);
+  }
+  25% {
+    transform: translate(30%, 50%) scale(1.7);
+  }
+  50% {
+    transform: translate(15%, 60%) scale(1.6);
+  }
+  75% {
+    transform: translate(25%, 80%) scale(1.5);
+  }
+}
+
+@keyframes float4 {
+  0%,
+  100% {
+    transform: translate(70%, 70%) scale(1.5);
+  }
+  25% {
+    transform: translate(80%, 50%) scale(1.6);
+  }
+  50% {
+    transform: translate(65%, 60%) scale(1.7);
+  }
+  75% {
+    transform: translate(85%, 80%) scale(1.5);
+  }
+}
+
+.grain-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gradient-node {
+    animation: none !important;
+    transition: none !important;
+  }
+}

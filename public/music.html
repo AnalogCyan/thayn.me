@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Music corner for Cyan Thayn: playlists, mixes, and inspirations."
+    />
+    <meta
+      name="theme-color"
+      content="#0b1020"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#eef2ff"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta name="theme-color" content="#46b3ff" />
+
+    <meta property="og:title" content="Cyan Thayn — Music" />
+    <meta
+      property="og:description"
+      content="Music corner for Cyan Thayn: playlists, mixes, and inspirations."
+    />
+    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
+    <meta property="og:url" content="https://thayn.me/music.html" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@AnalogCyan" />
+    <meta name="twitter:creator" content="@AnalogCyan" />
+
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
+    <link rel="alternate icon" href="/media/profile.svg" />
+    <link rel="apple-touch-icon" href="/media/logo.svg" />
+
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet" />
+
+    <script>
+      (function () {
+        try {
+          var m = localStorage.getItem("thayn_theme");
+          var d = document.documentElement;
+          if (m === "light") d.classList.add("light-theme");
+          else if (m === "dark") d.classList.add("dark-theme");
+          else if (m === "auto") {
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+              d.classList.add("dark-theme");
+            else d.classList.add("light-theme");
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./scripts.js" defer></script>
+
+    <title>Cyan Thayn — Music</title>
+  </head>
+  <body>
+    <div class="gradient-background" aria-hidden="true" role="presentation">
+  <div class="gradient-node"></div>
+  <div class="gradient-node"></div>
+  <div class="gradient-node"></div>
+  <div class="gradient-node"></div>
+  <div class="grain-overlay"></div>
+</div>
+
+    <header
+  class="container page-shell"
+  data-hero="false"
+  data-nav-page="music"
+>
+  <div class="nav-row">
+    <div class="nav-pill-wrap">
+  <nav class="nav-pill" aria-label="Primary">
+    <ul class="nav-pill__list">
+      <li class="nav-pill__item">
+        <a href="/" class="nav-pill__link" aria-label="Home" data-nav="home">
+          <i class="ri-home-5-line"></i>
+        <span class="nav-pill__text" data-i18n="nav.home">Home</span>
+        </a>
+      </li>
+      <li class="nav-pill__item">
+        <a href="/about.html" class="nav-pill__link" aria-label="About" data-nav="about">
+          <i class="ri-user-heart-line"></i>
+        <span class="nav-pill__text" data-i18n="nav.about">About</span>
+        </a>
+      </li>
+      <li class="nav-pill__item">
+        <a href="/blog/" class="nav-pill__link" aria-label="Blog" data-nav="blog">
+          <i class="ri-article-line"></i>
+        <span class="nav-pill__text" data-i18n="nav.blog">Blog</span>
+        </a>
+      </li>
+      <li class="nav-pill__item">
+        <a href="/projects.html" class="nav-pill__link" aria-label="Projects" data-nav="projects">
+          <i class="ri-folder-3-line"></i>
+        <span class="nav-pill__text" data-i18n="nav.projects">Projects</span>
+        </a>
+      </li>
+      <li class="nav-pill__item">
+        <a href="/photos.html" class="nav-pill__link" aria-label="Photos" data-nav="photos">
+          <i class="ri-camera-3-line"></i>
+        <span class="nav-pill__text" data-i18n="nav.photos">Photos</span>
+        </a>
+      </li>
+      <li class="nav-pill__item">
+        <a href="/music.html" class="nav-pill__link" aria-label="Music" data-nav="music">
+          <i class="ri-music-2-line"></i>
+        <span class="nav-pill__text" data-i18n="nav.music">Music</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <div class="nav-pill__theme">
+    <div class="theme-toggle" data-capsule="theme-lang-toggle" data-compact="true">
+  <button
+    class="theme-toggle__button"
+    data-theme-button="true"
+    aria-label="Toggle theme mode"
+    data-i18n-attr="aria-label:theme.label"
+    type="button"
+  >
+    <i class="theme-toggle__icon ri-contrast-2-line" aria-hidden="true"></i>
+    <span class="theme-toggle__text" data-i18n="theme.auto">Auto</span>
+  </button>
+  <button
+    class="theme-toggle__button language-toggle"
+    type="button"
+    aria-label="Language"
+    data-i18n-attr="aria-label:language.label"
+  >
+    <i class="lang-toggle__icon ri-translate-2" aria-hidden="true"></i>
+    <span class="lang-toggle__text">ENG</span>
+  </button>
+</div>
+
+  </div>
+</div>
+
+  </div>
+
+  <section class="glass section-card hero-card" id="top">
+    <div class="hero-details">
+      <div>
+        <div class="name" data-i18n="hero.name">Cyan Thayn</div>
+        <div class="subhead" data-i18n="hero.role">Programmer · Tinkerer</div>
+      </div>
+      <p data-i18n-html="hero.intro">
+        Hi, I’m Cyan! Online I go by <strong>AnalogCyan</strong>. I build
+        playful tools, fix broken tech, and chase weird ideas across the stack.
+        <a class="hero-link" href="/about.html">
+          Learn more <i class="ri-arrow-right-up-line" aria-hidden="true"></i>
+        </a>
+      </p>
+    </div>
+    <img
+      src="/media/profile.svg"
+      id="profile"
+      alt="Profile Picture"
+      data-i18n-attr="alt:hero.alt"
+      class="profile-pic"
+    />
+  </section>
+</header>
+
+
+    <main>
+      <section class="glass section-card">
+        <div class="section-title">
+          <h2>🎧 <span data-i18n="music.title">Music</span></h2>
+        </div>
+        <p data-i18n="music.body">
+          A space for mixes, cassette finds, and soundtracks that keep me
+          building. I’ll be publishing playlists and listening notes here soon.
+        </p>
+        <p data-i18n="music.prompt">In the meantime, here are my music profiles:</p>
+        <div class="hero-actions">
+          <a
+            class="button secondary"
+            href="https://beta.musicbrainz.org/user/AnalogCyan"
+            data-i18n="music.musicbrainz"
+            >MusicBrainz →</a
+          >
+          <a
+            class="button secondary"
+            href="https://www.last.fm/user/AnalogCyan"
+            data-i18n="music.lastfm"
+            >Last.fm →</a
+          >
+          <a
+            class="button secondary"
+            href="https://www.discogs.com/user/AnalogCyan/collection?folder=4319456"
+            data-i18n="music.discogs"
+            >Discogs →</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer class="container site-footer">
+  <div class="footer-links">
+    <a
+      href="https://fediring.net/previous?host=thayn.me"
+      class="footer-link"
+      aria-label="Previous site"
+      data-i18n-attr="aria-label:footer.prevLabel"
+      >←</a
+    >
+    <a href="https://fediring.net/" class="footer-link" data-i18n="footer.ring"
+      >Fediring</a
+    >
+    <a href="https://fediring.net/next?host=thayn.me" class="footer-link"
+      aria-label="Next site"
+      data-i18n-attr="aria-label:footer.nextLabel"
+      >→</a
+    >
+  </div>
+  <div id="quoteDisplay" data-i18n="footer.quote"
+    >Are you ready to embrace uncertainty?</div
+  >
+</footer>
+
+  </body>
+</html>

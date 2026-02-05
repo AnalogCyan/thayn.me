@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Notes, updates, and experiments." />
+    <meta
+      name="theme-color"
+      content="#0b1020"
+      media="(prefers-color-scheme: dark)"
+    />
+    <meta
+      name="theme-color"
+      content="#eef2ff"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta name="theme-color" content="#46b3ff" />
+
+    <meta property="og:title" content="Cyan Thayn — Blog" />
+    <meta
+      property="og:description"
+      content="Notes, updates, and experiments."
+    />
+    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
+    <meta property="og:url" content="https://thayn.me/blog/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@AnalogCyan" />
+    <meta name="twitter:creator" content="@AnalogCyan" />
+
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
+    <link rel="alternate icon" href="/media/profile.svg" />
+    <link rel="apple-touch-icon" href="/media/logo.svg" />
+
+    <!-- EXTERNAL_RESOURCES -->
+
+    <script>
+      (function () {
+        try {
+          var m = localStorage.getItem("thayn_theme");
+          var d = document.documentElement;
+          if (m === "light") d.classList.add("light-theme");
+          else if (m === "dark") d.classList.add("dark-theme");
+          else if (m === "auto") {
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches)
+              d.classList.add("dark-theme");
+            else d.classList.add("light-theme");
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/blog/styles.css" />
+    <script src="/scripts.js" defer></script>
+
+    <title>Cyan Thayn — Blog</title>
+  </head>
+  <body>
+    <drop capsule="ambient-background"></drop>
+    <drop capsule="hero-card" data-hero="false" data-nav-page="blog"></drop>
+
+    <main>
+      <section class="glass section-card blog-hero">
+        <div class="section-title">
+          <h2>📝 <span data-i18n="blog.title">Blog</span></h2>
+        </div>
+        <p data-i18n="blog.subtitle">Notes, updates, and experiments.</p>
+      </section>
+
+      <section class="blog-list">
+        {{#if posts.length}}
+        <div class="blog-grid">
+          {{#each posts}}
+          <article class="glass blog-card">
+            <div class="blog-meta">
+              <time datetime="{{date}}">{{formatDate date}}</time>
+              {{#if categories.length}}
+              <span class="tag">{{categories.[0]}}</span>
+              {{/if}}
+            </div>
+            <h3><a href="{{url}}">{{title}}</a></h3>
+            <p>{{excerpt}}</p>
+            <div class="blog-footer">
+              <span><span data-i18n="blog.by">By</span> {{author}}</span>
+              <a href="{{url}}" class="read-more" data-i18n="blog.readMore"
+                >Read More →</a
+              >
+            </div>
+          </article>
+          {{/each}}
+        </div>
+        {{else}}
+        <article class="glass section-card blog-empty">
+          <h3 data-i18n="blog.empty">No posts yet</h3>
+          <p data-i18n="blog.emptyBody">Check back soon for updates.</p>
+        </article>
+        {{/if}}
+      </section>
+    </main>
+
+    <drop capsule="site-footer"></drop>
+  </body>
+</html>

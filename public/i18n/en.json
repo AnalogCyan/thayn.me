@@ -1,0 +1,99 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "blog": "Blog",
+    "projects": "Projects",
+    "photos": "Photos",
+    "music": "Music"
+  },
+  "hero": {
+    "name": "Cyan Thayn",
+    "role": "Programmer · Tinkerer",
+    "intro": "Hi, I’m Cyan! Online I go by <strong>AnalogCyan</strong>. I build playful tools, fix broken tech, and chase weird ideas across the stack. <a class=\"hero-link\" href=\"/about.html\">Learn more <i class=\"ri-arrow-right-up-line\" aria-hidden=\"true\"></i></a>",
+    "alt": "Profile portrait"
+  },
+  "theme": {
+    "label": "Theme",
+    "auto": "Auto",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "language": {
+    "label": "Language"
+  },
+  "home": {
+    "meta": {
+      "description": "Cyan Thayn's personal website showcasing her projects and interests."
+    }
+  },
+  "about": {
+    "title": "About Me",
+    "intro": "Hi, I’m Cyan—online I go by AnalogCyan. I use she/her pronouns, and I’m proudly neurodivergent. That means my brain takes its own path sometimes, so I really appreciate your patience!",
+    "body1": "By day, you can find me fixing up broken tech. By night, I’m usually programming, tinkering with gadgets, or chasing whatever random idea has grabbed my attention. Outside of work, I’m into linguistics, retro games, speedrunning, and collecting cassette tapes. They’re clunky yet charming!",
+    "body2": "Oh, and one last thing: take care of your digital security! If you’re not already using a password manager, 2fa, or passkeys, now’s a great time to start. I personally recommend 1Password, but honestly, anything’s better than using your pet’s name for every login.",
+    "elsewhere": "Elsewhere"
+  },
+  "projects": {
+    "intro": "Explore some of the projects I've created or contributed to. Click on any to learn more! For additional projects, visit my GitHub. Unless otherwise noted, content on this website is licensed under GPLv3.",
+    "github": "GitHub →",
+    "items": {
+      "sticky": {
+        "title": "Sticky Paws",
+        "desc": "A 2D platformer game about a cat that can climb anything! Main game by Jonnil; server code by me."
+      },
+      "swiftwin": {
+        "title": "SwiftWin",
+        "desc": "PowerShell utility for performing a series of Windows maintenance tasks I commonly use when cleaning up and optimizing a system."
+      },
+      "itadakimasu": {
+        "title": "Itadakimasu",
+        "desc": "Random recipe password generator web app inspired by episode \"Nice Security Hollywood Terror\" of the Random but Memorable podcast from 1Password."
+      },
+      "thayncc": {
+        "title": "thayn.cc",
+        "desc": "A simple from-scratch private link shortener API."
+      },
+      "dor": {
+        "title": "DNS-over-RNG",
+        "desc": "A very cursed DNS server implementation inspired by the various DNS-over-protocol standards."
+      },
+      "mobs": {
+        "title": "More Vanilla Mobs",
+        "desc": "Minecraft 1.17+ data pack that implements some of the mobs that technically exist in the game, but don't appear in survival."
+      },
+      "inventory": {
+        "title": "InventorySystem",
+        "desc": "Medical sample inventory management system, created as our senior project in the COMS 4043 course at Arkansas Tech University."
+      }
+    }
+  },
+  "photos": {
+    "title": "Photos",
+    "body": "A space for photo sets, experiments, and visual notes. I’ll be adding galleries and highlights here soon.",
+    "cta": "Instagram →",
+    "prompt": "Want a peek in the meantime?"
+  },
+  "music": {
+    "title": "Music",
+    "body": "A space for my favorite albums, cassette finds, and soundtracks that keep me building. I’ll be publishing playlists, listening notes, and more here soon.",
+    "prompt": "In the meantime, here are my music profiles:",
+    "musicbrainz": "MusicBrainz →",
+    "lastfm": "Last.fm →",
+    "discogs": "Discogs →"
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Notes, updates, and experiments.",
+    "empty": "No posts yet",
+    "emptyBody": "Check back soon for updates.",
+    "readMore": "Read More →",
+    "by": "By"
+  },
+  "footer": {
+    "ring": "Fediring",
+    "quote": "Are you ready to embrace uncertainty?",
+    "prevLabel": "Previous site",
+    "nextLabel": "Next site"
+  }
+}

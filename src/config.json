@@ -1,0 +1,17 @@
+{
+  "fonts": {
+    "primary": {
+      "name": "Nunito",
+      "url": "https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
+    }
+  },
+  "externalResources": {
+    "remixicon": {
+      "type": "stylesheet",
+      "url": "https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
+    }
+  },
+  "meta": {
+    "title": "Cyan Thayn"
+  }
+}
