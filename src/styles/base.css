@@ -64,7 +64,9 @@ p {
 a {
   color: var(--text);
   text-decoration: none;
-  transition: color var(--transition-fast), transform var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 a:hover {
@@ -80,15 +82,14 @@ a:hover {
 }
 
 .glass {
-  background: linear-gradient(
-      135deg,
-      var(--glass-grad-start),
-      var(--glass-grad-end)
-    ),
+  background:
+    linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
     var(--bg-main);
   backdrop-filter: var(--bg-blur) var(--bg-saturation);
   -webkit-backdrop-filter: var(--bg-blur) var(--bg-saturation);
-  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  box-shadow:
+    var(--shadow-soft),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
   border-radius: var(--radius-xl);
   border: 1px solid var(--glass-border);
   position: relative;
@@ -100,19 +101,14 @@ a:hover {
   position: absolute;
   inset: 0;
   background-image:
-    radial-gradient(
-      circle at 20% 10%,
-      var(--glass-highlight),
-      transparent 45%
-    ),
-    radial-gradient(
-      circle at 80% 0%,
-      var(--glass-edge),
-      transparent 40%
-    ),
+    radial-gradient(circle at 20% 10%, var(--glass-highlight), transparent 45%),
+    radial-gradient(circle at 80% 0%, var(--glass-edge), transparent 40%),
     url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: no-repeat, no-repeat, repeat;
-  background-size: 100% 100%, 100% 100%, 120px 120px;
+  background-size:
+    100% 100%,
+    100% 100%,
+    120px 120px;
   background-blend-mode: screen;
   opacity: var(--bg-noise-opacity);
   pointer-events: none;
@@ -153,11 +149,8 @@ a:hover {
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.2rem;
-  background: linear-gradient(
-      135deg,
-      var(--glass-grad-start),
-      var(--glass-grad-end)
-    ),
+  background:
+    linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
     var(--gradient-accent);
   color: var(--white);
   border: 1px solid rgba(255, 255, 255, 0.35);
@@ -165,7 +158,9 @@ a:hover {
   font-weight: 600;
   text-decoration: none;
   cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
   transform-origin: center;
 }
 
@@ -176,11 +171,8 @@ a:hover {
 }
 
 .button.secondary {
-  background: linear-gradient(
-      135deg,
-      var(--glass-grad-start),
-      var(--glass-grad-end)
-    ),
+  background:
+    linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
     var(--bg-main);
   color: var(--text);
   border: 1px solid var(--glass-border);
@@ -194,11 +186,8 @@ a:hover {
   border-radius: var(--radius-full);
   font-size: 0.75rem;
   font-weight: 600;
-  background: linear-gradient(
-      135deg,
-      var(--glass-grad-start),
-      var(--glass-grad-end)
-    ),
+  background:
+    linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
     var(--bg-secondary);
   color: var(--text);
   border: 1px solid var(--glass-border);
@@ -240,17 +229,17 @@ a:hover {
   width: 48px;
   height: 48px;
   border-radius: var(--radius-full);
-  background: linear-gradient(
-      135deg,
-      var(--glass-grad-start),
-      var(--glass-grad-end)
-    ),
+  background:
+    linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
     var(--bg-secondary);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--shadow-soft), inset 0 1px 0 var(--glass-highlight);
+  box-shadow:
+    var(--shadow-soft),
+    inset 0 1px 0 var(--glass-highlight);
   backdrop-filter: var(--bg-blur) var(--bg-saturation);
   -webkit-backdrop-filter: var(--bg-blur) var(--bg-saturation);
-  transition: transform var(--transition-fast),
+  transition:
+    transform var(--transition-fast),
     background-color var(--transition-fast),
     box-shadow var(--transition-fast),
     color var(--transition-fast);
@@ -258,14 +247,17 @@ a:hover {
 
 .social-icons a:hover {
   transform: translateY(-1px) scale(1.03);
-  background: linear-gradient(
+  background:
+    linear-gradient(
       135deg,
       rgba(255, 255, 255, 0.08),
       rgba(255, 255, 255, 0.02)
     ),
     var(--bg-main);
   color: var(--text);
-  box-shadow: var(--shadow-md), inset 0 1px 0 var(--glass-highlight);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 var(--glass-highlight);
 }
 
 @media (max-width: 720px) {

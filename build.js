@@ -141,7 +141,7 @@ function injectResources(content, resourcesHTML, config) {
     if (!hasTitle) {
       output = output.replace(
         /<\/head>/i,
-        `    <title>${config.meta.title}</title>\n  </head>`
+        `    <title>${config.meta.title}</title>\n  </head>`,
       );
     }
   }
@@ -183,9 +183,12 @@ async function injectCapsules(content, capsules, pageName) {
       }
     }
 
-    capsuleHtml = capsuleHtml.replace(/{{\s*([a-zA-Z0-9_-]+)\s*}}/g, (_, key) => {
-      return key in dataAttrs ? String(dataAttrs[key]) : "";
-    });
+    capsuleHtml = capsuleHtml.replace(
+      /{{\s*([a-zA-Z0-9_-]+)\s*}}/g,
+      (_, key) => {
+        return key in dataAttrs ? String(dataAttrs[key]) : "";
+      },
+    );
 
     result += capsuleHtml;
     lastIndex = match.index + match[0].length;
@@ -201,7 +204,11 @@ async function expandAllDrops(inputHtml, capsules, pageName, globalUsed) {
 
   for (let pass = 0; pass < MAX_PASSES; pass += 1) {
     if (!html.includes("<drop ")) break;
-    const { html: nextHtml, used } = await injectCapsules(html, capsules, `${pageName}#${pass}`);
+    const { html: nextHtml, used } = await injectCapsules(
+      html,
+      capsules,
+      `${pageName}#${pass}`,
+    );
     used.forEach((u) => globalUsed.add(u));
     if (nextHtml === html) break;
     html = nextHtml;
@@ -225,17 +232,24 @@ async function buildPages(capsules, config, globalUsed) {
       let content = await fs.readFile(srcPath, "utf-8");
 
       content = injectResources(content, resourcesHTML, config);
-      const contentFinal = await expandAllDrops(content, capsules, file, globalUsed);
+      const contentFinal = await expandAllDrops(
+        content,
+        capsules,
+        file,
+        globalUsed,
+      );
 
       await fs.writeFile(destPath, contentFinal);
-    })
+    }),
   );
 }
 
 async function bundleStyles(capsules) {
   const files = (await fs.readdir(STYLES_DIR)).sort();
   const ordered = ["variables.css", "reset.css", "base.css", "home.css"];
-  const remaining = files.filter((f) => f.endsWith(".css") && !ordered.includes(f));
+  const remaining = files.filter(
+    (f) => f.endsWith(".css") && !ordered.includes(f),
+  );
   const cssFiles = [...ordered.filter((f) => files.includes(f)), ...remaining];
 
   let output = "";
@@ -279,7 +293,10 @@ async function bundleScripts(usedCapsules, capsules) {
 
 async function copyStatic() {
   await copyDir(path.join(SRC_DIR, "media"), path.join(PUBLIC_DIR, "media"));
-  await copyDir(path.join(SRC_DIR, ".well-known"), path.join(PUBLIC_DIR, ".well-known"));
+  await copyDir(
+    path.join(SRC_DIR, ".well-known"),
+    path.join(PUBLIC_DIR, ".well-known"),
+  );
   await copyDir(path.join(SRC_DIR, "i18n"), path.join(PUBLIC_DIR, "i18n"));
 
   const manifestSrc = path.join(SRC_DIR, "manifest.json");
@@ -320,7 +337,9 @@ function iso8601(dateStr) {
 }
 
 function buildRSS(posts, meta, siteUrl) {
-  const lastBuild = posts[0]?.date ? rfc2822(posts[0].date) : new Date().toUTCString();
+  const lastBuild = posts[0]?.date
+    ? rfc2822(posts[0].date)
+    : new Date().toUTCString();
   const items = posts
     .map((p) => {
       const link = absUrl(siteUrl, p.url);
@@ -358,7 +377,9 @@ ${items}
 }
 
 function buildAtom(posts, meta, siteUrl) {
-  const updated = posts[0]?.date ? iso8601(posts[0].date) : new Date().toISOString();
+  const updated = posts[0]?.date
+    ? iso8601(posts[0].date)
+    : new Date().toISOString();
   const entries = posts
     .map((p) => {
       const link = absUrl(siteUrl, p.url);
@@ -402,25 +423,49 @@ async function buildBlog(capsules, config, globalUsed) {
   await fs.mkdir(BLOG_OUTPUT_DIR, { recursive: true });
 
   if (await pathExists(BLOG_STYLES_FILE)) {
-    await fs.copyFile(BLOG_STYLES_FILE, path.join(BLOG_OUTPUT_DIR, "styles.css"));
+    await fs.copyFile(
+      BLOG_STYLES_FILE,
+      path.join(BLOG_OUTPUT_DIR, "styles.css"),
+    );
   }
 
   if (await pathExists(BLOG_SCRIPTS_DIR)) {
     await copyDir(BLOG_SCRIPTS_DIR, path.join(BLOG_OUTPUT_DIR, "scripts"));
   }
 
-  const indexTemplatePath = path.join(BLOG_TEMPLATES_DIR, "index-template.html");
+  const indexTemplatePath = path.join(
+    BLOG_TEMPLATES_DIR,
+    "index-template.html",
+  );
   const postTemplatePath = path.join(BLOG_TEMPLATES_DIR, "post-template.html");
 
   const indexTemplateRaw = await fs.readFile(indexTemplatePath, "utf-8");
   const postTemplateRaw = await fs.readFile(postTemplatePath, "utf-8");
 
   const resourcesHTML = generateResourcesHTML(config);
-  const indexWithResources = injectResources(indexTemplateRaw, resourcesHTML, config);
-  const postWithResources = injectResources(postTemplateRaw, resourcesHTML, config);
+  const indexWithResources = injectResources(
+    indexTemplateRaw,
+    resourcesHTML,
+    config,
+  );
+  const postWithResources = injectResources(
+    postTemplateRaw,
+    resourcesHTML,
+    config,
+  );
 
-  const indexTemplateSource = await expandAllDrops(indexWithResources, capsules, "blog-index", globalUsed);
-  const postTemplateSource = await expandAllDrops(postWithResources, capsules, "blog-post", globalUsed);
+  const indexTemplateSource = await expandAllDrops(
+    indexWithResources,
+    capsules,
+    "blog-index",
+    globalUsed,
+  );
+  const postTemplateSource = await expandAllDrops(
+    postWithResources,
+    capsules,
+    "blog-post",
+    globalUsed,
+  );
 
   const indexTemplate = Handlebars.compile(indexTemplateSource);
   const postTemplate = Handlebars.compile(postTemplateSource);
@@ -428,7 +473,9 @@ async function buildBlog(capsules, config, globalUsed) {
   let blogIndex = [];
 
   if (await pathExists(BLOG_POSTS_DIR)) {
-    const files = (await fs.readdir(BLOG_POSTS_DIR)).filter((file) => file.endsWith(".md"));
+    const files = (await fs.readdir(BLOG_POSTS_DIR)).filter((file) =>
+      file.endsWith(".md"),
+    );
 
     for (const file of files) {
       const filePath = path.join(BLOG_POSTS_DIR, file);
@@ -462,7 +509,9 @@ async function buildBlog(capsules, config, globalUsed) {
         .replace(/\s+/g, " ")
         .trim();
       const rawExcerpt = (attributes.excerpt || plainBody.slice(0, 180)).trim();
-      const excerpt = /[.!?…]$/.test(rawExcerpt) ? rawExcerpt : rawExcerpt + "…";
+      const excerpt = /[.!?…]$/.test(rawExcerpt)
+        ? rawExcerpt
+        : rawExcerpt + "…";
 
       const outputFileName = file.replace(".md", ".html");
       const data = {
@@ -484,13 +533,18 @@ async function buildBlog(capsules, config, globalUsed) {
     }
   }
 
-  blogIndex.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  blogIndex.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
 
   const indexData = {
     posts: blogIndex,
   };
   const filledIndexTemplate = indexTemplate(indexData);
-  await fs.writeFile(path.join(BLOG_OUTPUT_DIR, "index.html"), filledIndexTemplate);
+  await fs.writeFile(
+    path.join(BLOG_OUTPUT_DIR, "index.html"),
+    filledIndexTemplate,
+  );
 
   const recentPosts = blogIndex.slice(0, 3).map((post) => ({
     title: post.title,
@@ -502,7 +556,7 @@ async function buildBlog(capsules, config, globalUsed) {
   }));
   await fs.writeFile(
     path.join(BLOG_OUTPUT_DIR, "recent-posts.json"),
-    JSON.stringify(recentPosts, null, 2)
+    JSON.stringify(recentPosts, null, 2),
   );
 
   const meta = {

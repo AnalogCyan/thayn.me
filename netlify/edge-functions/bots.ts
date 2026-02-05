@@ -14,27 +14,24 @@ type CompiledAgent = AgentDefinition & {
   regex?: RegExp;
 };
 
-const compiledAgents: CompiledAgent[] = (agentDefinitions as AgentDefinition[]).map(
-  (agent) => {
-    if (agent.type === "regex") {
-      return {
-        ...agent,
-        regex: new RegExp(
-          agent.pattern,
-          agent.caseSensitive ? undefined : "i"
-        ),
-      } satisfies CompiledAgent;
-    }
-
+const compiledAgents: CompiledAgent[] = (
+  agentDefinitions as AgentDefinition[]
+).map((agent) => {
+  if (agent.type === "regex") {
     return {
       ...agent,
-      type: "substring",
-      patternLower: agent.caseSensitive
-        ? agent.pattern
-        : agent.pattern.toLowerCase(),
+      regex: new RegExp(agent.pattern, agent.caseSensitive ? undefined : "i"),
     } satisfies CompiledAgent;
   }
-);
+
+  return {
+    ...agent,
+    type: "substring",
+    patternLower: agent.caseSensitive
+      ? agent.pattern
+      : agent.pattern.toLowerCase(),
+  } satisfies CompiledAgent;
+});
 
 const AI_TRAINING_HEADER = "none";
 const ROBOTS_DIRECTIVE = "noai, noimageai";
@@ -52,9 +49,7 @@ function detectBlockedAgent(userAgent: string | null): CompiledAgent | null {
       continue;
     }
 
-    const haystack = agent.caseSensitive
-      ? userAgent
-      : userAgent.toLowerCase();
+    const haystack = agent.caseSensitive ? userAgent : userAgent.toLowerCase();
 
     if (haystack.includes(agent.patternLower ?? agent.pattern)) {
       return agent;
@@ -64,16 +59,13 @@ function detectBlockedAgent(userAgent: string | null): CompiledAgent | null {
   return null;
 }
 
-export default async function botShield(
-  request: Request,
-  context: Context
-) {
+export default async function botShield(request: Request, context: Context) {
   const userAgent = request.headers.get("user-agent");
   const matchedAgent = detectBlockedAgent(userAgent);
 
   if (matchedAgent) {
     context.log(
-      `Blocked ${matchedAgent.name} via user-agent: ${userAgent ?? "<missing>"}`
+      `Blocked ${matchedAgent.name} via user-agent: ${userAgent ?? "<missing>"}`,
     );
 
     return new Response("AI scraping is not permitted on this site.", {

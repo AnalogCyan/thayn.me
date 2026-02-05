@@ -8,11 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const toggles = Array.from(
-    document.querySelectorAll("[data-theme-button='true']")
+    document.querySelectorAll("[data-theme-button='true']"),
   );
-  const langButtons = Array.from(
-    document.querySelectorAll(".language-toggle")
-  );
+  const langButtons = Array.from(document.querySelectorAll(".language-toggle"));
   if (toggles.length === 0) return;
 
   const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
@@ -24,8 +22,16 @@ document.addEventListener("DOMContentLoaded", () => {
       key: "theme.auto",
       fallback: "Auto",
     },
-    [THEMES.LIGHT]: { icon: "ri-sun-line", key: "theme.light", fallback: "Light" },
-    [THEMES.DARK]: { icon: "ri-moon-line", key: "theme.dark", fallback: "Dark" },
+    [THEMES.LIGHT]: {
+      icon: "ri-sun-line",
+      key: "theme.light",
+      fallback: "Light",
+    },
+    [THEMES.DARK]: {
+      icon: "ri-moon-line",
+      key: "theme.dark",
+      fallback: "Dark",
+    },
   };
 
   function t(key, fallback) {
@@ -57,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
       toggle.dataset.themeMode = mode;
       toggle.setAttribute(
         "aria-label",
-        `${t("theme.label", "Theme")}: ${t(meta.key, meta.fallback)}`
+        `${t("theme.label", "Theme")}: ${t(meta.key, meta.fallback)}`,
       );
       const iconEl = toggle.querySelector(".theme-toggle__icon");
       const textEl = toggle.querySelector(".theme-toggle__text");
@@ -66,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         iconEl.classList.remove(
           "ri-contrast-2-line",
           "ri-sun-line",
-          "ri-moon-line"
+          "ri-moon-line",
         );
         iconEl.classList.add(meta.icon);
       }
@@ -100,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (textEl) textEl.textContent = code;
       button.setAttribute(
         "aria-label",
-        `${t("language.label", "Language")}: ${code}`
+        `${t("language.label", "Language")}: ${code}`,
       );
     });
   }

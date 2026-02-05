@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const projects = document.querySelectorAll('.project');
+document.addEventListener("DOMContentLoaded", () => {
+  const projects = document.querySelectorAll(".project");
 
   // Function to generate a random tilt that's visibly noticeable
   const getRandomTilt = () => {
@@ -17,30 +17,30 @@ document.addEventListener('DOMContentLoaded', () => {
 
   projects.forEach((project) => {
     // Add mouseenter event to apply a new random tilt each time
-    project.addEventListener('mouseenter', () => {
+    project.addEventListener("mouseenter", () => {
       const randomTilt = getRandomTilt();
       project.style.transform = `scale(var(--hover-scale)) rotate(${randomTilt}deg)`;
     });
 
     // Add mouseleave event to reset the transform
-    project.addEventListener('mouseleave', () => {
-      project.style.transform = 'scale(1) rotate(0deg)';
+    project.addEventListener("mouseleave", () => {
+      project.style.transform = "scale(1) rotate(0deg)";
     });
   });
 
   // Update for prefers-reduced-motion
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   function handleReducedMotion(e) {
     if (e.matches) {
       projects.forEach((project) => {
-        project.style.transform = 'none';
-        project.removeEventListener('mouseenter', null);
-        project.removeEventListener('mouseleave', null);
+        project.style.transform = "none";
+        project.removeEventListener("mouseenter", null);
+        project.removeEventListener("mouseleave", null);
       });
     }
   }
 
-  mediaQuery.addEventListener('change', handleReducedMotion);
+  mediaQuery.addEventListener("change", handleReducedMotion);
   handleReducedMotion(mediaQuery);
 });

@@ -12,7 +12,7 @@
     if (viewportWidth <= mobileBreakpoint) {
       document.documentElement.style.setProperty(
         "--container-max-width",
-        `${viewportWidth}px`
+        `${viewportWidth}px`,
       );
       return;
     }
@@ -25,7 +25,7 @@
 
     document.documentElement.style.setProperty(
       "--container-max-width",
-      `${width}px`
+      `${width}px`,
     );
   }
 
