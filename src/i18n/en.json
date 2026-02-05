@@ -5,7 +5,8 @@
     "blog": "Blog",
     "projects": "Projects",
     "photos": "Photos",
-    "music": "Music"
+    "music": "Music",
+    "menu": "Menu"
   },
   "hero": {
     "name": "Cyan Thayn",

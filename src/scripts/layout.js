@@ -5,6 +5,18 @@
     const container = navWrap.closest(".container");
     if (!container) return;
 
+    const viewportWidth =
+      window.innerWidth || document.documentElement.clientWidth || 0;
+    const mobileBreakpoint = 720;
+
+    if (viewportWidth <= mobileBreakpoint) {
+      document.documentElement.style.setProperty(
+        "--container-max-width",
+        `${viewportWidth}px`
+      );
+      return;
+    }
+
     const navRect = navWrap.getBoundingClientRect();
     const styles = window.getComputedStyle(container);
     const padLeft = parseFloat(styles.paddingLeft) || 0;

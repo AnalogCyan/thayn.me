@@ -1,40 +1,51 @@
 <div class="nav-pill-wrap">
   <nav class="nav-pill" aria-label="Primary">
-    <ul class="nav-pill__list">
+    <button
+      class="nav-pill__toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="nav-pill-menu"
+      aria-label="Toggle menu"
+      data-i18n-attr="aria-label:nav.menu"
+    >
+      <i class="ri-menu-line" aria-hidden="true"></i>
+      <span class="nav-pill__sr" data-i18n="nav.menu">Menu</span>
+    </button>
+    <ul class="nav-pill__list" id="nav-pill-menu">
       <li class="nav-pill__item">
         <a href="/" class="nav-pill__link" aria-label="Home" data-nav="home">
           <i class="ri-home-5-line"></i>
-        <span class="nav-pill__text" data-i18n="nav.home">Home</span>
+          <span class="nav-pill__text" data-i18n="nav.home">Home</span>
         </a>
       </li>
       <li class="nav-pill__item">
         <a href="/about.html" class="nav-pill__link" aria-label="About" data-nav="about">
           <i class="ri-user-heart-line"></i>
-        <span class="nav-pill__text" data-i18n="nav.about">About</span>
+          <span class="nav-pill__text" data-i18n="nav.about">About</span>
         </a>
       </li>
       <li class="nav-pill__item">
         <a href="/blog/" class="nav-pill__link" aria-label="Blog" data-nav="blog">
           <i class="ri-article-line"></i>
-        <span class="nav-pill__text" data-i18n="nav.blog">Blog</span>
+          <span class="nav-pill__text" data-i18n="nav.blog">Blog</span>
         </a>
       </li>
       <li class="nav-pill__item">
         <a href="/projects.html" class="nav-pill__link" aria-label="Projects" data-nav="projects">
           <i class="ri-folder-3-line"></i>
-        <span class="nav-pill__text" data-i18n="nav.projects">Projects</span>
+          <span class="nav-pill__text" data-i18n="nav.projects">Projects</span>
         </a>
       </li>
       <li class="nav-pill__item">
         <a href="/photos.html" class="nav-pill__link" aria-label="Photos" data-nav="photos">
           <i class="ri-camera-3-line"></i>
-        <span class="nav-pill__text" data-i18n="nav.photos">Photos</span>
+          <span class="nav-pill__text" data-i18n="nav.photos">Photos</span>
         </a>
       </li>
       <li class="nav-pill__item">
         <a href="/music.html" class="nav-pill__link" aria-label="Music" data-nav="music">
           <i class="ri-music-2-line"></i>
-        <span class="nav-pill__text" data-i18n="nav.music">Music</span>
+          <span class="nav-pill__text" data-i18n="nav.music">Music</span>
         </a>
       </li>
     </ul>
