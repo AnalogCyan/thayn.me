@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "node build.js",
-    "dev": "node build.js && npx serve public",
+    "dev": "node build.js && npx serve public -l 3000",
     "format": "prettier --write .",
     "syndicate": "node scripts/syndicate-bridgy.js",
     "syndicate:remote": "node scripts/syndicate-remote.js"
