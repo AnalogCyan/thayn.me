@@ -3,14 +3,18 @@ html {
   font-size: var(--font-size);
   line-height: var(--line-height);
   color: var(--text);
-  background-color: transparent;
+  background-color: var(--page-bg);
   min-height: 100%;
 }
 
 body {
   margin: 0;
-  padding: var(--header-gap) 0;
+  padding: calc(var(--header-gap) + env(safe-area-inset-top))
+    env(safe-area-inset-right)
+    calc(var(--header-gap) + env(safe-area-inset-bottom))
+    env(safe-area-inset-left);
   min-height: 100vh;
+  min-height: 100svh;
   color: var(--text);
   background-color: transparent;
   transition: color var(--transition-normal);
