@@ -114,25 +114,35 @@
     }
   }
 
-  function parseColorToRgb(colorText) {
+  function parseColorToRgba(colorText) {
     const raw = String(colorText || "").trim();
     if (!raw) return null;
 
     const probe = document.createElement("span");
-    probe.style.color = raw;
+    probe.style.backgroundColor = raw;
     probe.style.display = "none";
     document.body.append(probe);
-    const computed = getComputedStyle(probe).color;
+    const computed = getComputedStyle(probe).backgroundColor;
     probe.remove();
 
     const match = computed.match(
-      /rgba?\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)/i,
+      /rgba?\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)(?:\s*,\s*([0-9.]+))?/i,
     );
     if (!match) return null;
     return {
       r: Math.max(0, Math.min(255, Math.round(Number(match[1])))),
       g: Math.max(0, Math.min(255, Math.round(Number(match[2])))),
       b: Math.max(0, Math.min(255, Math.round(Number(match[3])))),
+      a: match[4] == null ? 1 : Math.max(0, Math.min(1, Number(match[4]))),
+    };
+  }
+
+  function compositeOver(fg, bg) {
+    const alpha = Math.max(0, Math.min(1, Number(fg?.a ?? 1)));
+    return {
+      r: Math.round(fg.r * alpha + bg.r * (1 - alpha)),
+      g: Math.round(fg.g * alpha + bg.g * (1 - alpha)),
+      b: Math.round(fg.b * alpha + bg.b * (1 - alpha)),
     };
   }
 
@@ -161,28 +171,68 @@
     };
   }
 
-  function ensureThemeContrast(root, sampled) {
+  function getEffectiveSurfaceColor(root) {
     const htmlStyles = getComputedStyle(document.documentElement);
-    const pageBgText =
-      htmlStyles.getPropertyValue("--page-bg") ||
-      getComputedStyle(root).backgroundColor ||
-      "rgb(240 240 240)";
-    const pageBg = parseColorToRgb(pageBgText) || { r: 240, g: 240, b: 240 };
+    const pageBg =
+      parseColorToRgba(htmlStyles.getPropertyValue("--page-bg")) ||
+      parseColorToRgba(getComputedStyle(document.documentElement).backgroundColor) ||
+      { r: 240, g: 240, b: 240, a: 1 };
 
-    const targetRatio = 2.6;
-    if (contrastRatio(sampled, pageBg) >= targetRatio) return sampled;
+    const rootBg = parseColorToRgba(getComputedStyle(root).backgroundColor);
+    if (rootBg && rootBg.a > 0) {
+      return compositeOver(rootBg, pageBg);
+    }
 
-    const bgLum = luminance(pageBg);
+    const bgMain =
+      parseColorToRgba(htmlStyles.getPropertyValue("--bg-main")) ||
+      parseColorToRgba(htmlStyles.getPropertyValue("--bg-secondary"));
+    if (bgMain) {
+      return compositeOver(bgMain, pageBg);
+    }
+
+    return { r: pageBg.r, g: pageBg.g, b: pageBg.b };
+  }
+
+  function pickStrongContrastFallback(root, surface) {
+    const htmlStyles = getComputedStyle(document.documentElement);
+    const candidates = [
+      parseColorToRgba(htmlStyles.getPropertyValue("--accent")),
+      parseColorToRgba(htmlStyles.getPropertyValue("--text")),
+      { r: 255, g: 255, b: 255, a: 1 },
+      { r: 0, g: 0, b: 0, a: 1 },
+    ].filter(Boolean);
+
+    let best = { r: 0, g: 153, b: 255 };
+    let bestRatio = contrastRatio(best, surface);
+    candidates.forEach((candidate) => {
+      const rgb = { r: candidate.r, g: candidate.g, b: candidate.b };
+      const ratio = contrastRatio(rgb, surface);
+      if (ratio > bestRatio) {
+        best = rgb;
+        bestRatio = ratio;
+      }
+    });
+    return best;
+  }
+
+  function ensureThemeContrast(root, sampled) {
+    const surface = getEffectiveSurfaceColor(root);
+    const targetRatio = 4;
+    if (contrastRatio(sampled, surface) >= targetRatio) return sampled;
+
+    const bgLum = luminance(surface);
     const sampleLum = luminance(sampled);
     const towardWhite = sampleLum <= bgLum;
 
     let best = sampled;
-    for (let i = 1; i <= 12; i += 1) {
-      const candidate = shiftColor(sampled, towardWhite, i / 12);
+    for (let i = 1; i <= 20; i += 1) {
+      const candidate = shiftColor(sampled, towardWhite, i / 20);
       best = candidate;
-      if (contrastRatio(candidate, pageBg) >= targetRatio) break;
+      if (contrastRatio(candidate, surface) >= targetRatio) break;
     }
-    return best;
+
+    if (contrastRatio(best, surface) >= targetRatio) return best;
+    return pickStrongContrastFallback(root, surface);
   }
 
   function clamp(value, min, max) {
