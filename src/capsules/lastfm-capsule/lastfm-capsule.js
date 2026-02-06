@@ -5,6 +5,10 @@
   const MIN_REFRESH_INTERVAL_MS = 75 * 1000;
   const MAX_REFRESH_INTERVAL_MS = 10 * 60 * 1000;
   const VIZ_TICK_MS = 220;
+  const LIGHT_PAGE_LIGHTNESS = 95;
+  const DARK_PAGE_LIGHTNESS = 8;
+  const LIGHT_SURFACE = { r: 255, g: 255, b: 255, a: 0.58 };
+  const DARK_SURFACE = { r: 8, g: 12, b: 20, a: 0.68 };
   let recentListIdCounter = 0;
 
   function isAllowedLastfmHost(hostname) {
@@ -104,37 +108,14 @@
       const rr = Math.min(255, Math.round(r * boost));
       const gg = Math.min(255, Math.round(g * boost));
       const bb = Math.min(255, Math.round(b * boost));
-      const adjusted = ensureThemeContrast(root, { r: rr, g: gg, b: bb });
-      root.style.setProperty(
-        "--lastfm-viz-color",
-        `rgb(${adjusted.r} ${adjusted.g} ${adjusted.b})`,
+      root.__lastfmSampledColor = { r: rr, g: gg, b: bb };
+      root.__lastfmVizColorsByTheme = computeVisualizerColorsByTheme(
+        root.__lastfmSampledColor,
       );
+      applyThemeAdjustedVisualizerColor(root);
     } catch {
       // Ignore color sampling failures and keep default accent color.
     }
-  }
-
-  function parseColorToRgba(colorText) {
-    const raw = String(colorText || "").trim();
-    if (!raw) return null;
-
-    const probe = document.createElement("span");
-    probe.style.backgroundColor = raw;
-    probe.style.display = "none";
-    document.body.append(probe);
-    const computed = getComputedStyle(probe).backgroundColor;
-    probe.remove();
-
-    const match = computed.match(
-      /rgba?\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)(?:\s*,\s*([0-9.]+))?/i,
-    );
-    if (!match) return null;
-    return {
-      r: Math.max(0, Math.min(255, Math.round(Number(match[1])))),
-      g: Math.max(0, Math.min(255, Math.round(Number(match[2])))),
-      b: Math.max(0, Math.min(255, Math.round(Number(match[3])))),
-      a: match[4] == null ? 1 : Math.max(0, Math.min(1, Number(match[4]))),
-    };
   }
 
   function compositeOver(fg, bg) {
@@ -171,36 +152,66 @@
     };
   }
 
-  function getEffectiveSurfaceColor(root) {
-    const htmlStyles = getComputedStyle(document.documentElement);
-    const pageBg =
-      parseColorToRgba(htmlStyles.getPropertyValue("--page-bg")) ||
-      parseColorToRgba(getComputedStyle(document.documentElement).backgroundColor) ||
-      { r: 240, g: 240, b: 240, a: 1 };
+  function hslToRgb(h, s, l) {
+    const hue = ((Number(h) % 360) + 360) % 360;
+    const sat = Math.max(0, Math.min(100, Number(s))) / 100;
+    const lig = Math.max(0, Math.min(100, Number(l))) / 100;
 
-    const rootBg = parseColorToRgba(getComputedStyle(root).backgroundColor);
-    if (rootBg && rootBg.a > 0) {
-      return compositeOver(rootBg, pageBg);
+    const c = (1 - Math.abs(2 * lig - 1)) * sat;
+    const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+    const m = lig - c / 2;
+    let r = 0;
+    let g = 0;
+    let b = 0;
+
+    if (hue < 60) {
+      r = c;
+      g = x;
+    } else if (hue < 120) {
+      r = x;
+      g = c;
+    } else if (hue < 180) {
+      g = c;
+      b = x;
+    } else if (hue < 240) {
+      g = x;
+      b = c;
+    } else if (hue < 300) {
+      r = x;
+      b = c;
+    } else {
+      r = c;
+      b = x;
     }
 
-    const bgMain =
-      parseColorToRgba(htmlStyles.getPropertyValue("--bg-main")) ||
-      parseColorToRgba(htmlStyles.getPropertyValue("--bg-secondary"));
-    if (bgMain) {
-      return compositeOver(bgMain, pageBg);
-    }
-
-    return { r: pageBg.r, g: pageBg.g, b: pageBg.b };
+    return {
+      r: Math.round((r + m) * 255),
+      g: Math.round((g + m) * 255),
+      b: Math.round((b + m) * 255),
+      a: 1,
+    };
   }
 
-  function pickStrongContrastFallback(root, surface) {
+  function getSurfaceColorForTheme(themeMode) {
     const htmlStyles = getComputedStyle(document.documentElement);
+    const accentHue = Number.parseFloat(
+      htmlStyles.getPropertyValue("--accent-hue"),
+    );
+    const hue = Number.isFinite(accentHue) ? accentHue : 205;
+    const pageLightness =
+      themeMode === "dark" ? DARK_PAGE_LIGHTNESS : LIGHT_PAGE_LIGHTNESS;
+    const pageBg = hslToRgb(hue, 30, pageLightness);
+    const overlay = themeMode === "dark" ? DARK_SURFACE : LIGHT_SURFACE;
+    return compositeOver(overlay, pageBg);
+  }
+
+  function pickStrongContrastFallback(surface) {
     const candidates = [
-      parseColorToRgba(htmlStyles.getPropertyValue("--accent")),
-      parseColorToRgba(htmlStyles.getPropertyValue("--text")),
+      { r: 70, g: 179, b: 255, a: 1 },
+      { r: 255, g: 124, b: 200, a: 1 },
       { r: 255, g: 255, b: 255, a: 1 },
       { r: 0, g: 0, b: 0, a: 1 },
-    ].filter(Boolean);
+    ];
 
     let best = { r: 0, g: 153, b: 255 };
     let bestRatio = contrastRatio(best, surface);
@@ -215,8 +226,7 @@
     return best;
   }
 
-  function ensureThemeContrast(root, sampled) {
-    const surface = getEffectiveSurfaceColor(root);
+  function ensureContrastOnSurface(sampled, surface) {
     const targetRatio = 4;
     if (contrastRatio(sampled, surface) >= targetRatio) return sampled;
 
@@ -232,7 +242,35 @@
     }
 
     if (contrastRatio(best, surface) >= targetRatio) return best;
-    return pickStrongContrastFallback(root, surface);
+    return pickStrongContrastFallback(surface);
+  }
+
+  function computeVisualizerColorsByTheme(sampled) {
+    if (!sampled) return null;
+    const lightSurface = getSurfaceColorForTheme("light");
+    const darkSurface = getSurfaceColorForTheme("dark");
+    return {
+      light: ensureContrastOnSurface(sampled, lightSurface),
+      dark: ensureContrastOnSurface(sampled, darkSurface),
+    };
+  }
+
+  function getActiveThemeKey() {
+    return document.documentElement.classList.contains("dark-theme")
+      ? "dark"
+      : "light";
+  }
+
+  function applyThemeAdjustedVisualizerColor(root) {
+    if (!root) return;
+    const themeKey = getActiveThemeKey();
+    const variants = root.__lastfmVizColorsByTheme;
+    const adjusted = variants?.[themeKey];
+    if (!adjusted) return;
+    root.style.setProperty(
+      "--lastfm-viz-color",
+      `rgb(${adjusted.r} ${adjusted.g} ${adjusted.b})`,
+    );
   }
 
   function clamp(value, min, max) {
@@ -483,6 +521,20 @@
     const profileUrl = PROFILE_URL;
     assignRecentControlsId(root);
     root.__lastfmRefreshMs = DEFAULT_REFRESH_INTERVAL_MS;
+    root.__lastfmSampledColor = null;
+    root.__lastfmVizColorsByTheme = null;
+
+    if (!root.__lastfmThemeObserver) {
+      const html = document.documentElement;
+      const observer = new MutationObserver(() => {
+        applyThemeAdjustedVisualizerColor(root);
+      });
+      observer.observe(html, {
+        attributes: true,
+        attributeFilter: ["class", "style"],
+      });
+      root.__lastfmThemeObserver = observer;
+    }
 
     setTrackUI(
       root,
