@@ -1,7 +1,9 @@
 (() => {
   const LASTFM_USER = "AnalogCyan";
   const PROFILE_URL = `https://www.last.fm/user/${encodeURIComponent(LASTFM_USER)}`;
-  const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+  const DEFAULT_REFRESH_INTERVAL_MS = 4 * 60 * 1000;
+  const MIN_REFRESH_INTERVAL_MS = 75 * 1000;
+  const MAX_REFRESH_INTERVAL_MS = 10 * 60 * 1000;
   const VIZ_TICK_MS = 220;
   let recentListIdCounter = 0;
 
@@ -102,10 +104,117 @@
       const rr = Math.min(255, Math.round(r * boost));
       const gg = Math.min(255, Math.round(g * boost));
       const bb = Math.min(255, Math.round(b * boost));
-      root.style.setProperty("--lastfm-viz-color", `rgb(${rr} ${gg} ${bb})`);
+      const adjusted = ensureThemeContrast(root, { r: rr, g: gg, b: bb });
+      root.style.setProperty(
+        "--lastfm-viz-color",
+        `rgb(${adjusted.r} ${adjusted.g} ${adjusted.b})`,
+      );
     } catch {
       // Ignore color sampling failures and keep default accent color.
     }
+  }
+
+  function parseColorToRgb(colorText) {
+    const raw = String(colorText || "").trim();
+    if (!raw) return null;
+
+    const probe = document.createElement("span");
+    probe.style.color = raw;
+    probe.style.display = "none";
+    document.body.append(probe);
+    const computed = getComputedStyle(probe).color;
+    probe.remove();
+
+    const match = computed.match(
+      /rgba?\(\s*([0-9.]+)\s*,\s*([0-9.]+)\s*,\s*([0-9.]+)/i,
+    );
+    if (!match) return null;
+    return {
+      r: Math.max(0, Math.min(255, Math.round(Number(match[1])))),
+      g: Math.max(0, Math.min(255, Math.round(Number(match[2])))),
+      b: Math.max(0, Math.min(255, Math.round(Number(match[3])))),
+    };
+  }
+
+  function luminance(rgb) {
+    const chan = [rgb.r, rgb.g, rgb.b].map((v) => {
+      const c = v / 255;
+      return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * chan[0] + 0.7152 * chan[1] + 0.0722 * chan[2];
+  }
+
+  function contrastRatio(a, b) {
+    const la = luminance(a);
+    const lb = luminance(b);
+    const lighter = Math.max(la, lb);
+    const darker = Math.min(la, lb);
+    return (lighter + 0.05) / (darker + 0.05);
+  }
+
+  function shiftColor(rgb, towardWhite, amount) {
+    const mix = towardWhite ? 255 : 0;
+    return {
+      r: Math.round(rgb.r + (mix - rgb.r) * amount),
+      g: Math.round(rgb.g + (mix - rgb.g) * amount),
+      b: Math.round(rgb.b + (mix - rgb.b) * amount),
+    };
+  }
+
+  function ensureThemeContrast(root, sampled) {
+    const htmlStyles = getComputedStyle(document.documentElement);
+    const pageBgText =
+      htmlStyles.getPropertyValue("--page-bg") ||
+      getComputedStyle(root).backgroundColor ||
+      "rgb(240 240 240)";
+    const pageBg = parseColorToRgb(pageBgText) || { r: 240, g: 240, b: 240 };
+
+    const targetRatio = 2.6;
+    if (contrastRatio(sampled, pageBg) >= targetRatio) return sampled;
+
+    const bgLum = luminance(pageBg);
+    const sampleLum = luminance(sampled);
+    const towardWhite = sampleLum <= bgLum;
+
+    let best = sampled;
+    for (let i = 1; i <= 12; i += 1) {
+      const candidate = shiftColor(sampled, towardWhite, i / 12);
+      best = candidate;
+      if (contrastRatio(candidate, pageBg) >= targetRatio) break;
+    }
+    return best;
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function computeRefreshIntervalMs(recentTracks) {
+    if (!Array.isArray(recentTracks) || recentTracks.length < 2) {
+      return DEFAULT_REFRESH_INTERVAL_MS;
+    }
+
+    const deltas = [];
+    for (let i = 0; i < recentTracks.length - 1; i += 1) {
+      const newer = Number(recentTracks[i]?.dateUts);
+      const older = Number(recentTracks[i + 1]?.dateUts);
+      if (!Number.isFinite(newer) || !Number.isFinite(older)) continue;
+      const deltaSec = newer - older;
+      if (deltaSec < 30 || deltaSec > 1200) continue;
+      deltas.push(deltaSec);
+    }
+
+    if (deltas.length === 0) return DEFAULT_REFRESH_INTERVAL_MS;
+    const sorted = deltas.slice().sort((a, b) => a - b);
+    const trimCount = sorted.length >= 6 ? Math.floor(sorted.length * 0.2) : 0;
+    const trimmed = sorted.slice(trimCount, sorted.length - trimCount);
+    const pool = trimmed.length > 0 ? trimmed : sorted;
+    const avgSec = pool.reduce((sum, n) => sum + n, 0) / pool.length;
+    return clamp(
+      Math.round(avgSec * 1000),
+      MIN_REFRESH_INTERVAL_MS,
+      MAX_REFRESH_INTERVAL_MS,
+    );
   }
 
   function stopVisualizer(root) {
@@ -116,7 +225,7 @@
 
     const bars = root.querySelectorAll("[data-lastfm-wave] span");
     bars.forEach((bar) => {
-      bar.style.setProperty("--lastfm-viz-scale", "1");
+      bar.style.height = "10px";
     });
   }
 
@@ -130,10 +239,11 @@
     const tick = () => {
       phase += 0.42;
       bars.forEach((bar, idx) => {
-        const swing = Math.abs(Math.sin(phase + idx * 0.9)) * 1.45;
-        const jitter = Math.random() * 0.35;
-        const scale = Math.max(0.5, Math.min(2.4, 0.7 + swing + jitter));
-        bar.style.setProperty("--lastfm-viz-scale", scale.toFixed(3));
+        const base = 8;
+        const swing = Math.abs(Math.sin(phase + idx * 0.9)) * 12;
+        const jitter = Math.random() * 4;
+        const px = Math.max(8, Math.min(24, Math.round(base + swing + jitter)));
+        bar.style.height = `${px}px`;
       });
     };
 
@@ -322,6 +432,7 @@
 
     const profileUrl = PROFILE_URL;
     assignRecentControlsId(root);
+    root.__lastfmRefreshMs = DEFAULT_REFRESH_INTERVAL_MS;
 
     setTrackUI(
       root,
@@ -356,6 +467,7 @@
         const liveTrack = data?.nowPlaying?.track || null;
         const recentTracks = Array.isArray(data?.recent) ? data.recent : [];
         const dataProfileUrl = sanitizeHttpUrl(data?.profileUrl) || profileUrl;
+        root.__lastfmRefreshMs = computeRefreshIntervalMs(recentTracks);
 
         if (nowPlaying && liveTrack) {
           setLiveMode(root, liveTrack, dataProfileUrl);
@@ -380,15 +492,23 @@
       showUnavailable(root, profileUrl);
     }
 
-    if (!root.__lastfmRefreshTimer) {
-      root.__lastfmRefreshTimer = window.setInterval(async () => {
+    const scheduleNextRefresh = () => {
+      if (root.__lastfmRefreshTimer) {
+        window.clearTimeout(root.__lastfmRefreshTimer);
+      }
+      const delay =
+        Number(root.__lastfmRefreshMs) || DEFAULT_REFRESH_INTERVAL_MS;
+      root.__lastfmRefreshTimer = window.setTimeout(async () => {
         try {
           await refresh();
         } catch {
           showUnavailable(root, profileUrl);
         }
-      }, REFRESH_INTERVAL_MS);
-    }
+        scheduleNextRefresh();
+      }, delay);
+    };
+
+    scheduleNextRefresh();
   }
 
   function init() {

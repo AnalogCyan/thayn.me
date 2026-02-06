@@ -114,7 +114,7 @@ export const handler = async (event) => {
   upstreamUrl.searchParams.set("user", user);
   upstreamUrl.searchParams.set("api_key", apiKey);
   upstreamUrl.searchParams.set("format", "json");
-  upstreamUrl.searchParams.set("limit", "8");
+  upstreamUrl.searchParams.set("limit", "20");
 
   try {
     const upstream = await fetch(upstreamUrl.toString(), {
