@@ -109,7 +109,8 @@ npm run format
 # Licensing
 
 This repository uses two licenses:
-• Code: GNU Affero General Public License v3.0 — see LICENSE￼
-• Content (text, images, media): Creative Commons Attribution–ShareAlike 4.0 — see LICENSE-CONTENT￼
+
+- Code: GNU Affero General Public License v3.0 — see LICENSE￼
+- Content (text, images, media): Creative Commons Attribution–ShareAlike 4.0 — see LICENSE-CONTENT￼
 
 If you reuse content, please attribute and keep derivatives under CC BY-SA 4.0.
