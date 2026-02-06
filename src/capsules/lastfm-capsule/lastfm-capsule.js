@@ -116,7 +116,7 @@
 
     const bars = root.querySelectorAll("[data-lastfm-wave] span");
     bars.forEach((bar) => {
-      bar.style.height = "8px";
+      bar.style.setProperty("--lastfm-viz-scale", "1");
     });
   }
 
@@ -130,11 +130,10 @@
     const tick = () => {
       phase += 0.42;
       bars.forEach((bar, idx) => {
-        const base = 8;
-        const swing = Math.abs(Math.sin(phase + idx * 0.9)) * 12;
-        const jitter = Math.random() * 4;
-        const px = Math.max(6, Math.min(24, Math.round(base + swing + jitter)));
-        bar.style.height = `${px}px`;
+        const swing = Math.abs(Math.sin(phase + idx * 0.9)) * 1.45;
+        const jitter = Math.random() * 0.35;
+        const scale = Math.max(0.5, Math.min(2.4, 0.7 + swing + jitter));
+        bar.style.setProperty("--lastfm-viz-scale", scale.toFixed(3));
       });
     };
 
