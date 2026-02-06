@@ -1,6 +1,8 @@
 (() => {
   const LASTFM_USER = "AnalogCyan";
   const PROFILE_URL = `https://www.last.fm/user/${encodeURIComponent(LASTFM_USER)}`;
+  const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
+  const VIZ_TICK_MS = 220;
   let recentListIdCounter = 0;
 
   function isAllowedLastfmHost(hostname) {
@@ -62,12 +64,91 @@
     return rtf.format(-Math.round(deltaSec / 86400), "day");
   }
 
+  function applyVisualizerColorFromImage(root, imageEl) {
+    if (!root || !imageEl) return;
+    try {
+      const w = Math.max(1, Math.min(imageEl.naturalWidth || 0, 32));
+      const h = Math.max(1, Math.min(imageEl.naturalHeight || 0, 32));
+      if (!w || !h) return;
+
+      const canvas = document.createElement("canvas");
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      ctx.drawImage(imageEl, 0, 0, w, h);
+      const data = ctx.getImageData(0, 0, w, h).data;
+
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let count = 0;
+      for (let i = 0; i < data.length; i += 4) {
+        const alpha = data[i + 3];
+        if (alpha < 40) continue;
+        r += data[i];
+        g += data[i + 1];
+        b += data[i + 2];
+        count += 1;
+      }
+      if (count === 0) return;
+
+      r = Math.round(r / count);
+      g = Math.round(g / count);
+      b = Math.round(b / count);
+
+      const boost = 1.08;
+      const rr = Math.min(255, Math.round(r * boost));
+      const gg = Math.min(255, Math.round(g * boost));
+      const bb = Math.min(255, Math.round(b * boost));
+      root.style.setProperty("--lastfm-viz-color", `rgb(${rr} ${gg} ${bb})`);
+    } catch {
+      // Ignore color sampling failures and keep default accent color.
+    }
+  }
+
+  function stopVisualizer(root) {
+    if (root.__lastfmVizTimer) {
+      window.clearInterval(root.__lastfmVizTimer);
+      root.__lastfmVizTimer = null;
+    }
+
+    const bars = root.querySelectorAll("[data-lastfm-wave] span");
+    bars.forEach((bar) => {
+      bar.style.height = "8px";
+    });
+  }
+
+  function startVisualizer(root) {
+    const bars = Array.from(root.querySelectorAll("[data-lastfm-wave] span"));
+    if (bars.length === 0) return;
+
+    stopVisualizer(root);
+    let phase = Math.random() * Math.PI * 2;
+
+    const tick = () => {
+      phase += 0.42;
+      bars.forEach((bar, idx) => {
+        const base = 8;
+        const swing = Math.abs(Math.sin(phase + idx * 0.9)) * 12;
+        const jitter = Math.random() * 4;
+        const px = Math.max(6, Math.min(24, Math.round(base + swing + jitter)));
+        bar.style.height = `${px}px`;
+      });
+    };
+
+    tick();
+    root.__lastfmVizTimer = window.setInterval(tick, VIZ_TICK_MS);
+  }
+
   function setTrackUI(root, track, mode, profileUrl) {
     const art = root.querySelector("[data-lastfm-art]");
+    const trackLink = root.querySelector("[data-lastfm-track-link]");
     const name = root.querySelector("[data-lastfm-name]");
     const artist = root.querySelector("[data-lastfm-artist]");
     const context = root.querySelector("[data-lastfm-context]");
-    const link = root.querySelector("[data-lastfm-link]");
+    const profileLink = root.querySelector("[data-lastfm-link]");
     const wave = root.querySelector("[data-lastfm-wave]");
 
     const safeName =
@@ -80,10 +161,7 @@
 
     if (context) {
       if (mode === "live") {
-        context.textContent = t(
-          "music.lastfmCapsule.kickerLive",
-          "Now playing",
-        );
+        context.textContent = "";
       } else {
         context.textContent = formatRelativeTime(track?.dateUts);
       }
@@ -95,16 +173,26 @@
       art.onerror = () => {
         art.src = "/media/logo.svg";
       };
+      art.onload = () => {
+        applyVisualizerColorFromImage(root, art);
+      };
+      if (art.complete && art.naturalWidth > 0) {
+        applyVisualizerColorFromImage(root, art);
+      }
     }
 
-    if (link) {
-      const trackUrl = sanitizeHttpUrl(track?.url);
-      const targetUrl = trackUrl || profileUrl;
-      link.href = targetUrl;
-      link.setAttribute(
+    const trackUrl = sanitizeHttpUrl(track?.url);
+    const targetUrl = trackUrl || profileUrl;
+    if (trackLink) {
+      trackLink.href = targetUrl;
+      trackLink.setAttribute(
         "aria-label",
         trackUrl ? `Open ${safeName} on Last.fm` : "Open profile on Last.fm",
       );
+    }
+    if (profileLink) {
+      profileLink.href = profileUrl;
+      profileLink.setAttribute("aria-label", "Open profile on Last.fm");
     }
 
     if (wave) {
@@ -119,6 +207,11 @@
     if (!wave) return;
     wave.hidden = !visible;
     wave.classList.toggle("is-active", visible);
+    if (visible) {
+      startVisualizer(root);
+    } else {
+      stopVisualizer(root);
+    }
   }
 
   function setToggleVisible(root, visible) {
@@ -247,35 +340,55 @@
     setWaveVisible(root, false);
     setRecentOpen(root, false);
 
+    const refresh = async () => {
+      if (root.__lastfmRefreshing) return;
+      root.__lastfmRefreshing = true;
+      try {
+        const response = await fetch("/.netlify/functions/lastfm-now-playing");
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            data && data.error ? data.error : "Last.fm request failed",
+          );
+        }
+
+        const nowPlaying = data?.nowPlaying?.active === true;
+        const liveTrack = data?.nowPlaying?.track || null;
+        const recentTracks = Array.isArray(data?.recent) ? data.recent : [];
+        const dataProfileUrl = sanitizeHttpUrl(data?.profileUrl) || profileUrl;
+
+        if (nowPlaying && liveTrack) {
+          setLiveMode(root, liveTrack, dataProfileUrl);
+          return;
+        }
+
+        const idleTracks = recentTracks.slice(0, 10);
+        if (idleTracks.length === 0) {
+          showUnavailable(root, dataProfileUrl);
+          return;
+        }
+
+        setIdleMode(root, idleTracks, dataProfileUrl);
+      } finally {
+        root.__lastfmRefreshing = false;
+      }
+    };
+
     try {
-      const response = await fetch("/.netlify/functions/lastfm-now-playing");
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          data && data.error ? data.error : "Last.fm request failed",
-        );
-      }
-
-      const nowPlaying = data?.nowPlaying?.active === true;
-      const liveTrack = data?.nowPlaying?.track || null;
-      const recentTracks = Array.isArray(data?.recent) ? data.recent : [];
-      const dataProfileUrl = sanitizeHttpUrl(data?.profileUrl) || profileUrl;
-
-      if (nowPlaying && liveTrack) {
-        setLiveMode(root, liveTrack, dataProfileUrl);
-        return;
-      }
-
-      const idleTracks = recentTracks.slice(0, 10);
-      if (idleTracks.length === 0) {
-        showUnavailable(root, dataProfileUrl);
-        return;
-      }
-
-      setIdleMode(root, idleTracks, dataProfileUrl);
+      await refresh();
     } catch {
       showUnavailable(root, profileUrl);
+    }
+
+    if (!root.__lastfmRefreshTimer) {
+      root.__lastfmRefreshTimer = window.setInterval(async () => {
+        try {
+          await refresh();
+        } catch {
+          showUnavailable(root, profileUrl);
+        }
+      }, REFRESH_INTERVAL_MS);
     }
   }
 

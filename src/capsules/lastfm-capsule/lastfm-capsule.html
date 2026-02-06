@@ -3,21 +3,30 @@
   data-capsule="lastfm-capsule"
 >
   <div class="lastfm-row" data-lastfm-row>
-    <img
-      class="lastfm-art"
-      data-lastfm-art
-      src="/media/logo.svg"
-      alt="Album art"
-      loading="lazy"
-      width="64"
-      height="64"
-    />
+    <a
+      class="lastfm-track-link"
+      data-lastfm-track-link
+      href="https://www.last.fm/user/AnalogCyan"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Open track on Last.fm"
+    >
+      <img
+        class="lastfm-art"
+        data-lastfm-art
+        src="/media/logo.svg"
+        alt="Album art"
+        loading="lazy"
+        width="64"
+        height="64"
+      />
 
-    <div class="lastfm-meta">
-      <p class="lastfm-name" data-lastfm-name>Loading Last.fm…</p>
-      <p class="lastfm-artist" data-lastfm-artist></p>
-      <p class="lastfm-context" data-lastfm-context></p>
-    </div>
+      <div class="lastfm-meta">
+        <p class="lastfm-name" data-lastfm-name>Loading Last.fm…</p>
+        <p class="lastfm-artist" data-lastfm-artist></p>
+        <p class="lastfm-context" data-lastfm-context></p>
+      </div>
+    </a>
 
     <span class="lastfm-spacer" aria-hidden="true"></span>
 
@@ -27,9 +36,10 @@
       href="https://www.last.fm/user/AnalogCyan"
       target="_blank"
       rel="noopener noreferrer me"
-      aria-label="Open track on Last.fm"
+      aria-label="Open profile on Last.fm"
     >
       <i class="ri-disc-line" aria-hidden="true"></i>
+      <span>Last.fm</span>
     </a>
 
     <div class="lastfm-wave" data-lastfm-wave aria-hidden="true" hidden>
