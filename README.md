@@ -14,8 +14,8 @@ Personal website & portfolio for Cyan.
   </a>
 </p>
 
-[!WARNING]
-Redesign in progress — some pages may be incomplete or broken.
+> [!WARNING]
+> Redesign in progress — some pages may be incomplete or broken.
 
 What’s in here:
 
