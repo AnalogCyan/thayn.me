@@ -81,7 +81,28 @@
     "prompt": "In the meantime, here are my music profiles:",
     "musicbrainz": "MusicBrainz →",
     "lastfm": "Last.fm →",
-    "discogs": "Discogs →"
+    "discogs": "Discogs →",
+    "lastfmCapsule": {
+      "title": "Last.fm",
+      "profile": "Open profile",
+      "loading": "Loading…",
+      "loadingBody": "Pulling latest scrobbles…",
+      "live": "Live now",
+      "liveBody": "Currently scrobbling on Last.fm.",
+      "offline": "Idle",
+      "idleBody": "Not currently scrobbling. Here is the latest activity.",
+      "error": "Unavailable",
+      "errorBody": "Could not load Last.fm right now. Try again in a bit.",
+      "noData": "No recent listening data available right now.",
+      "recentTitle": "Recent activity",
+      "kickerLive": "Now playing",
+      "kickerRecent": "Most recent scrobble",
+      "unknownTrack": "Unknown track",
+      "unknownArtist": "Unknown artist",
+      "by": "by",
+      "on": "on",
+      "justNow": "just now"
+    }
   },
   "blog": {
     "title": "Blog",

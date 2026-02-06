@@ -1,0 +1,55 @@
+<section
+  class="glass section-card lastfm-capsule"
+  data-capsule="lastfm-capsule"
+>
+  <div class="lastfm-row" data-lastfm-row>
+    <img
+      class="lastfm-art"
+      data-lastfm-art
+      src="/media/logo.svg"
+      alt="Album art"
+      loading="lazy"
+      width="64"
+      height="64"
+    />
+
+    <div class="lastfm-meta">
+      <p class="lastfm-name" data-lastfm-name>Loading Last.fm…</p>
+      <p class="lastfm-artist" data-lastfm-artist></p>
+      <p class="lastfm-context" data-lastfm-context></p>
+    </div>
+
+    <span class="lastfm-spacer" aria-hidden="true"></span>
+
+    <a
+      class="lastfm-link"
+      data-lastfm-link
+      href="https://www.last.fm/user/AnalogCyan"
+      target="_blank"
+      rel="noopener noreferrer me"
+      aria-label="Open track on Last.fm"
+    >
+      <i class="ri-disc-line" aria-hidden="true"></i>
+    </a>
+
+    <div class="lastfm-wave" data-lastfm-wave aria-hidden="true" hidden>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+
+    <button
+      class="lastfm-toggle"
+      type="button"
+      data-lastfm-toggle
+      aria-label="Show recent tracks"
+      aria-expanded="false"
+      hidden
+    >
+      <i class="ri-arrow-down-s-line" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <section class="lastfm-recent" data-lastfm-recent hidden>
+    <ul data-lastfm-recent-list></ul>
+  </section>
+</section>
+<script src="/capsules/lastfm-capsule/lastfm-capsule.js" defer></script>

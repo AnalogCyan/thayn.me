@@ -8,6 +8,13 @@ command = "node build.js"
 [build.environment]
 NODE_VERSION = "24"
 
+[images]
+remote_images = [
+  "https:\\/\\/lastfm\\.freetls\\.fastly\\.net\\/.*",
+  "https:\\/\\/lastfm-img2\\.akamaized\\.net\\/.*",
+  "https:\\/\\/img2-ak\\.lst\\.fm\\/.*"
+]
+
 # Edge Functions
 [[edge_functions]]
 path = "/*"
