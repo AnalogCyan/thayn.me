@@ -752,6 +752,229 @@ function iso8601(dateStr) {
   return new Date(dateStr).toISOString();
 }
 
+function normalizeLanguageKey(value) {
+  if (!value) return "en";
+  const normalized = String(value).trim().toLowerCase();
+  if (!normalized) return "en";
+  return normalized.split(/[-_]/)[0] || "en";
+}
+
+function normalizeLanguageList(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => normalizeLanguageKey(item))
+      .filter((item, index, array) => item && array.indexOf(item) === index);
+  }
+  if (typeof value === "string") {
+    return value
+      .split(",")
+      .map((item) => normalizeLanguageKey(item))
+      .filter((item, index, array) => item && array.indexOf(item) === index);
+  }
+  return [];
+}
+
+function normalizeCategories(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+  if (value == null) return [];
+  const single = String(value).trim();
+  return single ? [single] : [];
+}
+
+function stripMarkdown(markdown = "") {
+  return String(markdown)
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`[^`]*`/g, "")
+    .replace(/!\[[^\]]*\]\([^\)]+\)/g, "")
+    .replace(/\[[^\]]+\]\([^\)]+\)/g, "")
+    .replace(/[#>*_~\-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function toExcerpt(rawExcerpt, markdownBody) {
+  const plainBody = stripMarkdown(markdownBody);
+  const candidate = String(rawExcerpt || "").trim() || plainBody.slice(0, 180);
+  if (!candidate) return "";
+  return /[.!?…]$/.test(candidate) ? candidate : `${candidate}…`;
+}
+
+function parseTranslationEntry(entry) {
+  if (typeof entry === "string") {
+    return { body: entry };
+  }
+  if (!entry || typeof entry !== "object") return null;
+
+  const bodyValue =
+    typeof entry.body === "string"
+      ? entry.body
+      : typeof entry.content === "string"
+        ? entry.content
+        : typeof entry.markdown === "string"
+          ? entry.markdown
+          : null;
+
+  return {
+    title:
+      typeof entry.title === "string" && entry.title.trim()
+        ? entry.title.trim()
+        : null,
+    excerpt:
+      typeof entry.excerpt === "string" && entry.excerpt.trim()
+        ? entry.excerpt.trim()
+        : null,
+    author:
+      typeof entry.author === "string" && entry.author.trim()
+        ? entry.author.trim()
+        : null,
+    categories:
+      entry.categories != null ? normalizeCategories(entry.categories) : null,
+    body: bodyValue,
+  };
+}
+
+function parseLocalizedBodySections(markdown) {
+  const sections = new Map();
+  const lines = String(markdown || "").split("\n");
+  const remainder = [];
+
+  let activeLang = null;
+  let sectionLines = [];
+
+  const startPattern = /^:::lang\s+([a-zA-Z0-9_-]+)\s*$/;
+  const endPattern = /^:::\s*$/;
+
+  function flushSection() {
+    if (!activeLang) return;
+    const sectionBody = sectionLines.join("\n").trim();
+    sections.set(activeLang, { body: sectionBody });
+    activeLang = null;
+    sectionLines = [];
+  }
+
+  for (const line of lines) {
+    if (!activeLang) {
+      const start = line.match(startPattern);
+      if (start) {
+        activeLang = normalizeLanguageKey(start[1]);
+        sectionLines = [];
+        continue;
+      }
+      remainder.push(line);
+      continue;
+    }
+
+    if (endPattern.test(line)) {
+      flushSection();
+      continue;
+    }
+
+    sectionLines.push(line);
+  }
+
+  if (activeLang) {
+    remainder.push(`:::lang ${activeLang}`);
+    remainder.push(...sectionLines);
+  }
+
+  return {
+    sections,
+    remainder: remainder.join("\n").trim(),
+  };
+}
+
+function buildLocalizedVariants(attributes, body, fallbackTitle) {
+  const defaultLang = normalizeLanguageKey(
+    attributes.defaultLanguage || attributes.defaultLang || "en",
+  );
+  const declaredLanguages = normalizeLanguageList(
+    attributes.languages || attributes.langs,
+  );
+  const { sections: bodySections, remainder } = parseLocalizedBodySections(body);
+  const fallbackBodyFromSections =
+    bodySections.get(defaultLang)?.body ||
+    (declaredLanguages[0] ? bodySections.get(declaredLanguages[0])?.body : "") ||
+    Array.from(bodySections.values())[0]?.body ||
+    "";
+  const baseBody =
+    (bodySections.size > 0 ? fallbackBodyFromSections : "") ||
+    remainder ||
+    (typeof body === "string" ? body : "");
+  const baseVariant = {
+    title: fallbackTitle,
+    author: attributes.author || "Cyan Thayn",
+    date: attributes.date,
+    categories: normalizeCategories(attributes.categories),
+    content: marked(baseBody),
+    excerpt: toExcerpt(attributes.excerpt, baseBody),
+  };
+
+  const variants = new Map([[defaultLang, baseVariant]]);
+  const translations = attributes.translations;
+  const languageSet = new Set([defaultLang, ...declaredLanguages]);
+
+  Array.from(bodySections.keys()).forEach((lang) => languageSet.add(lang));
+  if (translations && typeof translations === "object") {
+    Object.keys(translations).forEach((lang) =>
+      languageSet.add(normalizeLanguageKey(lang)),
+    );
+  }
+
+  for (const lang of languageSet) {
+    if (!lang) continue;
+    const translationEntry =
+      translations && typeof translations === "object" ? translations[lang] : null;
+    const parsedTranslation = parseTranslationEntry(translationEntry);
+    const section = bodySections.get(lang) || null;
+    const sectionBody = section ? section.body : "";
+
+    const markdownBody =
+      (parsedTranslation && typeof parsedTranslation.body === "string"
+        ? parsedTranslation.body
+        : "") ||
+      (sectionBody || "") ||
+      baseBody;
+
+    variants.set(lang, {
+      title:
+        (parsedTranslation && parsedTranslation.title) ||
+        baseVariant.title,
+      author:
+        (parsedTranslation && parsedTranslation.author) ||
+        baseVariant.author,
+      date: baseVariant.date,
+      categories:
+        (parsedTranslation && parsedTranslation.categories) ||
+        baseVariant.categories,
+      content: marked(markdownBody),
+      excerpt: toExcerpt(
+        (parsedTranslation && parsedTranslation.excerpt) ||
+          "",
+        markdownBody,
+      ),
+    });
+  }
+
+  const localizedVariants = Array.from(variants.entries())
+    .map(([lang, data]) => ({
+      lang,
+      isDefault: lang === defaultLang,
+      ...data,
+    }))
+    .sort((a, b) => {
+      if (a.isDefault && !b.isDefault) return -1;
+      if (!a.isDefault && b.isDefault) return 1;
+      return a.lang.localeCompare(b.lang);
+    });
+
+  return {
+    defaultLang,
+    localizedVariants,
+  };
+}
+
 function buildRSS(posts, meta, siteUrl) {
   const lastBuild = posts[0]?.date
     ? rfc2822(posts[0].date)
@@ -905,25 +1128,12 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
           attributes.title = path.basename(file, ".md");
         }
 
-        if (attributes.categories && !Array.isArray(attributes.categories)) {
-          attributes.categories = [String(attributes.categories)];
-        }
-
-        const htmlContent = marked(body);
-        const plainBody = body
-          .replace(/```[\s\S]*?```/g, "")
-          .replace(/`[^`]*`/g, "")
-          .replace(/!\[[^\]]*\]\([^\)]+\)/g, "")
-          .replace(/\[[^\]]+\]\([^\)]+\)/g, "")
-          .replace(/[#>*_~\-]+/g, " ")
-          .replace(/\s+/g, " ")
-          .trim();
-        const rawExcerpt = (
-          attributes.excerpt || plainBody.slice(0, 180)
-        ).trim();
-        const excerpt = /[.!?…]$/.test(rawExcerpt)
-          ? rawExcerpt
-          : rawExcerpt + "…";
+        const { localizedVariants } = buildLocalizedVariants(
+          attributes,
+          body,
+          attributes.title,
+        );
+        const primaryVariant = localizedVariants[0];
 
         const slug = path.basename(file, ".md");
         const defaultPath = getCanonicalBlogPath(slug);
@@ -966,12 +1176,13 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         return {
           slug,
           data: {
-            title: attributes.title,
-            author: attributes.author || "Cyan Thayn",
+            title: primaryVariant.title,
+            author: primaryVariant.author,
             date: attributes.date,
-            categories: attributes.categories || [],
-            content: htmlContent,
-            excerpt,
+            categories: primaryVariant.categories,
+            content: primaryVariant.content,
+            excerpt: primaryVariant.excerpt,
+            localizedVariants,
             url,
             siteUrl,
             canonicalUrl,

@@ -52,6 +52,7 @@
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/blog/styles.css" />
     <script src="/scripts.js" defer></script>
+    <script src="/blog/scripts/localized-content.js" defer></script>
 
     <title>Cyan Thayn — Blog</title>
   </head>
@@ -79,17 +80,45 @@
                 >{{formatDate date}}</time
               >
               {{#if categories.length}}
-              <span class="tag">{{categories.[0]}}</span>
+              <span class="tag" data-blog-l10n-group>
+                {{#each localizedVariants}}
+                <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
+                  >{{categories.[0]}}</span
+                >
+                {{/each}}
+              </span>
               {{/if}}
             </div>
             <h3 class="p-name">
-              <a class="u-url" href="{{url}}">{{title}}</a>
+              <span data-blog-l10n-group>
+                {{#each localizedVariants}}
+                <a
+                  class="u-url"
+                  href="{{../url}}"
+                  data-blog-lang="{{lang}}"
+                  {{#unless isDefault}}hidden{{/unless}}
+                  >{{title}}</a
+                >
+                {{/each}}
+              </span>
             </h3>
-            <p class="p-summary">{{excerpt}}</p>
+            <p class="p-summary" data-blog-l10n-group>
+              {{#each localizedVariants}}
+              <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
+                >{{excerpt}}</span
+              >
+              {{/each}}
+            </p>
             <div class="blog-footer">
               <span>
                 <span data-i18n="blog.by">By</span>
-                <span class="p-author">{{author}}</span>
+                <span class="p-author" data-blog-l10n-group>
+                  {{#each localizedVariants}}
+                  <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
+                    >{{author}}</span
+                  >
+                  {{/each}}
+                </span>
               </span>
               <a href="{{url}}" class="read-more" data-i18n="blog.readMore"
                 >Read More →</a

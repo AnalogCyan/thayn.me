@@ -57,7 +57,24 @@ syndicationRequestedAt: {}
 syndicationCheckedAt: {}
 syndicationLastError: {}
 syndicationComplete: false
+defaultLanguage: "en"
+languages:
+  - en
+  - tok
+translations:
+  tok:
+    title: ""
+    excerpt: ""
+    categories:
+      - toki
 ---
+:::lang en
+
+:::
+
+:::lang tok
+
+:::
 ```
 
 ### Field reference:
@@ -87,6 +104,22 @@ syndicationComplete: false
     (truncated). Leave empty for the pipeline to fill.
 13. `syndicationComplete` (automation): `true` when all targets in `syndicate`
     are completed and the list is empty. Leave `false` or omit for new posts.
+14. `defaultLanguage` (optional): Base language key for the top-level markdown
+    body/metadata. Defaults to `en`.
+15. `languages` (optional): List of language keys you expect the post to
+    provide. Used with `:::lang <code>` body blocks.
+16. `translations` (optional, backward compatible): Map of language key →
+    translated fields. Each entry supports `title`, `excerpt`, `author`,
+    `categories`, and `body` (or `content`/`markdown`) as markdown.
+
+### Multilingual body blocks (recommended)
+
+Use `:::lang <code>` blocks in the markdown body to define each language.
+Each block is plain markdown body content only. Do not add nested frontmatter
+inside language blocks.
+
+The site still builds one post URL and swaps visible content to match the site
+language toggle.
 
 ## Local development
 

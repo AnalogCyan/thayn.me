@@ -48,6 +48,7 @@
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/blog/styles.css" />
     <script src="/scripts.js" defer></script>
+    <script src="/blog/scripts/localized-content.js" defer></script>
     <script type="module" src="/blog/scripts/webmentions.js"></script>
 
     <title>{{title}} — Cyan Thayn</title>
@@ -64,16 +65,39 @@
               >{{formatDate date}}</time
             >
             {{#if categories.length}}
-            <span class="tag">{{categories.[0]}}</span>
+            <span class="tag" data-blog-l10n-group>
+              {{#each localizedVariants}}
+              <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
+                >{{categories.[0]}}</span
+              >
+              {{/each}}
+            </span>
             {{/if}}
           </div>
           <h1 class="p-name">
-            <a class="u-url" href="{{canonicalUrl}}">{{title}}</a>
+            <span data-blog-l10n-group>
+              {{#each localizedVariants}}
+              <a
+                class="u-url"
+                href="{{../canonicalUrl}}"
+                data-blog-lang="{{lang}}"
+                {{#unless isDefault}}hidden{{/unless}}
+                >{{title}}</a
+              >
+              {{/each}}
+            </span>
           </h1>
           <p class="blog-post-author">
             By
-            <span class="p-author h-card">
-              <span class="p-name">{{author}}</span>
+            <span class="p-author h-card" data-blog-l10n-group>
+              {{#each localizedVariants}}
+              <span
+                class="p-name"
+                data-blog-lang="{{lang}}"
+                {{#unless isDefault}}hidden{{/unless}}
+                >{{author}}</span
+              >
+              {{/each}}
               <a
                 class="u-url u-uid"
                 href="{{siteUrl}}/"
@@ -84,7 +108,13 @@
             </span>
           </p>
         </header>
-        <div class="blog-post-content e-content">{{{content}}}</div>
+        <div class="blog-post-content e-content" data-blog-l10n-group>
+          {{#each localizedVariants}}
+          <div data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}>
+            {{{content}}}
+          </div>
+          {{/each}}
+        </div>
         <section
           id="webmentions"
           class="webmentions"
