@@ -13,6 +13,14 @@
 
 .site-footer .footer-links {
   display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: center;
+  justify-content: center;
+}
+
+.site-footer .footer-ring {
+  display: flex;
   gap: var(--spacing-md);
   align-items: center;
   justify-content: center;

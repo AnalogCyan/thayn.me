@@ -26,6 +26,7 @@
   }
 
   function detectLanguage() {
+    if (typeof navigator === "undefined") return DEFAULT_LANG;
     const prefs = [];
     if (Array.isArray(navigator.languages)) {
       prefs.push(...navigator.languages);
@@ -41,10 +42,11 @@
   function getStoredSetting() {
     try {
       const stored = normalizeLang(localStorage.getItem(STORAGE_KEY));
-      return stored || "en";
+      if (stored) return stored;
     } catch (err) {
-      return "en";
+      // ignore storage failures and fall back to browser preference
     }
+    return detectLanguage();
   }
 
   function getLocale(lang) {

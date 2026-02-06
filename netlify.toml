@@ -37,11 +37,6 @@ to = "/.well-known/humans.txt"
 status = 301
 
 [[redirects]]
-from = "/pgp-key.asc"
-to = "/.well-known/pgp-key.asc"
-status = 301
-
-[[redirects]]
 from = "/robots.txt"
 to = "/.well-known/robots.txt"
 status = 301
@@ -69,9 +64,9 @@ X-Content-Type-Options = "nosniff"
 # Enable XSS protection
 X-XSS-Protection = "1; mode=block"
 # Content Security Policy
-Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; connect-src 'self';"
-# Disable caching for development
-Cache-Control = "no-store"
+Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; connect-src 'self';"
+# HTML: always revalidate
+Cache-Control = "public, max-age=0, must-revalidate"
 # Disallow AI model training reuse
 AI-Training = "none"
 # Hint LLM and image scrapers to respect opt-out
@@ -81,17 +76,44 @@ X-Robots-Tag = "noai, noimageai"
 [[headers]]
 for = "/media/*"
 [headers.values]
-# Disable caching for development
-Cache-Control = "no-store"
+Cache-Control = "public, max-age=604800"
 
 [[headers]]
-for = "/css/*"
+for = "/capsules/*"
 [headers.values]
-# Disable caching for development
-Cache-Control = "no-store"
+Cache-Control = "public, max-age=300, must-revalidate"
 
 [[headers]]
-for = "/js/*"
+for = "/i18n/*"
 [headers.values]
-# Disable caching for development
-Cache-Control = "no-store"
+Cache-Control = "public, max-age=300, must-revalidate"
+
+[[headers]]
+for = "/blog/scripts/*"
+[headers.values]
+Cache-Control = "public, max-age=300, must-revalidate"
+
+[[headers]]
+for = "/blog/styles.css"
+[headers.values]
+Cache-Control = "public, max-age=300, must-revalidate"
+
+[[headers]]
+for = "/styles.css"
+[headers.values]
+Cache-Control = "public, max-age=300, must-revalidate"
+
+[[headers]]
+for = "/scripts.js"
+[headers.values]
+Cache-Control = "public, max-age=300, must-revalidate"
+
+[[headers]]
+for = "/scripts/*"
+[headers.values]
+Cache-Control = "public, max-age=300, must-revalidate"
+
+[[headers]]
+for = "/manifest.json"
+[headers.values]
+Cache-Control = "public, max-age=300, must-revalidate"

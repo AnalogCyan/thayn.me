@@ -27,7 +27,7 @@
       property="og:description"
       content="Music corner for Cyan Thayn: playlists, mixes, and inspirations."
     />
-    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
+    <meta property="og:image" content="https://thayn.me/media/profile.svg" />
     <meta property="og:url" content="https://thayn.me/music.html" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@AnalogCyan" />
@@ -49,21 +49,7 @@
 
     <!-- EXTERNAL_RESOURCES -->
 
-    <script>
-      (function () {
-        try {
-          var m = localStorage.getItem("thayn_theme");
-          var d = document.documentElement;
-          if (m === "light") d.classList.add("light-theme");
-          else if (m === "dark") d.classList.add("dark-theme");
-          else if (m === "auto") {
-            if (window.matchMedia("(prefers-color-scheme: dark)").matches)
-              d.classList.add("dark-theme");
-            else d.classList.add("light-theme");
-          }
-        } catch (e) {}
-      })();
-    </script>
+    <script src="/scripts/theme-init.js"></script>
 
     <link rel="stylesheet" href="./styles.css" />
     <script src="./scripts.js" defer></script>

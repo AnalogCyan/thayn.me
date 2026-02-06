@@ -4,6 +4,13 @@ import { fileURLToPath } from "url";
 import fm from "front-matter";
 import { marked } from "marked";
 import Handlebars from "handlebars";
+import {
+  getSiteUrl,
+  getCanonicalBlogPath,
+  isProductionBuild,
+} from "./site-url.js";
+import { canonicalizeUrl, toAbsoluteUrl } from "./lib/url.js";
+import { sanitizeExternalUrl } from "./lib/sanitize-url.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -14,6 +21,7 @@ const STYLES_DIR = path.join(SRC_DIR, "styles");
 const SCRIPTS_DIR = path.join(SRC_DIR, "scripts");
 const PUBLIC_DIR = path.join(__dirname, "public");
 const CONFIG_PATH = path.join(SRC_DIR, "config.json");
+const STANDALONE_SCRIPTS = new Set(["theme-init.js"]);
 
 const BLOG_DIR = path.join(SRC_DIR, "blog");
 const BLOG_POSTS_DIR = path.join(BLOG_DIR, "posts");
@@ -21,6 +29,34 @@ const BLOG_TEMPLATES_DIR = path.join(BLOG_DIR, "templates");
 const BLOG_OUTPUT_DIR = path.join(PUBLIC_DIR, "blog");
 const BLOG_STYLES_FILE = path.join(BLOG_DIR, "styles.css");
 const BLOG_SCRIPTS_DIR = path.join(BLOG_DIR, "scripts");
+const DEFAULT_WEBMENTION_FETCH_TIMEOUT_MS = 8000;
+const DEFAULT_WEBMENTION_FETCH_CONCURRENCY = 4;
+const WEBMENTION_FETCH_TIMEOUT_MS = (() => {
+  const raw = Number.parseInt(
+    process.env.WEBMENTION_FETCH_TIMEOUT_MS || "",
+    10,
+  );
+  return Number.isFinite(raw) && raw > 0
+    ? raw
+    : DEFAULT_WEBMENTION_FETCH_TIMEOUT_MS;
+})();
+const WEBMENTION_FETCH_CONCURRENCY = (() => {
+  const raw = Number.parseInt(
+    process.env.WEBMENTION_FETCH_CONCURRENCY || "",
+    10,
+  );
+  return Number.isFinite(raw) && raw > 0
+    ? raw
+    : DEFAULT_WEBMENTION_FETCH_CONCURRENCY;
+})();
+const WEBMENTIONS_BUILD_FETCH_ENABLED = (() => {
+  const raw = String(process.env.WEBMENTIONS_BUILD_FETCH || "")
+    .trim()
+    .toLowerCase();
+  if (["0", "false", "off", "no"].includes(raw)) return false;
+  if (["1", "true", "on", "yes"].includes(raw)) return true;
+  return isProductionBuild();
+})();
 
 marked.setOptions({
   gfm: true,
@@ -35,15 +71,38 @@ Handlebars.registerHelper("formatDate", function (date) {
   return utcDate.toLocaleDateString("en-US", options);
 });
 
+Handlebars.registerHelper("formatDateTime", function (date) {
+  if (!date) return "";
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return "";
+  return parsed.toLocaleString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+});
+
 const SYNDICATION_SITES = {
   bluesky: { label: "Bluesky" },
-  fediverse: { label: "Fediverse" },
+  mastodon: { label: "Mastodon" },
+  fediverse: { label: "Mastodon" },
   instagram: { label: "Instagram" },
   github: { label: "GitHub" },
   musicbrainz: { label: "MusicBrainz" },
   lastfm: { label: "Last.fm" },
   discogs: { label: "Discogs" },
   pronouns: { label: "Pronouns" },
+};
+
+const BRIDGY_PUBLISH_TARGETS = {
+  mastodon: "https://brid.gy/publish/mastodon",
+  bluesky: "https://brid.gy/publish/bluesky",
+};
+
+const TARGET_ALIASES = {
+  fediverse: "mastodon",
 };
 
 function normalizeSyndication(raw) {
@@ -87,6 +146,93 @@ function normalizeSyndication(raw) {
   return links;
 }
 
+function normalizeSyndicateTargets(raw) {
+  const targets = new Set();
+
+  const normalizeTarget = (value) => {
+    if (!value) return "";
+    const key = String(value).trim().toLowerCase();
+    return TARGET_ALIASES[key] || key;
+  };
+
+  const addTarget = (value) => {
+    const key = normalizeTarget(value);
+    if (BRIDGY_PUBLISH_TARGETS[key]) {
+      targets.add(key);
+    }
+  };
+
+  if (Array.isArray(raw)) {
+    raw.forEach((entry) => {
+      if (!entry) return;
+      if (typeof entry === "string") {
+        addTarget(entry);
+        return;
+      }
+      if (typeof entry === "object") {
+        Object.entries(entry).forEach(([key, enabled]) => {
+          if (!enabled) return;
+          addTarget(key);
+        });
+      }
+    });
+  } else if (typeof raw === "object") {
+    Object.entries(raw).forEach(([key, enabled]) => {
+      if (!enabled) return;
+      addTarget(key);
+    });
+  } else if (typeof raw === "string") {
+    addTarget(raw);
+  }
+
+  return Array.from(targets);
+}
+
+function getSyndicatedTargets(raw) {
+  const targets = new Set();
+  if (!raw) return targets;
+
+  const addTarget = (value) => {
+    if (!value) return;
+    const key = String(value).trim().toLowerCase();
+    if (BRIDGY_PUBLISH_TARGETS[key]) targets.add(key);
+    if (key === "fediverse") targets.add("mastodon");
+  };
+
+  if (Array.isArray(raw)) {
+    raw.forEach((entry) => {
+      if (!entry) return;
+      if (typeof entry === "string") return;
+      if (typeof entry === "object") {
+        const key = entry.site || entry.network || entry.service;
+        const url = entry.url || entry.href;
+        if (key && url) addTarget(key);
+      }
+    });
+    return targets;
+  }
+
+  if (typeof raw === "object") {
+    Object.entries(raw).forEach(([key, value]) => {
+      if (!value) return;
+      if (typeof value === "string") {
+        addTarget(key);
+        return;
+      }
+      if (Array.isArray(value)) {
+        if (value.length > 0) addTarget(key);
+        return;
+      }
+      if (typeof value === "object") {
+        const url = value.url || value.href;
+        if (url) addTarget(key);
+      }
+    });
+  }
+
+  return targets;
+}
+
 async function pathExists(p) {
   try {
     await fs.access(p);
@@ -94,6 +240,26 @@ async function pathExists(p) {
   } catch {
     return false;
   }
+}
+
+async function mapWithConcurrency(items, limit, mapper) {
+  if (items.length === 0) return [];
+
+  const results = new Array(items.length);
+  let nextIndex = 0;
+  const workerCount = Math.max(1, Math.min(limit, items.length));
+
+  async function worker() {
+    while (true) {
+      const current = nextIndex;
+      if (current >= items.length) return;
+      nextIndex += 1;
+      results[current] = await mapper(items[current], current);
+    }
+  }
+
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+  return results;
 }
 
 async function cleanPublic() {
@@ -127,26 +293,67 @@ async function loadConfig() {
   }
 }
 
-function generateResourcesHTML(config) {
+function generateResourcesHTML(config, siteUrl) {
   let html = "";
+  const preconnects = new Set();
 
   if (config.fonts) {
     for (const font of Object.values(config.fonts)) {
       if (!font.url) continue;
-      html += `\n    <link rel="preconnect" href="https://fonts.googleapis.com" />`;
-      html += `\n    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />`;
+      preconnects.add("https://fonts.googleapis.com");
+      preconnects.add("https://fonts.gstatic.com");
       html += `\n    <link href="${font.url}" rel="stylesheet" />`;
     }
   }
 
   if (config.externalResources) {
     for (const resource of Object.values(config.externalResources)) {
+      if (resource.url) {
+        try {
+          const host = new URL(resource.url).hostname;
+          if (host === "cdn.jsdelivr.net") {
+            preconnects.add("https://cdn.jsdelivr.net");
+          }
+        } catch {
+          // ignore invalid URLs
+        }
+      }
       if (resource.type === "stylesheet") {
         html += `\n    <link href="${resource.url}" rel="stylesheet" />`;
       } else if (resource.type === "script") {
         html += `\n    <script src="${resource.url}"${resource.defer ? " defer" : ""}></script>`;
       }
     }
+  }
+
+  if (preconnects.size > 0) {
+    const ordered = Array.from(preconnects).sort();
+    const tags = ordered.map((href) => {
+      const crossorigin = href.includes("fonts.gstatic.com")
+        ? " crossorigin"
+        : "";
+      return `\n    <link rel="preconnect" href="${href}"${crossorigin} />`;
+    });
+    html = `${tags.join("")}${html}`;
+  }
+
+  if (siteUrl) {
+    html += `\n    <link rel="alternate" type="application/rss+xml" title="RSS" href="${toAbsoluteUrl(
+      siteUrl,
+      "/blog/rss.xml",
+    )}" />`;
+    html += `\n    <link rel="alternate" type="application/atom+xml" title="Atom" href="${toAbsoluteUrl(
+      siteUrl,
+      "/blog/atom.xml",
+    )}" />`;
+    html += `\n    <link rel="alternate" type="application/mf2+html" title="Microformats" href="${toAbsoluteUrl(
+      siteUrl,
+      "/blog/",
+    )}" />`;
+    html += `\n    <link rel="feed" href="${toAbsoluteUrl(
+      siteUrl,
+      "/blog/",
+    )}" />`;
   }
 
   return html;
@@ -199,6 +406,15 @@ function injectResources(content, resourcesHTML, config) {
   }
 
   return output;
+}
+
+function ensureCanonicalLink(html, canonicalUrl) {
+  if (!canonicalUrl) return html;
+  if (/<link\s+[^>]*rel=["']canonical["']/i.test(html)) return html;
+  return html.replace(
+    /<\/head>/i,
+    `    <link rel="canonical" href="${canonicalUrl}" />\n  </head>`,
+  );
 }
 
 async function injectCapsules(content, capsules, pageName) {
@@ -273,9 +489,9 @@ async function expandAllDrops(inputHtml, capsules, pageName, globalUsed) {
   return html;
 }
 
-async function buildPages(capsules, config, globalUsed) {
+async function buildPages(capsules, config, globalUsed, siteUrl) {
   const files = await fs.readdir(PAGES_DIR);
-  const resourcesHTML = generateResourcesHTML(config);
+  const resourcesHTML = generateResourcesHTML(config, siteUrl);
 
   await Promise.all(
     files.map(async (file) => {
@@ -284,6 +500,11 @@ async function buildPages(capsules, config, globalUsed) {
       let content = await fs.readFile(srcPath, "utf-8");
 
       content = injectResources(content, resourcesHTML, config);
+      const canonicalPath = file === "index.html" ? "/" : `/${file}`;
+      content = ensureCanonicalLink(
+        content,
+        canonicalizeUrl(siteUrl, canonicalPath),
+      );
       const contentFinal = await expandAllDrops(
         content,
         capsules,
@@ -325,19 +546,47 @@ async function bundleScripts(usedCapsules, capsules) {
 
   if (await pathExists(SCRIPTS_DIR)) {
     const files = (await fs.readdir(SCRIPTS_DIR)).sort();
+    const standalone = [];
     for (const file of files) {
       if (!file.endsWith(".js")) continue;
+      if (STANDALONE_SCRIPTS.has(file)) {
+        standalone.push(file);
+        continue;
+      }
       const js = await fs.readFile(path.join(SCRIPTS_DIR, file), "utf-8");
       output += `\n// === ${file} ===\n${js}`;
+    }
+
+    if (standalone.length > 0) {
+      const standaloneDir = path.join(PUBLIC_DIR, "scripts");
+      await fs.mkdir(standaloneDir, { recursive: true });
+      await Promise.all(
+        standalone.map((file) =>
+          fs.copyFile(
+            path.join(SCRIPTS_DIR, file),
+            path.join(standaloneDir, file),
+          ),
+        ),
+      );
     }
   }
 
   const orderedCapsules = Array.from(usedCapsules).sort();
-  for (const capName of orderedCapsules) {
-    const cap = capsules[capName];
-    if (!cap || !cap.jsPath) continue;
-    const js = await fs.readFile(cap.jsPath, "utf-8");
-    output += `\n// === Capsule: ${capName} ===\n${js}`;
+  const capsuleScripts = orderedCapsules.filter(
+    (capName) => capsules[capName] && capsules[capName].jsPath,
+  );
+  if (capsuleScripts.length > 0) {
+    const capsulesDir = path.join(PUBLIC_DIR, "capsules");
+    await fs.mkdir(capsulesDir, { recursive: true });
+    await Promise.all(
+      capsuleScripts.map(async (capName) => {
+        const cap = capsules[capName];
+        if (!cap || !cap.jsPath) return;
+        const destDir = path.join(capsulesDir, capName);
+        await fs.mkdir(destDir, { recursive: true });
+        await fs.copyFile(cap.jsPath, path.join(destDir, `${capName}.js`));
+      }),
+    );
   }
 
   await fs.writeFile(path.join(PUBLIC_DIR, "scripts.js"), output);
@@ -355,16 +604,135 @@ async function copyStatic() {
   if (await pathExists(manifestSrc)) {
     await fs.copyFile(manifestSrc, path.join(PUBLIC_DIR, "manifest.json"));
   }
+
+  const sanitizeUrlSrc = path.join(__dirname, "lib", "sanitize-url.js");
+  if (await pathExists(sanitizeUrlSrc)) {
+    const libOutDir = path.join(PUBLIC_DIR, "lib");
+    await fs.mkdir(libOutDir, { recursive: true });
+    await fs.copyFile(sanitizeUrlSrc, path.join(libOutDir, "sanitize-url.js"));
+  }
 }
 
-function getSiteUrl() {
-  const raw =
-    process.env.SITE_URL ||
-    process.env.URL ||
-    process.env.DEPLOY_PRIME_URL ||
-    process.env.DEPLOY_URL ||
-    "http://localhost:8888";
-  return String(raw).replace(/\/+$/, "");
+function getFunctionsBaseUrl(siteUrl) {
+  return siteUrl;
+}
+
+function initWebmentionBuckets() {
+  return {
+    replies: [],
+    likes: [],
+    reposts: [],
+    mentions: [],
+    bookmarks: [],
+  };
+}
+
+function extractWebmentionText(item) {
+  if (!item || !item.content) return "";
+  if (typeof item.content === "string") return item.content.trim();
+  if (typeof item.content === "object") {
+    return String(item.content.text || item.content.value || "").trim();
+  }
+  return "";
+}
+
+function normalizeWebmentionAuthor(item) {
+  const author = (item && item.author) || {};
+  const authorName =
+    String(author.name || author.url || item.url || "Someone").trim() ||
+    "Someone";
+  const authorUrl = sanitizeExternalUrl(author.url || item.url);
+  const authorPhoto = sanitizeExternalUrl(author.photo);
+  return { authorName, authorUrl, authorPhoto };
+}
+
+function normalizeWebmentionReply(item) {
+  const author = normalizeWebmentionAuthor(item);
+  const published = item.published || item["wm-received"] || "";
+  const received = item["wm-received"] || item.published || "";
+  const text = extractWebmentionText(item);
+  const url = sanitizeExternalUrl(item.url);
+
+  return {
+    ...author,
+    published,
+    received,
+    text,
+    url,
+  };
+}
+
+function normalizeWebmentionPerson(item) {
+  const author = normalizeWebmentionAuthor(item);
+  const url = sanitizeExternalUrl(item.url) || author.authorUrl || null;
+
+  return {
+    ...author,
+    url,
+  };
+}
+
+function toTime(value) {
+  if (!value) return 0;
+  const parsed = Date.parse(value);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function buildWebmentionBuckets(payload) {
+  const buckets = initWebmentionBuckets();
+  const items = Array.isArray(payload?.children) ? payload.children : [];
+
+  for (const item of items) {
+    if (!item) continue;
+    const isPrivate =
+      item["wm-private"] === true ||
+      item["wm-private"] === "true" ||
+      item["wm-private"] === 1;
+    if (isPrivate) continue;
+
+    const prop = item["wm-property"];
+    if (prop === "in-reply-to") {
+      buckets.replies.push(normalizeWebmentionReply(item));
+    } else if (prop === "like-of") {
+      buckets.likes.push(normalizeWebmentionPerson(item));
+    } else if (prop === "repost-of") {
+      buckets.reposts.push(normalizeWebmentionPerson(item));
+    } else if (prop === "mention-of") {
+      buckets.mentions.push(normalizeWebmentionPerson(item));
+    } else if (prop === "bookmark-of") {
+      buckets.bookmarks.push(normalizeWebmentionPerson(item));
+    }
+  }
+
+  buckets.replies.sort((a, b) => toTime(a.received) - toTime(b.received));
+
+  return buckets;
+}
+
+async function fetchWebmentions(targetUrl, functionsBaseUrl) {
+  if (!WEBMENTIONS_BUILD_FETCH_ENABLED) return null;
+  if (!functionsBaseUrl) return null;
+  const endpoint = `${functionsBaseUrl}/.netlify/functions/webmentions?target=${encodeURIComponent(
+    targetUrl,
+  )}`;
+  const controller = new AbortController();
+  const timeout = setTimeout(
+    () => controller.abort(),
+    WEBMENTION_FETCH_TIMEOUT_MS,
+  );
+
+  try {
+    const res = await fetch(endpoint, {
+      headers: { Accept: "application/json" },
+      signal: controller.signal,
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 function xmlEscape(s = "") {
@@ -374,10 +742,6 @@ function xmlEscape(s = "") {
     .replace(/>/g, "&gt;")
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&apos;");
-}
-
-function absUrl(siteUrl, p = "") {
-  return p.startsWith("http") ? p : siteUrl + p;
 }
 
 function rfc2822(dateStr) {
@@ -394,7 +758,7 @@ function buildRSS(posts, meta, siteUrl) {
     : new Date().toUTCString();
   const items = posts
     .map((p) => {
-      const link = absUrl(siteUrl, p.url);
+      const link = toAbsoluteUrl(siteUrl, p.url);
       const cats = (p.categories || [])
         .map((c) => `    <category>${xmlEscape(c)}</category>`)
         .join("\n");
@@ -418,7 +782,7 @@ function buildRSS(posts, meta, siteUrl) {
 <rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\">
 <channel>
   <title>${xmlEscape(meta.title)}</title>
-  <link>${absUrl(siteUrl, "/blog/")}</link>
+  <link>${toAbsoluteUrl(siteUrl, "/blog/")}</link>
   <description>${xmlEscape(meta.description)}</description>
   <language>${xmlEscape(meta.language)}</language>
   <lastBuildDate>${lastBuild}</lastBuildDate>
@@ -434,7 +798,7 @@ function buildAtom(posts, meta, siteUrl) {
     : new Date().toISOString();
   const entries = posts
     .map((p) => {
-      const link = absUrl(siteUrl, p.url);
+      const link = toAbsoluteUrl(siteUrl, p.url);
       const cats = (p.categories || [])
         .map((c) => `    <category term=\"${xmlEscape(c)}\"/>`)
         .join("\n");
@@ -459,17 +823,17 @@ function buildAtom(posts, meta, siteUrl) {
   return `<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <feed xmlns=\"http://www.w3.org/2005/Atom\">
   <title>${xmlEscape(meta.title)}</title>
-  <id>${absUrl(siteUrl, "/blog/")}</id>
+  <id>${toAbsoluteUrl(siteUrl, "/blog/")}</id>
   <updated>${updated}</updated>
-  <link href=\"${absUrl(siteUrl, "/blog/atom.xml")}\" rel=\"self\"/>
-  <link href=\"${absUrl(siteUrl, "/blog/")}\"/>
+  <link href=\"${toAbsoluteUrl(siteUrl, "/blog/atom.xml")}\" rel=\"self\"/>
+  <link href=\"${toAbsoluteUrl(siteUrl, "/blog/")}\"/>
   <author><name>${xmlEscape(meta.author)}</name></author>
 ${entries}
 </feed>
 `;
 }
 
-async function buildBlog(capsules, config, globalUsed) {
+async function buildBlog(capsules, config, globalUsed, siteUrl) {
   if (!(await pathExists(BLOG_TEMPLATES_DIR))) return;
 
   await fs.mkdir(BLOG_OUTPUT_DIR, { recursive: true });
@@ -494,7 +858,7 @@ async function buildBlog(capsules, config, globalUsed) {
   const indexTemplateRaw = await fs.readFile(indexTemplatePath, "utf-8");
   const postTemplateRaw = await fs.readFile(postTemplatePath, "utf-8");
 
-  const resourcesHTML = generateResourcesHTML(config);
+  const resourcesHTML = generateResourcesHTML(config, siteUrl);
   const indexWithResources = injectResources(
     indexTemplateRaw,
     resourcesHTML,
@@ -523,66 +887,111 @@ async function buildBlog(capsules, config, globalUsed) {
   const postTemplate = Handlebars.compile(postTemplateSource);
 
   let blogIndex = [];
-
+  const functionsBaseUrl = getFunctionsBaseUrl(siteUrl);
   if (await pathExists(BLOG_POSTS_DIR)) {
-    const files = (await fs.readdir(BLOG_POSTS_DIR)).filter((file) =>
-      file.endsWith(".md"),
+    const files = (await fs.readdir(BLOG_POSTS_DIR))
+      .filter((file) => file.endsWith(".md"))
+      .sort();
+
+    const postEntries = await mapWithConcurrency(
+      files,
+      WEBMENTION_FETCH_CONCURRENCY,
+      async (file) => {
+        const filePath = path.join(BLOG_POSTS_DIR, file);
+        const markdown = await fs.readFile(filePath, "utf-8");
+        const { attributes, body } = fm(markdown);
+
+        if (!attributes.title) {
+          attributes.title = path.basename(file, ".md");
+        }
+
+        if (attributes.categories && !Array.isArray(attributes.categories)) {
+          attributes.categories = [String(attributes.categories)];
+        }
+
+        const htmlContent = marked(body);
+        const plainBody = body
+          .replace(/```[\s\S]*?```/g, "")
+          .replace(/`[^`]*`/g, "")
+          .replace(/!\[[^\]]*\]\([^\)]+\)/g, "")
+          .replace(/\[[^\]]+\]\([^\)]+\)/g, "")
+          .replace(/[#>*_~\-]+/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+        const rawExcerpt = (
+          attributes.excerpt || plainBody.slice(0, 180)
+        ).trim();
+        const excerpt = /[.!?…]$/.test(rawExcerpt)
+          ? rawExcerpt
+          : rawExcerpt + "…";
+
+        const slug = path.basename(file, ".md");
+        const defaultPath = getCanonicalBlogPath(slug);
+        const defaultCanonical = canonicalizeUrl(siteUrl, defaultPath);
+        const canonicalOverride = canonicalizeUrl(
+          siteUrl,
+          attributes.canonical,
+        );
+        const canonicalUrl = canonicalOverride || defaultCanonical;
+
+        let url = canonicalUrl;
+        try {
+          const parsed = new URL(canonicalUrl);
+          if (parsed.origin === siteUrl) {
+            url = parsed.pathname;
+          }
+        } catch {
+          url = canonicalUrl;
+        }
+
+        const webmentionPayload = await fetchWebmentions(
+          canonicalUrl,
+          functionsBaseUrl,
+        );
+        const webmentions = buildWebmentionBuckets(webmentionPayload);
+        const hasWebmentions = Object.values(webmentions).some(
+          (items) => items.length > 0,
+        );
+        const syndicateTargets = normalizeSyndicateTargets(
+          attributes.syndicate,
+        );
+        const syndicatedTargets = getSyndicatedTargets(attributes.syndication);
+        const pendingTargets = syndicateTargets.filter(
+          (target) => !syndicatedTargets.has(target),
+        );
+        const bridgyPublishTargets = pendingTargets.map(
+          (target) => BRIDGY_PUBLISH_TARGETS[target],
+        );
+
+        return {
+          slug,
+          data: {
+            title: attributes.title,
+            author: attributes.author || "Cyan Thayn",
+            date: attributes.date,
+            categories: attributes.categories || [],
+            content: htmlContent,
+            excerpt,
+            url,
+            siteUrl,
+            canonicalUrl,
+            syndicationLinks: normalizeSyndication(attributes.syndication),
+            webmentions,
+            hasWebmentions,
+            bridgyPublishTargets,
+          },
+        };
+      },
     );
 
-    for (const file of files) {
-      const filePath = path.join(BLOG_POSTS_DIR, file);
-      const markdown = await fs.readFile(filePath, "utf-8");
-      const { attributes, body } = fm(markdown);
-
-      if (attributes.draft && process.env.BLOG_INCLUDE_DRAFTS !== "1") {
-        continue;
-      }
-
-      if (!attributes.title) {
-        attributes.title = path.basename(file, ".md");
-      }
-
-      if (!attributes.date || isNaN(new Date(attributes.date).getTime())) {
-        const stat = await fs.stat(filePath);
-        attributes.date = new Date(stat.mtime).toISOString().slice(0, 10);
-      }
-
-      if (attributes.categories && !Array.isArray(attributes.categories)) {
-        attributes.categories = [String(attributes.categories)];
-      }
-
-      const htmlContent = marked(body);
-      const plainBody = body
-        .replace(/```[\s\S]*?```/g, "")
-        .replace(/`[^`]*`/g, "")
-        .replace(/!\[[^\]]*\]\([^\)]+\)/g, "")
-        .replace(/\[[^\]]+\]\([^\)]+\)/g, "")
-        .replace(/[#>*_~\-]+/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-      const rawExcerpt = (attributes.excerpt || plainBody.slice(0, 180)).trim();
-      const excerpt = /[.!?…]$/.test(rawExcerpt)
-        ? rawExcerpt
-        : rawExcerpt + "…";
-
-      const outputFileName = file.replace(".md", ".html");
-      const data = {
-        title: attributes.title,
-        author: attributes.author || "Cyan Thayn",
-        date: attributes.date,
-        categories: attributes.categories || [],
-        content: htmlContent,
-        excerpt,
-        url: `/blog/${outputFileName}`,
-        siteUrl: getSiteUrl(),
-        syndicationLinks: normalizeSyndication(attributes.syndication),
-      };
-
-      const filledTemplate = postTemplate(data);
-      const outputPath = path.join(BLOG_OUTPUT_DIR, outputFileName);
+    for (const entry of postEntries) {
+      const filledTemplate = postTemplate(entry.data);
+      const outputDir = path.join(BLOG_OUTPUT_DIR, entry.slug);
+      await fs.mkdir(outputDir, { recursive: true });
+      const outputPath = path.join(outputDir, "index.html");
       await fs.writeFile(outputPath, filledTemplate);
 
-      blogIndex.push(data);
+      blogIndex.push(entry.data);
     }
   }
 
@@ -592,6 +1001,7 @@ async function buildBlog(capsules, config, globalUsed) {
 
   const indexData = {
     posts: blogIndex,
+    siteUrl,
   };
   const filledIndexTemplate = indexTemplate(indexData);
   await fs.writeFile(
@@ -619,10 +1029,10 @@ async function buildBlog(capsules, config, globalUsed) {
     author: process.env.BLOG_AUTHOR || "Cyan Thayn",
   };
 
-  const rssXml = buildRSS(blogIndex, meta, getSiteUrl());
+  const rssXml = buildRSS(blogIndex, meta, siteUrl);
   await fs.writeFile(path.join(BLOG_OUTPUT_DIR, "rss.xml"), rssXml);
 
-  const atomXml = buildAtom(blogIndex, meta, getSiteUrl());
+  const atomXml = buildAtom(blogIndex, meta, siteUrl);
   await fs.writeFile(path.join(BLOG_OUTPUT_DIR, "atom.xml"), atomXml);
 }
 
@@ -630,10 +1040,11 @@ async function build() {
   const config = await loadConfig();
   const capsules = await loadCapsules();
   const usedCapsules = new Set();
+  const siteUrl = getSiteUrl();
 
   await cleanPublic();
-  await buildPages(capsules, config, usedCapsules);
-  await buildBlog(capsules, config, usedCapsules);
+  await buildPages(capsules, config, usedCapsules, siteUrl);
+  await buildBlog(capsules, config, usedCapsules, siteUrl);
   await bundleStyles(capsules);
   await bundleScripts(usedCapsules, capsules);
   await copyStatic();

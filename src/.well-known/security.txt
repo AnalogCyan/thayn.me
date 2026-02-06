@@ -2,7 +2,6 @@
 Contact: mailto:security@thayn.me
 Contact: https://github.com/AnalogCyan/
 Contact: https://tech.lgbt/@AnalogCyan/
-Expires: 2025-01-01T00:00:00.000Z
-Encryption: https://thayn.me/.well-known/pgp-key.asc
+Expires: 2027-02-05T00:00:00.000Z
 Preferred-Languages: en
 Canonical: https://thayn.me/.well-known/security.txt

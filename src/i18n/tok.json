@@ -90,12 +90,20 @@
     "emptyBody": "Check back soon for updates.",
     "readMore": "Read More →",
     "by": "By",
-    "syndicated": "Syndicated",
-    "alsoOn": "Also on:"
+    "alsoOn": "Also on:",
+    "webmentions": {
+      "title": "Webmentions",
+      "empty": "No webmentions yet.",
+      "likes": "Likes",
+      "reposts": "Reposts",
+      "mentions": "Mentions",
+      "bookmarks": "Bookmarks",
+      "replies": "Replies",
+      "source": "View source"
+    }
   },
   "footer": {
     "ring": "kulupu lipu Fediring",
-    "mentions": "mentions",
     "quote": "sina ken awen lon nasa ala nasa?",
     "prevLabel": "o tawa lipu pini",
     "nextLabel": "o tawa lipu sin"

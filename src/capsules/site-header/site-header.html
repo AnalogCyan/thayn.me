@@ -1,4 +1,4 @@
-<div class="nav-pill-wrap">
+<div class="nav-pill-wrap" data-capsule="site-header">
   <nav class="nav-pill" aria-label="Primary">
     <button
       class="nav-pill__toggle"
@@ -77,6 +77,27 @@
   </nav>
 
   <div class="nav-pill__theme">
-    <drop capsule="theme-lang-toggle" data-compact="true"></drop>
+    <div class="theme-toggle" data-compact="true">
+      <button
+        class="theme-toggle__button"
+        data-theme-button="true"
+        aria-label="Toggle theme mode"
+        data-i18n-attr="aria-label:theme.label"
+        type="button"
+      >
+        <i class="theme-toggle__icon ri-contrast-2-line" aria-hidden="true"></i>
+        <span class="theme-toggle__text" data-i18n="theme.auto">Auto</span>
+      </button>
+      <button
+        class="theme-toggle__button language-toggle"
+        type="button"
+        aria-label="Language"
+        data-i18n-attr="aria-label:language.label"
+      >
+        <i class="lang-toggle__icon ri-translate-2" aria-hidden="true"></i>
+        <span class="lang-toggle__text">ENG</span>
+      </button>
+    </div>
   </div>
 </div>
+<script src="/capsules/site-header/site-header.js" defer></script>

@@ -11,12 +11,12 @@
   "name": "Cyan Thayn",
   "icons": [
     {
-      "src": "./media/logo.svg",
+      "src": "/media/logo.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     },
     {
-      "src": "./media/profile.svg",
+      "src": "/media/profile.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }

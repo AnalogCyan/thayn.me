@@ -24,7 +24,7 @@
       property="og:description"
       content="Notes, updates, and experiments."
     />
-    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
+    <meta property="og:image" content="https://thayn.me/media/profile.svg" />
     <meta property="og:url" content="https://thayn.me/blog/" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@AnalogCyan" />
@@ -33,25 +33,21 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
     <link rel="apple-touch-icon" href="/media/logo.svg" />
+    <link rel="canonical" href="{{siteUrl}}/blog/" />
     <link rel="webmention" href="https://webmention.io/thayn.me/webmention" />
+    <link rel="pingback" href="https://webmention.io/thayn.me/xmlrpc" />
+    <link rel="me" href="https://tech.lgbt/@AnalogCyan" />
+    <link rel="me" href="https://bsky.app/profile/thayn.me" />
+    <link rel="me" href="https://en.pronouns.page/@AnalogCyan" />
+    <link rel="me" href="https://www.instagram.com/analogcyan/" />
+    <link rel="me" href="https://beta.musicbrainz.org/user/AnalogCyan" />
+    <link rel="me" href="https://www.last.fm/user/AnalogCyan" />
+    <link rel="me" href="https://www.discogs.com/user/AnalogCyan" />
+    <link rel="me" href="https://github.com/AnalogCyan" />
 
     <!-- EXTERNAL_RESOURCES -->
 
-    <script>
-      (function () {
-        try {
-          var m = localStorage.getItem("thayn_theme");
-          var d = document.documentElement;
-          if (m === "light") d.classList.add("light-theme");
-          else if (m === "dark") d.classList.add("dark-theme");
-          else if (m === "auto") {
-            if (window.matchMedia("(prefers-color-scheme: dark)").matches)
-              d.classList.add("dark-theme");
-            else d.classList.add("light-theme");
-          }
-        } catch (e) {}
-      })();
-    </script>
+    <script src="/scripts/theme-init.js"></script>
 
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/blog/styles.css" />
@@ -61,7 +57,9 @@
   </head>
   <body>
     <drop capsule="ambient-background"></drop>
-    <drop capsule="hero-card" data-hero="false" data-nav-page="blog"></drop>
+    <div class="h-card">
+      <drop capsule="hero-card" data-hero="false" data-nav-page="blog"></drop>
+    </div>
 
     <main>
       <section class="glass section-card blog-hero">
@@ -71,21 +69,28 @@
         <p data-i18n="blog.subtitle">Notes, updates, and experiments.</p>
       </section>
 
-      <section class="blog-list">
+      <section class="blog-list h-feed">
         {{#if posts.length}}
         <div class="blog-grid">
           {{#each posts}}
-          <article class="glass blog-card">
+          <article class="glass blog-card h-entry">
             <div class="blog-meta">
-              <time datetime="{{date}}">{{formatDate date}}</time>
+              <time datetime="{{date}}" class="dt-published"
+                >{{formatDate date}}</time
+              >
               {{#if categories.length}}
               <span class="tag">{{categories.[0]}}</span>
               {{/if}}
             </div>
-            <h3><a href="{{url}}">{{title}}</a></h3>
-            <p>{{excerpt}}</p>
+            <h3 class="p-name">
+              <a class="u-url" href="{{url}}">{{title}}</a>
+            </h3>
+            <p class="p-summary">{{excerpt}}</p>
             <div class="blog-footer">
-              <span><span data-i18n="blog.by">By</span> {{author}}</span>
+              <span>
+                <span data-i18n="blog.by">By</span>
+                <span class="p-author">{{author}}</span>
+              </span>
               <a href="{{url}}" class="read-more" data-i18n="blog.readMore"
                 >Read More →</a
               >

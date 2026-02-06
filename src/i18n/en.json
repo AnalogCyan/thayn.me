@@ -90,12 +90,20 @@
     "emptyBody": "Check back soon for updates.",
     "readMore": "Read More →",
     "by": "By",
-    "syndicated": "Syndicated",
-    "alsoOn": "Also on:"
+    "alsoOn": "Also on:",
+    "webmentions": {
+      "title": "Webmentions",
+      "empty": "No webmentions yet.",
+      "likes": "Likes",
+      "reposts": "Reposts",
+      "mentions": "Mentions",
+      "bookmarks": "Bookmarks",
+      "replies": "Replies",
+      "source": "View source"
+    }
   },
   "footer": {
     "ring": "Fediring",
-    "mentions": "mentions",
     "quote": "Are you ready to embrace uncertainty?",
     "prevLabel": "Previous site",
     "nextLabel": "Next site"

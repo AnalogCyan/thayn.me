@@ -21,38 +21,34 @@
 
     <meta property="og:title" content="{{title}}" />
     <meta property="og:description" content="{{excerpt}}" />
-    <meta property="og:image" content="https://thayn.me/media/Cyan.png" />
-    <meta property="og:url" content="{{siteUrl}}{{url}}" />
+    <meta property="og:image" content="https://thayn.me/media/profile.svg" />
+    <meta property="og:url" content="{{canonicalUrl}}" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@AnalogCyan" />
     <meta name="twitter:creator" content="@AnalogCyan" />
-
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
     <link rel="apple-touch-icon" href="/media/logo.svg" />
+    <link rel="canonical" href="{{canonicalUrl}}" />
     <link rel="webmention" href="https://webmention.io/thayn.me/webmention" />
+    <link rel="pingback" href="https://webmention.io/thayn.me/xmlrpc" />
+    <link rel="me" href="https://tech.lgbt/@AnalogCyan" />
+    <link rel="me" href="https://bsky.app/profile/thayn.me" />
+    <link rel="me" href="https://en.pronouns.page/@AnalogCyan" />
+    <link rel="me" href="https://www.instagram.com/analogcyan/" />
+    <link rel="me" href="https://beta.musicbrainz.org/user/AnalogCyan" />
+    <link rel="me" href="https://www.last.fm/user/AnalogCyan" />
+    <link rel="me" href="https://www.discogs.com/user/AnalogCyan" />
+    <link rel="me" href="https://github.com/AnalogCyan" />
 
     <!-- EXTERNAL_RESOURCES -->
 
-    <script>
-      (function () {
-        try {
-          var m = localStorage.getItem("thayn_theme");
-          var d = document.documentElement;
-          if (m === "light") d.classList.add("light-theme");
-          else if (m === "dark") d.classList.add("dark-theme");
-          else if (m === "auto") {
-            if (window.matchMedia("(prefers-color-scheme: dark)").matches)
-              d.classList.add("dark-theme");
-            else d.classList.add("light-theme");
-          }
-        } catch (e) {}
-      })();
-    </script>
+    <script src="/scripts/theme-init.js"></script>
 
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/blog/styles.css" />
     <script src="/scripts.js" defer></script>
+    <script type="module" src="/blog/scripts/webmentions.js"></script>
 
     <title>{{title}} — Cyan Thayn</title>
   </head>
@@ -61,20 +57,171 @@
     <drop capsule="hero-card" data-hero="false" data-nav-page="blog"></drop>
 
     <main>
-      <article class="glass section-card blog-post">
+      <article class="glass section-card blog-post h-entry">
         <header class="blog-post-header">
           <div class="blog-post-meta">
-            <time datetime="{{date}}">{{formatDate date}}</time>
+            <time datetime="{{date}}" class="dt-published"
+              >{{formatDate date}}</time
+            >
             {{#if categories.length}}
             <span class="tag">{{categories.[0]}}</span>
             {{/if}}
           </div>
-          <h1>{{title}}</h1>
-          <p class="blog-post-author">By {{author}}</p>
+          <h1 class="p-name">
+            <a class="u-url" href="{{canonicalUrl}}">{{title}}</a>
+          </h1>
+          <p class="blog-post-author">
+            By
+            <span class="p-author h-card">
+              <span class="p-name">{{author}}</span>
+              <a
+                class="u-url u-uid"
+                href="{{siteUrl}}/"
+                aria-hidden="true"
+                tabindex="-1"
+              ></a>
+              <img class="u-photo" src="/media/profile.svg" alt="" hidden />
+            </span>
+          </p>
         </header>
-        <div class="blog-post-content">{{{content}}}</div>
+        <div class="blog-post-content e-content">{{{content}}}</div>
+        <section
+          id="webmentions"
+          class="webmentions"
+          data-target="{{canonicalUrl}}"
+          data-refresh-seconds="60"
+        >
+          <h2 data-i18n="blog.webmentions.title">Webmentions</h2>
+
+          {{#unless hasWebmentions}}
+          <p class="webmentions-empty" data-i18n="blog.webmentions.empty">
+            No webmentions yet.
+          </p>
+          {{/unless}} {{#if webmentions.likes.length}}
+          <div class="webmentions-group webmentions-likes">
+            <h3>
+              <span data-i18n="blog.webmentions.likes">Likes</span>
+              ({{webmentions.likes.length}})
+            </h3>
+            <ul class="webmentions-people">
+              {{#each webmentions.likes}}
+              <li>
+                {{#if authorUrl}}
+                <a href="{{authorUrl}}" rel="nofollow ugc">
+                  <span>{{authorName}}</span>
+                </a>
+                {{else}}
+                <span>{{authorName}}</span>
+                {{/if}}
+              </li>
+              {{/each}}
+            </ul>
+          </div>
+          {{/if}} {{#if webmentions.reposts.length}}
+          <div class="webmentions-group webmentions-reposts">
+            <h3>
+              <span data-i18n="blog.webmentions.reposts">Reposts</span>
+              ({{webmentions.reposts.length}})
+            </h3>
+            <ul class="webmentions-people">
+              {{#each webmentions.reposts}}
+              <li>
+                {{#if authorUrl}}
+                <a href="{{authorUrl}}" rel="nofollow ugc">
+                  <span>{{authorName}}</span>
+                </a>
+                {{else}}
+                <span>{{authorName}}</span>
+                {{/if}}
+              </li>
+              {{/each}}
+            </ul>
+          </div>
+          {{/if}} {{#if webmentions.mentions.length}}
+          <div class="webmentions-group webmentions-mentions">
+            <h3>
+              <span data-i18n="blog.webmentions.mentions">Mentions</span>
+              ({{webmentions.mentions.length}})
+            </h3>
+            <ul class="webmentions-people">
+              {{#each webmentions.mentions}}
+              <li>
+                {{#if authorUrl}}
+                <a href="{{authorUrl}}" rel="nofollow ugc">
+                  <span>{{authorName}}</span>
+                </a>
+                {{else}}
+                <span>{{authorName}}</span>
+                {{/if}}
+              </li>
+              {{/each}}
+            </ul>
+          </div>
+          {{/if}} {{#if webmentions.bookmarks.length}}
+          <div class="webmentions-group webmentions-bookmarks">
+            <h3>
+              <span data-i18n="blog.webmentions.bookmarks">Bookmarks</span>
+              ({{webmentions.bookmarks.length}})
+            </h3>
+            <ul class="webmentions-people">
+              {{#each webmentions.bookmarks}}
+              <li>
+                {{#if authorUrl}}
+                <a href="{{authorUrl}}" rel="nofollow ugc">
+                  <span>{{authorName}}</span>
+                </a>
+                {{else}}
+                <span>{{authorName}}</span>
+                {{/if}}
+              </li>
+              {{/each}}
+            </ul>
+          </div>
+          {{/if}} {{#if webmentions.replies.length}}
+          <div class="webmentions-group webmentions-replies">
+            <h3>
+              <span data-i18n="blog.webmentions.replies">Replies</span>
+              ({{webmentions.replies.length}})
+            </h3>
+            <ul class="webmentions-replies">
+              {{#each webmentions.replies}}
+              <li class="webmention-reply">
+                <div class="webmention-meta">
+                  {{#if authorUrl}}
+                  <a href="{{authorUrl}}" rel="nofollow ugc">{{authorName}}</a>
+                  {{else}}
+                  <span>{{authorName}}</span>
+                  {{/if}} {{#if published}}
+                  <time datetime="{{published}}"
+                    >{{formatDateTime published}}</time
+                  >
+                  {{/if}}
+                </div>
+                {{#if text}}
+                <p>{{text}}</p>
+                {{/if}} {{#if url}}
+                <a
+                  class="webmention-source"
+                  href="{{url}}"
+                  rel="nofollow ugc"
+                  data-i18n="blog.webmentions.source"
+                  >View source</a
+                >
+                {{/if}}
+              </li>
+              {{/each}}
+            </ul>
+          </div>
+          {{/if}}
+        </section>
         <footer class="blog-post-footer">
-          {{#if syndicationLinks.length}}
+          {{#if bridgyPublishTargets.length}}
+          <div class="bridgy-publish-links" aria-hidden="true">
+            {{#each bridgyPublishTargets}}
+            <a href="{{this}}" rel="nofollow ugc">Bridgy Publish</a>
+            {{/each}}
+          </div>
+          {{/if}} {{#if syndicationLinks.length}}
           <div class="blog-syndication">
             <span class="blog-syndication-label" data-i18n="blog.alsoOn"
               >Also on:</span
