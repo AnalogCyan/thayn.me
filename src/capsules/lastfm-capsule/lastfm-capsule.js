@@ -519,10 +519,11 @@
 
     setWaveVisible(root, false);
     setTrackUI(root, tracks[0], "idle", profileUrl);
-    renderRecentList(root, tracks, profileUrl);
+    const historyTracks = tracks.slice(1);
+    renderRecentList(root, historyTracks, profileUrl);
 
     const toggle = root.querySelector("[data-lastfm-toggle]");
-    if (toggle) {
+    if (toggle && historyTracks.length > 0) {
       setToggleVisible(root, true);
       if (toggle.dataset.bound !== "true") {
         toggle.dataset.bound = "true";
@@ -531,6 +532,8 @@
           setRecentOpen(root, !isOpen);
         });
       }
+    } else {
+      setToggleVisible(root, false);
     }
 
     setRecentOpen(root, false);
