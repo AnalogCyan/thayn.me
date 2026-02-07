@@ -478,8 +478,35 @@
     const recent = root.querySelector("[data-lastfm-recent]");
     if (!toggle || !recent) return;
 
+    if (recent.dataset.animated !== "true") {
+      recent.dataset.animated = "true";
+      recent.hidden = false;
+      recent.addEventListener("transitionend", (event) => {
+        if (event.propertyName !== "max-height") return;
+        if (recent.classList.contains("is-open")) {
+          recent.style.maxHeight = "none";
+        }
+      });
+    }
+
     toggle.setAttribute("aria-expanded", open ? "true" : "false");
-    recent.hidden = !open;
+    if (open) {
+      recent.classList.add("is-open");
+      recent.style.maxHeight = "0px";
+      window.requestAnimationFrame(() => {
+        recent.style.maxHeight = `${recent.scrollHeight}px`;
+      });
+      return;
+    }
+
+    const currentHeight =
+      recent.style.maxHeight === "none"
+        ? recent.scrollHeight
+        : Math.max(0, recent.scrollHeight);
+    recent.style.maxHeight = `${currentHeight}px`;
+    recent.classList.remove("is-open");
+    void recent.offsetHeight;
+    recent.style.maxHeight = "0px";
   }
 
   function setIdleMode(root, tracks, profileUrl) {

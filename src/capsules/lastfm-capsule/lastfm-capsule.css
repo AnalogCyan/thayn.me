@@ -151,8 +151,27 @@
 }
 
 .lastfm-recent {
-  border-top: 1px solid var(--glass-border);
+  border-top: 1px solid transparent;
+  padding-top: 0;
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-6px);
+  overflow: hidden;
+  pointer-events: none;
+  transition:
+    max-height 320ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease,
+    transform 220ms ease,
+    padding-top 260ms ease,
+    border-color 240ms ease;
+}
+
+.lastfm-recent.is-open {
+  border-top-color: var(--glass-border);
   padding-top: 0.8rem;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .lastfm-recent ul {
