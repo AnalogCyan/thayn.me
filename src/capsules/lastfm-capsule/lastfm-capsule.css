@@ -160,21 +160,102 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.4rem;
+  gap: 0.48rem;
 }
 
 .lastfm-recent li {
-  font-size: 0.85rem;
-  color: var(--text-muted);
   min-width: 0;
 }
 
-.lastfm-recent a {
+.lastfm-recent-link {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.62rem;
+  min-height: 44px;
+  padding: 0.38rem 0.48rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--glass-grad-start) 72%, transparent),
+      color-mix(in srgb, var(--glass-grad-end) 72%, transparent)
+    ),
+    color-mix(in srgb, var(--bg-secondary) 82%, transparent);
   color: inherit;
-  display: block;
-  white-space: nowrap;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.lastfm-recent-link:hover,
+.lastfm-recent-link:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-soft);
+  border-color: color-mix(in srgb, var(--accent) 44%, var(--glass-border));
+}
+
+.lastfm-recent-link:focus-visible {
+  outline: none;
+}
+
+.lastfm-recent-art {
+  width: 36px;
+  height: 36px;
+  border-radius: 0.5rem;
+  object-fit: cover;
+  border: 1px solid var(--glass-border);
+  background:
+    linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
+    var(--bg-secondary);
+}
+
+.lastfm-recent-meta {
+  min-width: 0;
+  display: grid;
+  gap: 0.08rem;
+}
+
+.lastfm-recent-name,
+.lastfm-recent-artist {
+  margin: 0;
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lastfm-recent-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.lastfm-recent-artist {
+  font-size: 0.77rem;
+  color: var(--text-muted);
+}
+
+.lastfm-recent-time {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--text-muted);
+  border: 1px solid color-mix(in srgb, var(--glass-border) 85%, transparent);
+  border-radius: 9999px;
+  padding: 0.28rem 0.45rem;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--glass-grad-start) 65%, transparent),
+      color-mix(in srgb, var(--glass-grad-end) 65%, transparent)
+    ),
+    color-mix(in srgb, var(--bg-secondary) 76%, transparent);
 }
 
 @media (max-width: 640px) {
@@ -207,5 +288,21 @@
 
   .lastfm-track-link {
     gap: 0.55rem;
+  }
+
+  .lastfm-recent-link {
+    grid-template-columns: 34px minmax(0, 1fr);
+    row-gap: 0.22rem;
+  }
+
+  .lastfm-recent-time {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 0.04rem;
+  }
+
+  .lastfm-recent-art {
+    width: 34px;
+    height: 34px;
   }
 }

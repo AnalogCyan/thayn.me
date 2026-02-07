@@ -428,6 +428,11 @@
     tracks.slice(0, 10).forEach((track) => {
       const item = document.createElement("li");
       const link = document.createElement("a");
+      const thumb = document.createElement("img");
+      const meta = document.createElement("span");
+      const title = document.createElement("span");
+      const subtitle = document.createElement("span");
+      const time = document.createElement("span");
       const name =
         track.name || t("music.lastfmCapsule.unknownTrack", "Unknown track");
       const artist =
@@ -435,12 +440,33 @@
         t("music.lastfmCapsule.unknownArtist", "Unknown artist");
       const when = formatRelativeTime(track.dateUts);
 
+      item.className = "lastfm-recent-item";
+      link.className = "lastfm-recent-link";
       link.href = sanitizeHttpUrl(track.url) || profileUrl;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      link.textContent = when
-        ? `${name} · ${artist} · ${when}`
-        : `${name} · ${artist}`;
+
+      thumb.className = "lastfm-recent-art";
+      thumb.src = track.image || "/media/logo.svg";
+      thumb.alt = `${name} album art`;
+      thumb.loading = "lazy";
+      thumb.width = 36;
+      thumb.height = 36;
+      thumb.onerror = () => {
+        thumb.src = "/media/logo.svg";
+      };
+
+      meta.className = "lastfm-recent-meta";
+      title.className = "lastfm-recent-name";
+      subtitle.className = "lastfm-recent-artist";
+      title.textContent = name;
+      subtitle.textContent = artist;
+      meta.append(title, subtitle);
+
+      time.className = "lastfm-recent-time";
+      time.textContent = when || "recent";
+
+      link.append(thumb, meta, time);
 
       item.append(link);
       recentList.append(item);
