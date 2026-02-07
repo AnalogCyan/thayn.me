@@ -184,7 +184,7 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0.48rem;
+  gap: 0.18rem;
 }
 
 .lastfm-recent li {
@@ -198,7 +198,7 @@
   gap: 0.62rem;
   min-height: 44px;
   padding: 0.38rem 0.48rem;
-  border-radius: 0.75rem;
+  border-radius: 0.42rem;
   border: 1px solid color-mix(in srgb, var(--glass-border) 72%, transparent);
   background:
     linear-gradient(
@@ -212,6 +212,16 @@
     transform var(--transition-fast),
     box-shadow var(--transition-fast),
     border-color var(--transition-fast);
+}
+
+.lastfm-recent li:first-child .lastfm-recent-link {
+  border-top-left-radius: 0.75rem;
+  border-top-right-radius: 0.75rem;
+}
+
+.lastfm-recent li:last-child .lastfm-recent-link {
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
 }
 
 .lastfm-recent-link:hover,
