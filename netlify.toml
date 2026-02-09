@@ -54,6 +54,21 @@ to = "/.netlify/functions/lastfm-now-playing"
 status = 200
 
 [[redirects]]
+from = "/feed.xml"
+to = "/blog/rss.xml"
+status = 301
+
+[[redirects]]
+from = "/rss.xml"
+to = "/blog/rss.xml"
+status = 301
+
+[[redirects]]
+from = "/atom.xml"
+to = "/blog/atom.xml"
+status = 301
+
+[[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200
