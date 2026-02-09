@@ -15,11 +15,6 @@ remote_images = [
   "https:\\/\\/img2-ak\\.lst\\.fm\\/.*"
 ]
 
-# Edge Functions
-[[edge_functions]]
-path = "/*"
-function = "bots"
-
 # Redirects configuration
 [[redirects]]
 from = "https://git.thayn.me/*"
