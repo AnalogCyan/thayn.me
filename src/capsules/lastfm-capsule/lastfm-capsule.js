@@ -612,7 +612,7 @@
       if (root.__lastfmRefreshing) return;
       root.__lastfmRefreshing = true;
       try {
-        const response = await fetch("/.netlify/functions/lastfm-now-playing");
+        const response = await fetch("/api/lastfm-now-playing");
         const data = await response.json();
 
         if (!response.ok) {

@@ -49,6 +49,11 @@ to = "/.well-known/security.txt"
 status = 301
 
 [[redirects]]
+from = "/api/lastfm-now-playing"
+to = "/.netlify/functions/lastfm-now-playing"
+status = 200
+
+[[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200

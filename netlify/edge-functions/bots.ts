@@ -1,5 +1,5 @@
-import type { Config, Context } from "@netlify/edge-functions";
-import agentDefinitions from "./agents.json" with { type: "json" };
+import type { Context } from "@netlify/edge-functions";
+import agentDefinitions from "./agents.ts";
 
 type AgentDefinition = {
   name: string;
@@ -60,35 +60,38 @@ function detectBlockedAgent(userAgent: string | null): CompiledAgent | null {
 }
 
 export default async function botShield(request: Request, context: Context) {
-  const userAgent = request.headers.get("user-agent");
-  const matchedAgent = detectBlockedAgent(userAgent);
+  try {
+    const userAgent = request.headers.get("user-agent");
+    const matchedAgent = detectBlockedAgent(userAgent);
 
-  if (matchedAgent) {
-    context.log(
-      `Blocked ${matchedAgent.name} via user-agent: ${userAgent ?? "<missing>"}`,
-    );
+    if (matchedAgent) {
+      context.log(
+        `Blocked ${matchedAgent.name} via user-agent: ${userAgent ?? "<missing>"}`,
+      );
 
-    return new Response("AI scraping is not permitted on this site.", {
-      status: 403,
-      headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-        "Cache-Control": "no-store, no-cache, must-revalidate",
-        "X-Robots-Tag": ROBOTS_DIRECTIVE,
-        "AI-Training": AI_TRAINING_HEADER,
-      },
+      return new Response("AI scraping is not permitted on this site.", {
+        status: 403,
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Cache-Control": "no-store, no-cache, must-revalidate",
+          "X-Robots-Tag": ROBOTS_DIRECTIVE,
+          "AI-Training": AI_TRAINING_HEADER,
+        },
+      });
+    }
+
+    const upstreamResponse = await context.next();
+    const headers = new Headers(upstreamResponse.headers);
+    headers.set("X-Robots-Tag", ROBOTS_DIRECTIVE);
+    headers.set("AI-Training", AI_TRAINING_HEADER);
+
+    return new Response(upstreamResponse.body, {
+      status: upstreamResponse.status,
+      statusText: upstreamResponse.statusText,
+      headers,
     });
+  } catch (error) {
+    context.log(`botShield error; bypassing: ${String(error)}`);
+    return context.next();
   }
-
-  const upstreamResponse = await context.next();
-  const response = new Response(upstreamResponse.body, upstreamResponse);
-
-  response.headers.set("X-Robots-Tag", ROBOTS_DIRECTIVE);
-  response.headers.set("AI-Training", AI_TRAINING_HEADER);
-
-  return response;
 }
-
-export const config: Config = {
-  path: "/*",
-  onError: "bypass",
-};
