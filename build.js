@@ -913,19 +913,26 @@ function buildLocalizedVariants(attributes, body, fallbackTitle) {
 
   const variants = new Map([[defaultLang, baseVariant]]);
   const translations = attributes.translations;
+  const translationEntriesByLang = new Map();
   const languageSet = new Set([defaultLang, ...declaredLanguages]);
 
   Array.from(bodySections.keys()).forEach((lang) => languageSet.add(lang));
   if (translations && typeof translations === "object") {
-    Object.keys(translations).forEach((lang) =>
-      languageSet.add(normalizeLanguageKey(lang)),
-    );
+    Object.entries(translations).forEach(([lang, entry]) => {
+      const normalizedLang = normalizeLanguageKey(lang);
+      if (!normalizedLang) return;
+      languageSet.add(normalizedLang);
+
+      // Keep the first translation for a normalized key, but prefer exact base keys.
+      if (!translationEntriesByLang.has(normalizedLang) || lang === normalizedLang) {
+        translationEntriesByLang.set(normalizedLang, entry);
+      }
+    });
   }
 
   for (const lang of languageSet) {
     if (!lang) continue;
-    const translationEntry =
-      translations && typeof translations === "object" ? translations[lang] : null;
+    const translationEntry = translationEntriesByLang.get(lang) || null;
     const parsedTranslation = parseTranslationEntry(translationEntry);
     const section = bodySections.get(lang) || null;
     const sectionBody = section ? section.body : "";
