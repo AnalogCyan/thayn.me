@@ -79,7 +79,8 @@ export default async function botShield(request: Request, context: Context) {
     });
   }
 
-  const response = await context.next();
+  const upstreamResponse = await context.next();
+  const response = new Response(upstreamResponse.body, upstreamResponse);
 
   response.headers.set("X-Robots-Tag", ROBOTS_DIRECTIVE);
   response.headers.set("AI-Training", AI_TRAINING_HEADER);
@@ -88,5 +89,6 @@ export default async function botShield(request: Request, context: Context) {
 }
 
 export const config: Config = {
-  path: "*",
+  path: "/*",
+  onError: "bypass",
 };

@@ -25,15 +25,6 @@ function sanitizeLastfmTrackUrl(value) {
   }
 }
 
-export const config = {
-  path: "/.netlify/functions/lastfm-now-playing",
-  rateLimit: {
-    windowLimit: 120,
-    windowSize: 60,
-    aggregateBy: ["ip", "domain"],
-  },
-};
-
 function pickImage(track) {
   const images = Array.isArray(track?.image) ? track.image : [];
   for (let i = images.length - 1; i >= 0; i -= 1) {
