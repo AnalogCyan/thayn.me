@@ -7,6 +7,10 @@ html {
   min-height: 100%;
 }
 
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   margin: 0;
   padding: calc(var(--header-gap) + env(safe-area-inset-top))
@@ -166,6 +170,7 @@ a:hover {
     transform var(--transition-fast),
     box-shadow var(--transition-fast);
   transform-origin: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .button:hover,
