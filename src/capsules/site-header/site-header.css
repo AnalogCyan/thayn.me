@@ -179,10 +179,7 @@
 .nav-pill__link.is-active i,
 .nav-pill__link:hover .nav-pill__text,
 .nav-pill__link:focus .nav-pill__text,
-.nav-pill__link.is-active .nav-pill__text,
-.nav-pill__toggle:hover i,
-.nav-pill__toggle:focus i,
-.nav-pill--open .nav-pill__toggle i {
+.nav-pill__link.is-active .nav-pill__text {
   transform: translateY(-1px) scale(1.03);
 }
 
