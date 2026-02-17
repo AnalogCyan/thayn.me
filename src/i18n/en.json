@@ -30,10 +30,13 @@
   },
   "about": {
     "title": "About Me",
-    "intro": "Hi, I’m Cyan—online I go by AnalogCyan. I use she/her pronouns, and I’m proudly neurodivergent. That means my brain takes its own path sometimes, so I really appreciate your patience!",
-    "body1": "By day, you can find me fixing up broken tech. By night, I’m usually programming, tinkering with gadgets, or chasing whatever random idea has grabbed my attention. Outside of work, I’m into linguistics, retro games, speedrunning, and collecting cassette tapes. They’re clunky yet charming!",
-    "body2": "Oh, and one last thing: take care of your digital security! If you’re not already using a password manager, 2fa, or passkeys, now’s a great time to start. I personally recommend 1Password, but honestly, anything’s better than using your pet’s name for every login.",
-    "elsewhere": "Elsewhere"
+    "intro": "Hi, I’m Cyan. Online, I go by AnalogCyan. I use she/her pronouns, and I am proudly neurodivergent. My brain tends to take its own path, and I appreciate your patience when it does.",
+    "body1": "You can usually find me programming, tinkering with gadgets, or chasing whatever idea has captured my attention. I am drawn to novelty and a bit of whimsy, especially tactile, slightly imperfect tech that feels intentional and full of character.",
+    "body2": "If you would like to see what I am working on or listening to, explore the site or follow the links below to find me elsewhere online.",
+    "elsewhere": "Elsewhere",
+    "pronouns": "Pronouns.page",
+    "mastodon": "Mastodon",
+    "bluesky": "Bluesky"
   },
   "projects": {
     "intro": "Explore some of the projects I've created or contributed to. Click on any to learn more! For additional projects, visit my GitHub. Unless otherwise noted, content on this website is licensed under GPLv3.",
