@@ -21,7 +21,7 @@ const STYLES_DIR = path.join(SRC_DIR, "styles");
 const SCRIPTS_DIR = path.join(SRC_DIR, "scripts");
 const PUBLIC_DIR = path.join(__dirname, "public");
 const CONFIG_PATH = path.join(SRC_DIR, "config.json");
-const STANDALONE_SCRIPTS = new Set(["theme-init.js"]);
+const STANDALONE_SCRIPTS = new Set(["theme-init.js", "i18n-init.js"]);
 
 const BLOG_DIR = path.join(SRC_DIR, "blog");
 const BLOG_POSTS_DIR = path.join(BLOG_DIR, "posts");

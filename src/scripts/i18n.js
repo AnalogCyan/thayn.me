@@ -147,6 +147,8 @@
     document.documentElement.setAttribute("data-lang", setting);
 
     applyTranslations(document);
+    document.documentElement.removeAttribute("data-i18n-pending");
+    document.documentElement.setAttribute("data-i18n-ready", "true");
 
     const event = new CustomEvent("th-i18n-ready", {
       detail: {
