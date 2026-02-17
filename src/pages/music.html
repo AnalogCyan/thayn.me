@@ -65,27 +65,30 @@
       <drop capsule="lastfm-capsule"></drop>
 
       <section class="glass section-card">
+        <div class="section-title">
+          <h2 data-i18n="music.libraryTitle">Self-Hosted Library</h2>
+        </div>
         <p data-i18n-html="music.clientsBody">
           I host my personal music library on Valkyrie, my homelab server,
-          powered by <a href="https://www.navidrome.org/">Navidrome</a>.
+          using <a href="https://www.navidrome.org/">Navidrome</a>.
         </p>
         <p data-i18n="music.clientsBody2">
           Every album I care about lives there in full quality, properly
           tagged, with artwork and metadata exactly how I want it. No
-          disappearing licenses. No surprise edits. No algorithm quietly
-          reshuffling my taste.
+          disappears because of licensing changes. Nothing gets edited or
+          swapped out without me knowing.
         </p>
         <p data-i18n="music.clientsBody3">
           I prefer owning my music instead of renting access to it. Streaming
-          is convenient, but convenience isn’t the same thing as control. When
-          you self-host, your library is yours. It works offline. It doesn’t
-          get pulled. It doesn’t change unless you change it.
+          is convenient, but convenience is not the same thing as control. When
+          you self host, your library is yours. It works offline. It does not
+          get pulled. It does not change unless you decide to change it.
         </p>
         <p data-i18n="music.clientsBody4">
-          If that idea appeals to you, this setup is surprisingly approachable.
-          All you really need are your files, a small server (or even a spare
-          machine), and the right client apps to stream from your own
-          collection.
+          If that approach appeals to you, it is more approachable than it
+          sounds. All you really need are your files, a small server or spare
+          machine, and the right client apps to access your collection from
+          anywhere.
         </p>
         <p data-i18n="music.clientsLead">
           These are the clients I recommend:
@@ -126,35 +129,50 @@
 
       <section class="glass section-card">
         <div class="section-title">
-          <h2>🎧 <span data-i18n="music.title">Music</span></h2>
+          <h2 data-i18n="music.profilesTitle">Music Profiles</h2>
         </div>
         <p data-i18n="music.body">
-          A space for mixes, cassette finds, and soundtracks that keep me
-          building. I’ll be publishing playlists and listening notes here soon.
+          You can find me on a variety of music related platforms. Not every
+          profile is up-to-date, but they are all collected here for the sake
+          of completeness.
         </p>
-        <p data-i18n="music.prompt">
-          In the meantime, here are my music profiles:
+        <p data-i18n="music.body2">
+          For a live look at what is actually in rotation, the Last.fm widget
+          at the top of the page mirrors my current listening activity from my
+          library and links directly to my profile there.
         </p>
-        <div class="hero-actions">
+        <nav class="client-link-group" aria-label="Music profile links">
           <a
-            class="button secondary"
+            class="button secondary client-link client-link--first"
             href="https://beta.musicbrainz.org/user/AnalogCyan"
-            data-i18n="music.musicbrainz"
-            >MusicBrainz →</a
           >
+            <span
+              class="client-link__logo client-link__logo--musicbrainz"
+              aria-hidden="true"
+            ></span>
+            <span data-i18n="music.musicbrainz">MusicBrainz</span>
+          </a>
           <a
-            class="button secondary"
+            class="button secondary client-link client-link--middle"
             href="https://www.discogs.com/user/AnalogCyan/collection?folder=4319456"
-            data-i18n="music.discogs"
-            >Discogs →</a
           >
+            <span
+              class="client-link__logo client-link__logo--discogs"
+              aria-hidden="true"
+            ></span>
+            <span data-i18n="music.discogs">Discogs</span>
+          </a>
           <a
-            class="button secondary"
+            class="button secondary client-link client-link--last"
             href="https://bandcamp.com/analogcyan"
-            data-i18n="music.bandcamp"
-            >Bandcamp →</a
           >
-        </div>
+            <span
+              class="client-link__logo client-link__logo--bandcamp"
+              aria-hidden="true"
+            ></span>
+            <span data-i18n="music.bandcamp">Bandcamp</span>
+          </a>
+        </nav>
       </section>
     </main>
 

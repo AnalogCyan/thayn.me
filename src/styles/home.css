@@ -64,6 +64,7 @@
   display: flex;
   gap: 0.08rem;
   width: min(100%, 52rem);
+  margin-inline: auto;
 }
 
 .client-link {
@@ -136,6 +137,21 @@
 .client-link__logo--navic {
   -webkit-mask-image: url("/media/navic.svg");
   mask-image: url("/media/navic.svg");
+}
+
+.client-link__logo--musicbrainz {
+  -webkit-mask-image: url("/media/musicbrainz.svg");
+  mask-image: url("/media/musicbrainz.svg");
+}
+
+.client-link__logo--discogs {
+  -webkit-mask-image: url("/media/discogs.svg");
+  mask-image: url("/media/discogs.svg");
+}
+
+.client-link__logo--bandcamp {
+  -webkit-mask-image: url("/media/bandcamp.svg");
+  mask-image: url("/media/bandcamp.svg");
 }
 
 .profile-pic {
@@ -261,6 +277,7 @@
   .client-link-group {
     flex-direction: column;
     width: min(20rem, 100%);
+    align-self: center;
   }
 
   .client-link.client-link--first {
