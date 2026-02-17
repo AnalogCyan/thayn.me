@@ -60,6 +60,84 @@
   flex-wrap: wrap;
 }
 
+.client-link-group {
+  display: flex;
+  gap: 0.08rem;
+  width: min(100%, 52rem);
+}
+
+.client-link {
+  --client-pill-radius: 1.375rem;
+  --client-radius-edge: 0.84rem;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 2.75rem;
+  justify-content: center;
+  text-align: center;
+  border-radius: var(--client-pill-radius);
+  transition:
+    flex-grow var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.client-link-group:hover .client-link:not(:hover) {
+  flex-grow: 0.88;
+}
+
+.client-link:hover {
+  flex-grow: 1.12;
+}
+
+.client-link.client-link--first {
+  border-radius: var(--client-pill-radius) var(--client-radius-edge)
+    var(--client-radius-edge) var(--client-pill-radius);
+}
+
+.client-link.client-link--middle {
+  border-radius: var(--client-radius-edge);
+}
+
+.client-link.client-link--last {
+  border-radius: var(--client-radius-edge) var(--client-pill-radius)
+    var(--client-pill-radius) var(--client-radius-edge);
+}
+
+.client-link__badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  line-height: 1;
+}
+
+.client-link__badges i {
+  font-size: 1rem;
+}
+
+.client-link__logo {
+  width: 0.98rem;
+  height: 0.98rem;
+  display: inline-block;
+  flex: 0 0 auto;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+
+.client-link__logo--feishin {
+  -webkit-mask-image: url("/media/feishin.png");
+  mask-image: url("/media/feishin.png");
+}
+
+.client-link__logo--navic {
+  -webkit-mask-image: url("/media/navic.svg");
+  mask-image: url("/media/navic.svg");
+}
+
 .profile-pic {
   grid-area: pic;
   width: clamp(140px, 20vw, 200px);
@@ -178,6 +256,25 @@
   .hero-actions {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .client-link-group {
+    flex-direction: column;
+    width: min(20rem, 100%);
+  }
+
+  .client-link.client-link--first {
+    border-radius: var(--client-pill-radius) var(--client-pill-radius)
+      var(--client-radius-edge) var(--client-radius-edge);
+  }
+
+  .client-link.client-link--middle {
+    border-radius: var(--client-radius-edge);
+  }
+
+  .client-link.client-link--last {
+    border-radius: var(--client-radius-edge) var(--client-radius-edge)
+      var(--client-pill-radius) var(--client-pill-radius);
   }
 }
 
