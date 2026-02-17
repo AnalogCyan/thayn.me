@@ -6,6 +6,7 @@
   "scripts": {
     "build": "node build.js",
     "dev": "npm run build && npx serve public -l 3000",
+    "lint": "eslint .",
     "format": "prettier --write .",
     "syndicate": "node scripts/syndicate-bridgy.js"
   },
@@ -18,6 +19,8 @@
     "node": ">=24"
   },
   "devDependencies": {
-    "prettier": "^3.8.1"
+    "eslint": "^8.57.1",
+    "prettier": "^3.8.1",
+    "serve": "14.2.4"
   }
 }

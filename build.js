@@ -8,7 +8,7 @@ import {
   getSiteUrl,
   getCanonicalBlogPath,
   isProductionBuild,
-} from "./site-url.js";
+} from "./lib/site-url.js";
 import { canonicalizeUrl, toAbsoluteUrl } from "./lib/url.js";
 import { sanitizeExternalUrl } from "./lib/sanitize-url.js";
 

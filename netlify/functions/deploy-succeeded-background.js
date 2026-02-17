@@ -22,7 +22,7 @@ import {
   shouldMarkRequested,
 } from "../../lib/syndication-policy.js";
 import { canonicalizeUrl } from "../../lib/url.js";
-import { getCanonicalBlogPath, getSiteUrl } from "../../site-url.js";
+import { getCanonicalBlogPath, getSiteUrl } from "../../lib/site-url.js";
 
 const POSTS_DIR = "src/blog/posts";
 const COMMIT_PREFIX = process.env.SYNDICATION_COMMIT_PREFIX || "Syndication:";

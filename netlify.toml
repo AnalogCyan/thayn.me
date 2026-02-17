@@ -3,12 +3,11 @@
 [build]
 # Directory to publish
 publish = "public"
-command = "node build.js"
+command = "npm run build"
 
 [build.environment]
 NODE_VERSION = "24"
 
-# Edge Functions
 [[edge_functions]]
 path = "/*"
 function = "bots"
@@ -78,25 +77,18 @@ from = "/*"
 to = "/index.html"
 status = 200
 
-# Custom headers for security and anti-AI directives
+# Headers
 [[headers]]
 for = "/*"
 [headers.values]
-# Prevent clickjacking
 X-Frame-Options = "DENY"
-# Enable HSTS with a max age of 1 year
 Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
-# Prevent MIME type sniffing
 X-Content-Type-Options = "nosniff"
-# Enable XSS protection
 X-XSS-Protection = "1; mode=block"
-# Content Security Policy
 Content-Security-Policy = "default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com; connect-src 'self';"
-# HTML: always revalidate
+Referrer-Policy = "strict-origin-when-cross-origin"
 Cache-Control = "public, max-age=0, must-revalidate"
-# Disallow AI model training reuse
 AI-Training = "none"
-# Hint LLM and image scrapers to respect opt-out
 X-Robots-Tag = "noai, noimageai"
 
 # Headers for specific paths
