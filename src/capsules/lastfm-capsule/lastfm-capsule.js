@@ -11,7 +11,6 @@
   const DARK_SURFACE = { r: 8, g: 12, b: 20, a: 0.68 };
   let recentListIdCounter = 0;
 
-  // B3: Shared canvas reused across all color-sampling calls.
   let _sharedCanvas = null;
   let _sharedCtx = null;
   function getSharedCanvas() {
@@ -22,7 +21,6 @@
     return { canvas: _sharedCanvas, ctx: _sharedCtx };
   }
 
-  // B2: Per-root element cache — built once on first access.
   function getEls(root) {
     if (!root.__els) {
       root.__els = {
@@ -143,7 +141,6 @@
       );
       applyThemeAdjustedVisualizerColor(root);
     } catch {
-      // Ignore color sampling failures and keep default accent color.
     }
   }
 
