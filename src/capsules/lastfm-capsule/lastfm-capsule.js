@@ -11,14 +11,44 @@
   const DARK_SURFACE = { r: 8, g: 12, b: 20, a: 0.68 };
   let recentListIdCounter = 0;
 
+  // B3: Shared canvas reused across all color-sampling calls.
+  let _sharedCanvas = null;
+  let _sharedCtx = null;
+  function getSharedCanvas() {
+    if (!_sharedCanvas) {
+      _sharedCanvas = document.createElement("canvas");
+      _sharedCtx = _sharedCanvas.getContext("2d");
+    }
+    return { canvas: _sharedCanvas, ctx: _sharedCtx };
+  }
+
+  // B2: Per-root element cache — built once on first access.
+  function getEls(root) {
+    if (!root.__els) {
+      root.__els = {
+        art: root.querySelector("[data-lastfm-art]"),
+        trackLink: root.querySelector("[data-lastfm-track-link]"),
+        name: root.querySelector("[data-lastfm-name]"),
+        artist: root.querySelector("[data-lastfm-artist]"),
+        context: root.querySelector("[data-lastfm-context]"),
+        profileLink: root.querySelector("[data-lastfm-link]"),
+        wave: root.querySelector("[data-lastfm-wave]"),
+        toggle: root.querySelector("[data-lastfm-toggle]"),
+        recentList: root.querySelector("[data-lastfm-recent-list]"),
+        recent: root.querySelector("[data-lastfm-recent]"),
+        bars: Array.from(root.querySelectorAll("[data-lastfm-wave] span")),
+      };
+    }
+    return root.__els;
+  }
+
   function isAllowedLastfmHost(hostname) {
     const host = String(hostname || "").toLowerCase();
     return host === "last.fm" || host.endsWith(".last.fm");
   }
 
   function assignRecentControlsId(root) {
-    const toggle = root.querySelector("[data-lastfm-toggle]");
-    const recentList = root.querySelector("[data-lastfm-recent-list]");
+    const { toggle, recentList } = getEls(root);
     if (!toggle || !recentList) return;
 
     if (!recentList.id) {
@@ -77,11 +107,10 @@
       const h = Math.max(1, Math.min(imageEl.naturalHeight || 0, 32));
       if (!w || !h) return;
 
-      const canvas = document.createElement("canvas");
+      const { canvas, ctx } = getSharedCanvas();
+      if (!ctx) return;
       canvas.width = w;
       canvas.height = h;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
 
       ctx.drawImage(imageEl, 0, 0, w, h);
       const data = ctx.getImageData(0, 0, w, h).data;
@@ -311,14 +340,14 @@
       root.__lastfmVizTimer = null;
     }
 
-    const bars = root.querySelectorAll("[data-lastfm-wave] span");
+    const { bars } = getEls(root);
     bars.forEach((bar) => {
       bar.style.height = "10px";
     });
   }
 
   function startVisualizer(root) {
-    const bars = Array.from(root.querySelectorAll("[data-lastfm-wave] span"));
+    const { bars } = getEls(root);
     if (bars.length === 0) return;
 
     stopVisualizer(root);
@@ -340,13 +369,8 @@
   }
 
   function setTrackUI(root, track, mode, profileUrl) {
-    const art = root.querySelector("[data-lastfm-art]");
-    const trackLink = root.querySelector("[data-lastfm-track-link]");
-    const name = root.querySelector("[data-lastfm-name]");
-    const artist = root.querySelector("[data-lastfm-artist]");
-    const context = root.querySelector("[data-lastfm-context]");
-    const profileLink = root.querySelector("[data-lastfm-link]");
-    const wave = root.querySelector("[data-lastfm-wave]");
+    const { art, trackLink, name, artist, context, profileLink, wave } =
+      getEls(root);
 
     const safeName =
       track?.name || t("music.lastfmCapsule.unknownTrack", "Unknown track");
@@ -400,7 +424,7 @@
   }
 
   function setWaveVisible(root, visible) {
-    const wave = root.querySelector("[data-lastfm-wave]");
+    const { wave } = getEls(root);
     if (!wave) return;
     wave.hidden = !visible;
     wave.classList.toggle("is-active", visible);
@@ -412,7 +436,7 @@
   }
 
   function setToggleVisible(root, visible) {
-    const toggle = root.querySelector("[data-lastfm-toggle]");
+    const { toggle } = getEls(root);
     if (!toggle) return;
     toggle.hidden = !visible;
     if (!visible) {
@@ -421,7 +445,7 @@
   }
 
   function renderRecentList(root, tracks, profileUrl) {
-    const recentList = root.querySelector("[data-lastfm-recent-list]");
+    const { recentList } = getEls(root);
     if (!recentList) return;
 
     recentList.innerHTML = "";
@@ -474,8 +498,7 @@
   }
 
   function setRecentOpen(root, open) {
-    const toggle = root.querySelector("[data-lastfm-toggle]");
-    const recent = root.querySelector("[data-lastfm-recent]");
+    const { toggle, recent } = getEls(root);
     if (!toggle || !recent) return;
 
     if (recent.dataset.animated !== "true") {
@@ -490,6 +513,10 @@
     }
 
     toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    toggle.setAttribute(
+      "aria-label",
+      open ? "Hide recent tracks" : "Show recent tracks",
+    );
     if (open) {
       recent.classList.add("is-open");
       recent.style.maxHeight = "0px";
@@ -522,7 +549,7 @@
     const historyTracks = tracks.slice(1);
     renderRecentList(root, historyTracks, profileUrl);
 
-    const toggle = root.querySelector("[data-lastfm-toggle]");
+    const { toggle } = getEls(root);
     if (toggle && historyTracks.length > 0) {
       setToggleVisible(root, true);
       if (toggle.dataset.bound !== "true") {
@@ -566,7 +593,7 @@
       profileUrl,
     );
 
-    const context = root.querySelector("[data-lastfm-context]");
+    const { context } = getEls(root);
     if (context) context.textContent = "";
   }
 

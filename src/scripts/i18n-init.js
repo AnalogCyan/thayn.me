@@ -1,6 +1,7 @@
 (() => {
   const STORAGE_KEY = "thayn-lang";
   const DEFAULT_LANG = "en";
+  const SUPPORTED = ["en", "tok"];
 
   function normalizeLang(value) {
     if (!value) return null;
@@ -19,7 +20,7 @@
     if (navigator.language) prefs.push(navigator.language);
     for (const pref of prefs) {
       const norm = normalizeLang(pref);
-      if (norm) return norm;
+      if (norm && SUPPORTED.includes(norm)) return norm;
     }
     return DEFAULT_LANG;
   }

@@ -126,25 +126,6 @@
   opacity: 1;
 }
 
-.page-shell[data-nav-page="home"] .nav-pill__link[data-nav="home"],
-.page-shell[data-nav-page="about"] .nav-pill__link[data-nav="about"],
-.page-shell[data-nav-page="projects"] .nav-pill__link[data-nav="projects"],
-.page-shell[data-nav-page="blog"] .nav-pill__link[data-nav="blog"],
-.page-shell[data-nav-page="photos"] .nav-pill__link[data-nav="photos"],
-.page-shell[data-nav-page="music"] .nav-pill__link[data-nav="music"] {
-  color: var(--text);
-}
-
-.page-shell[data-nav-page="home"] .nav-pill__link[data-nav="home"]::before,
-.page-shell[data-nav-page="about"] .nav-pill__link[data-nav="about"]::before,
-.page-shell[data-nav-page="projects"]
-  .nav-pill__link[data-nav="projects"]::before,
-.page-shell[data-nav-page="blog"] .nav-pill__link[data-nav="blog"]::before,
-.page-shell[data-nav-page="photos"] .nav-pill__link[data-nav="photos"]::before,
-.page-shell[data-nav-page="music"] .nav-pill__link[data-nav="music"]::before {
-  opacity: 1;
-}
-
 .nav-pill__link:hover::after,
 .nav-pill__link:focus::after,
 .nav-pill__link.is-active::after,
@@ -183,32 +164,6 @@
   transform: translateY(-1px) scale(1.03);
 }
 
-.page-shell[data-nav-page="home"] .nav-pill__link[data-nav="home"] i,
-.page-shell[data-nav-page="about"] .nav-pill__link[data-nav="about"] i,
-.page-shell[data-nav-page="projects"] .nav-pill__link[data-nav="projects"] i,
-.page-shell[data-nav-page="blog"] .nav-pill__link[data-nav="blog"] i,
-.page-shell[data-nav-page="photos"] .nav-pill__link[data-nav="photos"] i,
-.page-shell[data-nav-page="music"] .nav-pill__link[data-nav="music"] i,
-.page-shell[data-nav-page="home"]
-  .nav-pill__link[data-nav="home"]
-  .nav-pill__text,
-.page-shell[data-nav-page="about"]
-  .nav-pill__link[data-nav="about"]
-  .nav-pill__text,
-.page-shell[data-nav-page="projects"]
-  .nav-pill__link[data-nav="projects"]
-  .nav-pill__text,
-.page-shell[data-nav-page="blog"]
-  .nav-pill__link[data-nav="blog"]
-  .nav-pill__text,
-.page-shell[data-nav-page="photos"]
-  .nav-pill__link[data-nav="photos"]
-  .nav-pill__text,
-.page-shell[data-nav-page="music"]
-  .nav-pill__link[data-nav="music"]
-  .nav-pill__text {
-  transform: translateY(-1px) scale(1.03);
-}
 
 .nav-pill__link i {
   font-size: 1.25rem;

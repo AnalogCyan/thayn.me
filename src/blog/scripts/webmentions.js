@@ -292,7 +292,7 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
       latestBuckets = buckets;
       render(buckets);
     } catch (err) {
-      if (err.name !== "AbortError") {
+      if (err.name === "AbortError") {
         return;
       }
     } finally {
