@@ -66,25 +66,67 @@
         <div class="section-title">
           <h2 data-i18n="nav.projects">Projects</h2>
         </div>
-        <p data-i18n="projects.intro">
-          Explore some of the projects I've created or contributed to. Click on
-          any to learn more! For additional projects, visit my GitHub (linked
-          above). Unless otherwise noted, content on this website is licensed
-          under
-          <a href="https://choosealicense.com/licenses/gpl-3.0/">GPLv3</a>.
-        </p>
-        <div class="hero-actions">
-          <a
-            class="button secondary"
-            href="https://github.com/AnalogCyan"
-            data-i18n="projects.github"
-            >GitHub →</a
+        <p data-i18n-html="projects.intro">
+          Explore some of the projects I've created or contributed to; click on
+          any to learn more! For code-related projects, visit my GitHub; for
+          non-code projects, explore around my site! I'm also a part of
+          <a href="https://jonnil.games">Jonnil Games</a>, where I manage the
+          website and help make games. Unless otherwise noted, code on this
+          website is licensed under
+          <a href="https://github.com/AnalogCyan/thayn.me/blob/main/LICENSE"
+            >AGPLv3</a
           >
-        </div>
+          and content is licensed under
+          <a
+            href="https://github.com/AnalogCyan/thayn.me/blob/main/LICENSE-CONTENT"
+            >CC BY-SA 4.0</a
+          >.
+        </p>
+        <nav class="client-link-group" aria-label="Project links">
+          <a
+            class="button secondary client-link client-link--first"
+            href="https://github.com/AnalogCyan"
+          >
+            <i class="ri-github-fill" aria-hidden="true"></i>
+            <span data-i18n="projects.github">GitHub</span>
+          </a>
+          <a
+            class="button secondary client-link client-link--last"
+            href="https://jonnil.games"
+          >
+            <img
+              src="https://jonnil.games/favicon.ico"
+              alt=""
+              aria-hidden="true"
+              class="client-link__favicon"
+            />
+            <span data-i18n="projects.jonnilgames">Jonnil Games</span>
+          </a>
+        </nav>
 
         <div class="project-grid">
           <article class="project">
-            <a href="https://github.com/AnalogCyan/Sticky-Paws-Server">
+            <a href="https://jonnil.games/games/asylum/">
+              <div class="project-header">
+                <h3>
+                  🏚️
+                  <span data-i18n="projects.items.asylum.title"
+                    >Juni's Asylum</span
+                  >
+                </h3>
+                <div class="tags">
+                  <span class="tag wip">WIP</span>
+                </div>
+              </div>
+              <p data-i18n="projects.items.asylum.desc">
+                A horror adventure game with platforming, puzzles, and branching
+                narrative. Made by Jonnil Games.
+              </p>
+            </a>
+          </article>
+
+          <article class="project">
+            <a href="https://jonnil.games/games/sticky/">
               <div class="project-header">
                 <h3>
                   🐾
@@ -99,71 +141,8 @@
                 </div>
               </div>
               <p data-i18n="projects.items.sticky.desc">
-                A 2D platformer game about a cat that can climb anything! Main
-                game by Jonnil; server code by me.
-              </p>
-            </a>
-          </article>
-
-          <article class="project">
-            <a href="https://github.com/AnalogCyan/SwiftWin">
-              <div class="project-header">
-                <h3>
-                  🔮
-                  <span data-i18n="projects.items.swiftwin.title"
-                    >SwiftWin</span
-                  >
-                </h3>
-                <div class="tags">
-                  <span class="tag wip">WIP</span>
-                  <span class="tag">PowerShell</span>
-                  <span class="tag">GPLv3</span>
-                </div>
-              </div>
-              <p data-i18n="projects.items.swiftwin.desc">
-                PowerShell utility for performing a series of Windows
-                maintenance tasks I commonly use when cleaning up and optimizing
-                a system.
-              </p>
-            </a>
-          </article>
-
-          <article class="project">
-            <a href="https://github.com/AnalogCyan/itadakimasu">
-              <div class="project-header">
-                <h3>
-                  🔑
-                  <span data-i18n="projects.items.itadakimasu.title"
-                    >Itadakimasu</span
-                  >
-                </h3>
-                <div class="tags">
-                  <span class="tag">PWA</span>
-                  <span class="tag">GPLv3</span>
-                </div>
-              </div>
-              <p data-i18n="projects.items.itadakimasu.desc">
-                Random recipe password generator web app inspired by episode
-                "Nice Security Hollywood Terror" of the Random but Memorable
-                podcast from 1Password.
-              </p>
-            </a>
-          </article>
-
-          <article class="project">
-            <a href="https://github.com/AnalogCyan/thayn.cc">
-              <div class="project-header">
-                <h3>
-                  🔗
-                  <span data-i18n="projects.items.thayncc.title">thayn.cc</span>
-                </h3>
-                <div class="tags">
-                  <span class="tag">Python</span>
-                  <span class="tag">GPLv3</span>
-                </div>
-              </div>
-              <p data-i18n="projects.items.thayncc.desc">
-                A simple from-scratch private link shortener API.
+                A 2D platformer game about a cat that can climb anything! Made
+                by Jonnil Games.
               </p>
             </a>
           </article>
@@ -208,27 +187,6 @@
             </a>
           </article>
 
-          <article class="project">
-            <a href="https://github.com/Box-Analyst/InventorySystem">
-              <div class="project-header">
-                <h3>
-                  🏥
-                  <span data-i18n="projects.items.inventory.title"
-                    >InventorySystem</span
-                  >
-                </h3>
-                <div class="tags">
-                  <span class="tag">UWP</span>
-                  <span class="tag">AGPLv3</span>
-                </div>
-              </div>
-              <p data-i18n="projects.items.inventory.desc">
-                Medical sample inventory management system, created as our
-                senior project in the COMS 4043 course at Arkansas Tech
-                University.
-              </p>
-            </a>
-          </article>
         </div>
       </section>
     </main>

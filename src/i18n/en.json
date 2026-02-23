@@ -38,24 +38,17 @@
     "bluesky": "Bluesky"
   },
   "projects": {
-    "intro": "Explore some of the projects I've created or contributed to. Click on any to learn more! For additional projects, visit my GitHub. Unless otherwise noted, content on this website is licensed under GPLv3.",
-    "github": "GitHub →",
+    "intro": "Explore some of the projects I've created or contributed to; click on any to learn more! For code-related projects, visit my GitHub; for non-code projects, explore around my site! I'm also a part of <a href=\"https://jonnil.games\">Jonnil Games</a>, where I manage the website and help make games. Unless otherwise noted, code on this website is licensed under <a href=\"https://github.com/AnalogCyan/thayn.me/blob/main/LICENSE\">AGPLv3</a> and content is licensed under <a href=\"https://github.com/AnalogCyan/thayn.me/blob/main/LICENSE-CONTENT\">CC BY-SA 4.0</a>.",
+    "github": "GitHub",
+    "jonnilgames": "Jonnil Games",
     "items": {
+      "asylum": {
+        "title": "Juni's Asylum",
+        "desc": "A horror adventure game with platforming, puzzles, and branching narrative. Made by Jonnil Games."
+      },
       "sticky": {
         "title": "Sticky Paws",
-        "desc": "A 2D platformer game about a cat that can climb anything! Main game by Jonnil; server code by me."
-      },
-      "swiftwin": {
-        "title": "SwiftWin",
-        "desc": "PowerShell utility for performing a series of Windows maintenance tasks I commonly use when cleaning up and optimizing a system."
-      },
-      "itadakimasu": {
-        "title": "Itadakimasu",
-        "desc": "Random recipe password generator web app inspired by episode \"Nice Security Hollywood Terror\" of the Random but Memorable podcast from 1Password."
-      },
-      "thayncc": {
-        "title": "thayn.cc",
-        "desc": "A simple from-scratch private link shortener API."
+        "desc": "A 2D platformer game about a cat that can climb anything! Made by Jonnil Games."
       },
       "dor": {
         "title": "DNS-over-RNG",
@@ -64,10 +57,6 @@
       "mobs": {
         "title": "More Vanilla Mobs",
         "desc": "Minecraft 1.17+ data pack that implements some of the mobs that technically exist in the game, but don't appear in survival."
-      },
-      "inventory": {
-        "title": "InventorySystem",
-        "desc": "Medical sample inventory management system, created as our senior project in the COMS 4043 course at Arkansas Tech University."
       }
     }
   },

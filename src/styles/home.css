@@ -154,6 +154,14 @@
   mask-image: url("/media/bandcamp.svg");
 }
 
+.client-link__favicon {
+  width: 0.98rem;
+  height: 0.98rem;
+  display: inline-block;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .profile-pic {
   grid-area: pic;
   width: clamp(140px, 20vw, 200px);
