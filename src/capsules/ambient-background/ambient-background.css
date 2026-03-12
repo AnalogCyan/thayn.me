@@ -8,8 +8,6 @@
   overflow: hidden;
   background-color: var(--page-bg);
   transition: background-color 0.5s ease;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
 }
 
 .gradient-node {
@@ -17,9 +15,10 @@
   border-radius: 50%;
   filter: blur(120px);
   opacity: 0.8;
+  will-change: transform;
   transition: background-color 1s ease;
   transform-origin: center;
-  transform: scale(1.5);
+  transform: translateZ(0) scale(1.5);
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
@@ -89,64 +88,64 @@
 @keyframes float1 {
   0%,
   100% {
-    transform: translate(10%, 10%) scale(1.5);
+    transform: translate3d(10%, 10%, 0) scale(1.5);
   }
   25% {
-    transform: translate(15%, 30%) scale(1.6);
+    transform: translate3d(15%, 30%, 0) scale(1.6);
   }
   50% {
-    transform: translate(30%, 15%) scale(1.5);
+    transform: translate3d(30%, 15%, 0) scale(1.5);
   }
   75% {
-    transform: translate(20%, 25%) scale(1.7);
+    transform: translate3d(20%, 25%, 0) scale(1.7);
   }
 }
 
 @keyframes float2 {
   0%,
   100% {
-    transform: translate(60%, 20%) scale(1.5);
+    transform: translate3d(60%, 20%, 0) scale(1.5);
   }
   25% {
-    transform: translate(40%, 30%) scale(1.7);
+    transform: translate3d(40%, 30%, 0) scale(1.7);
   }
   50% {
-    transform: translate(50%, 60%) scale(1.5);
+    transform: translate3d(50%, 60%, 0) scale(1.5);
   }
   75% {
-    transform: translate(70%, 45%) scale(1.6);
+    transform: translate3d(70%, 45%, 0) scale(1.6);
   }
 }
 
 @keyframes float3 {
   0%,
   100% {
-    transform: translate(20%, 70%) scale(1.5);
+    transform: translate3d(20%, 70%, 0) scale(1.5);
   }
   25% {
-    transform: translate(30%, 50%) scale(1.7);
+    transform: translate3d(30%, 50%, 0) scale(1.7);
   }
   50% {
-    transform: translate(15%, 60%) scale(1.6);
+    transform: translate3d(15%, 60%, 0) scale(1.6);
   }
   75% {
-    transform: translate(25%, 80%) scale(1.5);
+    transform: translate3d(25%, 80%, 0) scale(1.5);
   }
 }
 
 @keyframes float4 {
   0%,
   100% {
-    transform: translate(70%, 70%) scale(1.5);
+    transform: translate3d(70%, 70%, 0) scale(1.5);
   }
   25% {
-    transform: translate(80%, 50%) scale(1.6);
+    transform: translate3d(80%, 50%, 0) scale(1.6);
   }
   50% {
-    transform: translate(65%, 60%) scale(1.7);
+    transform: translate3d(65%, 60%, 0) scale(1.7);
   }
   75% {
-    transform: translate(85%, 80%) scale(1.5);
+    transform: translate3d(85%, 80%, 0) scale(1.5);
   }
 }
 
