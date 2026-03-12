@@ -6,20 +6,10 @@
   height: 100%;
   z-index: -1;
   overflow: hidden;
-  background-color: hsl(var(--accent-hue, 205), 30%, 8%);
+  background-color: var(--page-bg);
   transition: background-color 0.5s ease;
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not(.dark-theme) .gradient-background {
-    background-color: hsl(var(--accent-hue, 205), 30%, 95%);
-  }
-}
-
-:root.light-theme .gradient-background {
-  background-color: hsl(var(--accent-hue, 205), 30%, 95%);
 }
 
 .gradient-node {
@@ -27,7 +17,6 @@
   border-radius: 50%;
   filter: blur(120px);
   opacity: 0.8;
-  will-change: transform;
   transition: background-color 1s ease;
   transform-origin: center;
   transform: scale(1.5);

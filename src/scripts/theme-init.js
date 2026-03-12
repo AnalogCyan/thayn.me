@@ -6,7 +6,8 @@
       root.classList.add("light-theme");
     } else if (mode === "dark") {
       root.classList.add("dark-theme");
-    } else if (mode === "auto") {
+    } else {
+      // null or "auto": always resolve to a class before first render
       if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
         root.classList.add("dark-theme");
       } else {
