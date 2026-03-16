@@ -71,10 +71,12 @@
               id="blog-search"
               class="blog-filter-input"
               placeholder="Search posts..."
+              aria-label="Search posts"
               data-i18n-placeholder="blog.search"
+              data-i18n-attr="aria-label:blog.search"
             />
             {{#if authorOptions.length}}
-            <select id="author-filter" class="blog-filter-select">
+            <select id="author-filter" class="blog-filter-select" aria-label="Filter by author" data-i18n-attr="aria-label:blog.filterAuthor">
               <option value="" data-i18n="blog.allAuthors">All Authors</option>
               {{#each authorOptions}}
               <option value="{{value}}">{{label}}</option>
@@ -82,7 +84,7 @@
             </select>
             {{/if}}
             {{#if categoryOptions.length}}
-            <select id="category-filter" class="blog-filter-select">
+            <select id="category-filter" class="blog-filter-select" aria-label="Filter by category" data-i18n-attr="aria-label:blog.filterCategory">
               <option value="" data-i18n="blog.allCategories">All Categories</option>
               {{#each categoryOptions}}
               <option value="{{value}}">{{label}}</option>
