@@ -10,10 +10,6 @@
   padding-bottom: 0;
 }
 
-.page-shell[data-hero="false"] .hero-card {
-  display: none;
-}
-
 .hero-card {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;

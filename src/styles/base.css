@@ -5,6 +5,11 @@ html {
   color: var(--text);
   background-color: var(--page-bg);
   min-height: 100%;
+  scrollbar-width: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
 }
 
 html[data-i18n-pending="true"] [data-i18n],
@@ -157,6 +162,14 @@ a:hover {
 .glass > * {
   position: relative;
   z-index: 1;
+}
+
+main {
+  transition: opacity 0.18s ease;
+}
+
+main.spa-out {
+  opacity: 0;
 }
 
 .button,

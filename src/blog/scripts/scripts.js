@@ -1,4 +1,5 @@
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
+  function init() {
   const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
   const MIDNIGHT_UTC_RE = /T00:00:00(?:\.000)?Z$/i;
 
@@ -139,4 +140,11 @@ document.addEventListener("DOMContentLoaded", function () {
     formatDates();
     filterPosts();
   });
-});
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
