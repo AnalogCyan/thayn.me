@@ -1393,6 +1393,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
               : `${siteUrl}/media/profile.svg`,
             syndicationLinks: normalizeSyndication(attributes.syndication),
             blueskyDiscussionUrl: syndicationMap["bluesky"] || "https://bsky.app/profile/thayn.me",
+            mastodonDiscussionUrl: syndicationMap["mastodon"] || "https://tech.lgbt/@AnalogCyan",
             webmentions,
             hasWebmentions,
             bridgyPublishTargets,
