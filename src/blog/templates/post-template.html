@@ -96,7 +96,7 @@
                 aria-hidden="true"
                 tabindex="-1"
               ></a>
-              <img class="u-photo" src="/media/profile.svg" alt="" hidden />
+              <data class="u-photo" value="/media/profile.svg"></data>
             </span>
           </p>
         </header>
@@ -113,11 +113,11 @@
           data-target="{{canonicalUrl}}"
           data-refresh-seconds="60"
         >
-          <h2 data-i18n="blog.webmentions.title">Webmentions</h2>
+          <h2 data-i18n="blog.webmentions.title">Comments</h2>
 
           {{#unless hasWebmentions}}
           <p class="webmentions-empty" data-i18n="blog.webmentions.empty">
-            No webmentions yet.
+            No comments yet.
           </p>
           {{/unless}} {{#if webmentions.likes.length}}
           <div class="webmentions-group webmentions-likes">
@@ -261,6 +261,15 @@
             </div>
           </div>
           {{/if}}
+          <a
+            href="{{blueskyDiscussionUrl}}"
+            class="button secondary"
+            target="_blank"
+            rel="noreferrer noopener"
+            data-i18n="blog.discussBluesky"
+            ><i class="ri-bluesky-line" aria-hidden="true"></i> Discuss on
+            Bluesky</a
+          >
           <a href="/blog/" class="button secondary">Back to Blog</a>
         </footer>
       </article>

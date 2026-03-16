@@ -192,13 +192,13 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
     container.textContent = "";
 
     const title = document.createElement("h2");
-    title.textContent = t("blog.webmentions.title", "Webmentions");
+    title.textContent = t("blog.webmentions.title", "Comments");
     container.appendChild(title);
 
     if (buckets.replies.length === 0) {
       const empty = document.createElement("p");
       empty.className = "webmentions-empty";
-      empty.textContent = t("blog.webmentions.empty", "No webmentions yet.");
+      empty.textContent = t("blog.webmentions.empty", "No comments yet.");
       container.appendChild(empty);
       return;
     }
