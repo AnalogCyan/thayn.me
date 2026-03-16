@@ -11,7 +11,7 @@
     const openClass = "nav-pill--open";
     const mediaQuery = window.matchMedia("(max-width: 720px)");
 
-    const setOpen = (open) => {
+    const setOpen = (open, focusFirst) => {
       if (!mediaQuery.matches) {
         nav.classList.remove(openClass);
         toggle.setAttribute("aria-expanded", "false");
@@ -29,20 +29,17 @@
         icon.classList.toggle("ri-close-line", open);
       }
 
-      if (open) {
+      if (open && focusFirst) {
         const firstLink = list.querySelector("a");
         if (firstLink) requestAnimationFrame(() => firstLink.focus());
       }
     };
 
-    const toggleMenu = () => {
-      if (!mediaQuery.matches) return;
-      setOpen(!nav.classList.contains(openClass));
-    };
-
     toggle.addEventListener("click", (event) => {
       event.preventDefault();
-      toggleMenu();
+      if (!mediaQuery.matches) return;
+      const opening = !nav.classList.contains(openClass);
+      setOpen(opening, opening && event.detail === 0);
     });
 
     document.addEventListener("click", (event) => {

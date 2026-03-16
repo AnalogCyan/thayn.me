@@ -113,20 +113,25 @@
   transition: opacity var(--transition-normal);
 }
 
-:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible) {
+:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible, :active) {
   color: var(--text);
 }
 
-:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible)::before,
+:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible, :active)::before,
 .nav-pill__link.is-active::before,
 .nav-pill--open .nav-pill__toggle::before {
   opacity: 1;
 }
 
-:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible)::after,
+:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible, :active)::after,
 .nav-pill__link.is-active::after,
 .nav-pill--open .nav-pill__toggle::after {
   opacity: 1;
+}
+
+:is(.nav-pill__link, .nav-pill__toggle):active::before,
+:is(.nav-pill__link, .nav-pill__toggle):active::after {
+  transition-duration: 0s;
 }
 
 .nav-pill__link::after,
