@@ -12,6 +12,16 @@
     }
   },
   "meta": {
-    "title": "Cyan Thayn"
+    "title": "Cyan Thayn",
+    "relMe": [
+      "https://tech.lgbt/@AnalogCyan",
+      "https://bsky.app/profile/thayn.me",
+      "https://en.pronouns.page/@AnalogCyan",
+      "https://www.instagram.com/analogcyan/",
+      "https://beta.musicbrainz.org/user/AnalogCyan",
+      "https://www.last.fm/user/AnalogCyan",
+      "https://www.discogs.com/user/AnalogCyan",
+      "https://github.com/AnalogCyan"
+    ]
   }
 }

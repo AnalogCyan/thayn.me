@@ -7,24 +7,58 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
   const target = sanitizeExternalUrl(container.dataset.target);
   if (!target) return;
 
-  const refreshSeconds = Number.parseInt(
-    container.dataset.refreshSeconds || "60",
-    10,
-  );
+  const reactionsContainer = document.getElementById("post-reactions");
+
+  const DEFAULT_REFRESH_SECONDS = 180;
+  const MIN_REFRESH_SECONDS = 60;
+  const MAX_REFRESH_SECONDS = 900;
+  const RESUME_BACKOFF_MS = 2000;
+  const FAILURE_BACKOFF_BASE_MS = 15000;
+  const FAILURE_BACKOFF_MAX_MS = 10 * 60 * 1000;
+  const POLL_JITTER_MS = 5000;
+
+  function parseRefreshSeconds(value) {
+    const parsed = Number.parseInt(value || "", 10);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      return DEFAULT_REFRESH_SECONDS;
+    }
+    return Math.max(MIN_REFRESH_SECONDS, Math.min(MAX_REFRESH_SECONDS, parsed));
+  }
+
+  const refreshSeconds = parseRefreshSeconds(container.dataset.refreshSeconds);
 
   let controller = null;
   let timer = null;
   let paused = false;
-  const resumeBackoffMs = 2000;
-
-  const createBuckets = () => ({
-    replies: [],
-    likes: [],
-    reposts: [],
-    mentions: [],
-    bookmarks: [],
-  });
+  let hasFetchedBuckets = false;
   let latestBuckets = createBuckets();
+  let lastKnownCount = null;
+  let consecutiveFailures = 0;
+
+  function createBuckets() {
+    return {
+      replies: [],
+      likes: [],
+      reposts: [],
+      mentions: [],
+      bookmarks: [],
+    };
+  }
+
+  function bucketCount(buckets) {
+    return Object.values(buckets).reduce(
+      (total, items) => total + (Array.isArray(items) ? items.length : 0),
+      0,
+    );
+  }
+
+  function endpoint({ countOnly = false } = {}) {
+    const params = new URLSearchParams({ target });
+    if (countOnly) {
+      params.set("mode", "count");
+    }
+    return `/.netlify/functions/webmentions?${params.toString()}`;
+  }
 
   const t = (key, fallback) => {
     if (window.JG_I18N && typeof window.JG_I18N.t === "function") {
@@ -58,8 +92,10 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
     const received = item["wm-received"] || item.published || "";
     const text = extractText(item);
     const url = sanitizeExternalUrl(item.url);
+    const authorLink = author.authorUrl || url || null;
     return {
       ...author,
+      authorLink,
       published,
       received,
       text,
@@ -70,8 +106,10 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
   const normalizePerson = (item) => {
     const author = normalizeAuthor(item);
     const url = sanitizeExternalUrl(item.url) || author.authorUrl || null;
+    const authorLink = author.authorUrl || url || null;
     return {
       ...author,
+      authorLink,
       url,
     };
   };
@@ -113,64 +151,75 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
     return buckets;
   };
 
-  const renderPeopleGroup = (labelKey, labelFallback, items, className) => {
-    const group = document.createElement("div");
-    group.className = `webmentions-group ${className}`;
+  const REACTION_TYPES = [
+    { key: "likes", iconClass: "ri-heart-3-fill", iconColor: "#e11d48", labelKey: "blog.webmentions.likes", labelFallback: "Likes" },
+    { key: "reposts", iconClass: "ri-repeat-fill", iconColor: "#16a34a", labelKey: "blog.webmentions.reposts", labelFallback: "Reposts" },
+    { key: "mentions", iconClass: "ri-at-line", iconColor: "#2563eb", labelKey: "blog.webmentions.mentions", labelFallback: "Mentions" },
+    { key: "bookmarks", iconClass: "ri-bookmark-fill", iconColor: "#d97706", labelKey: "blog.webmentions.bookmarks", labelFallback: "Bookmarks" },
+  ];
 
-    const heading = document.createElement("h3");
-    heading.textContent = `${t(labelKey, labelFallback)} (${items.length})`;
-    group.appendChild(heading);
+  const renderReactions = (buckets) => {
+    if (!reactionsContainer) return;
+    reactionsContainer.textContent = "";
 
-    const list = document.createElement("ul");
-    list.className = "webmentions-people";
-
-    for (const item of items) {
-      const li = document.createElement("li");
-      const hasLink = item.authorUrl;
-      const wrapper = hasLink
-        ? document.createElement("a")
-        : document.createElement("span");
-      if (hasLink) {
-        wrapper.href = item.authorUrl;
-        wrapper.rel = "nofollow ugc";
-      }
-
-      const name = document.createElement("span");
-      name.textContent = item.authorName || "Someone";
-      wrapper.appendChild(name);
-
-      li.appendChild(wrapper);
-      list.appendChild(li);
+    const active = REACTION_TYPES.filter(({ key }) => buckets[key]?.length > 0);
+    if (active.length === 0) {
+      reactionsContainer.hidden = true;
+      return;
     }
 
-    group.appendChild(list);
-    return group;
+    reactionsContainer.hidden = false;
+    for (const { key, iconClass, iconColor, labelKey, labelFallback } of active) {
+      const count = buckets[key].length;
+      const pill = document.createElement("span");
+      pill.className = "post-reaction";
+      pill.setAttribute("aria-label", `${count} ${t(labelKey, labelFallback)}`);
+
+      const icon = document.createElement("i");
+      icon.className = iconClass;
+      icon.style.color = iconColor;
+      icon.setAttribute("aria-hidden", "true");
+      pill.appendChild(icon);
+      pill.appendChild(document.createTextNode(` ${count}`));
+
+      reactionsContainer.appendChild(pill);
+    }
   };
 
-  const renderRepliesGroup = (items) => {
-    const group = document.createElement("div");
-    group.className = "webmentions-group webmentions-replies";
+  const render = (buckets) => {
+    renderReactions(buckets);
 
-    const heading = document.createElement("h3");
-    heading.textContent = `${t("blog.webmentions.replies", "Replies")} (${items.length})`;
-    group.appendChild(heading);
+    container.textContent = "";
+
+    const title = document.createElement("h2");
+    title.textContent = t("blog.webmentions.title", "Webmentions");
+    container.appendChild(title);
+
+    if (buckets.replies.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "webmentions-empty";
+      empty.textContent = t("blog.webmentions.empty", "No webmentions yet.");
+      container.appendChild(empty);
+      return;
+    }
 
     const list = document.createElement("ul");
     list.className = "webmentions-replies";
 
-    for (const item of items) {
+    for (const item of buckets.replies) {
       const li = document.createElement("li");
       li.className = "webmention-reply";
 
       const meta = document.createElement("div");
       meta.className = "webmention-meta";
 
-      const hasLink = item.authorUrl;
+      const linkUrl = item.authorLink;
+      const hasLink = Boolean(linkUrl);
       const authorEl = hasLink
         ? document.createElement("a")
         : document.createElement("span");
       if (hasLink) {
-        authorEl.href = item.authorUrl;
+        authorEl.href = linkUrl;
         authorEl.rel = "nofollow ugc";
       }
       authorEl.textContent = item.authorName || "Someone";
@@ -212,127 +261,133 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
       list.appendChild(li);
     }
 
-    group.appendChild(list);
-    return group;
+    container.appendChild(list);
   };
 
-  const render = (buckets) => {
-    container.textContent = "";
+  function isAbortError(err) {
+    return Boolean(err && typeof err === "object" && err.name === "AbortError");
+  }
 
-    const title = document.createElement("h2");
-    title.textContent = t("blog.webmentions.title", "Webmentions");
-    container.appendChild(title);
-
-    const hasAny = Object.values(buckets).some((items) => items.length > 0);
-    if (!hasAny) {
-      const empty = document.createElement("p");
-      empty.className = "webmentions-empty";
-      empty.textContent = t("blog.webmentions.empty", "No webmentions yet.");
-      container.appendChild(empty);
-      return;
+  async function fetchJson({ countOnly = false } = {}) {
+    if (controller) {
+      controller.abort();
     }
 
-    if (buckets.likes.length > 0) {
-      container.appendChild(
-        renderPeopleGroup(
-          "blog.webmentions.likes",
-          "Likes",
-          buckets.likes,
-          "webmentions-likes",
-        ),
-      );
-    }
-    if (buckets.reposts.length > 0) {
-      container.appendChild(
-        renderPeopleGroup(
-          "blog.webmentions.reposts",
-          "Reposts",
-          buckets.reposts,
-          "webmentions-reposts",
-        ),
-      );
-    }
-    if (buckets.mentions.length > 0) {
-      container.appendChild(
-        renderPeopleGroup(
-          "blog.webmentions.mentions",
-          "Mentions",
-          buckets.mentions,
-          "webmentions-mentions",
-        ),
-      );
-    }
-    if (buckets.bookmarks.length > 0) {
-      container.appendChild(
-        renderPeopleGroup(
-          "blog.webmentions.bookmarks",
-          "Bookmarks",
-          buckets.bookmarks,
-          "webmentions-bookmarks",
-        ),
-      );
-    }
-    if (buckets.replies.length > 0) {
-      container.appendChild(renderRepliesGroup(buckets.replies));
-    }
-  };
-
-  const refresh = async () => {
-    if (controller) controller.abort();
-    controller = new AbortController();
+    const currentController = new AbortController();
+    controller = currentController;
 
     try {
-      const res = await fetch(
-        `/.netlify/functions/webmentions?target=${encodeURIComponent(target)}`,
-        { signal: controller.signal, headers: { Accept: "application/json" } },
-      );
-      if (!res.ok) return;
-      const payload = await res.json();
-      const buckets = groupMentions(payload);
-      latestBuckets = buckets;
-      render(buckets);
-    } catch (err) {
-      if (err.name === "AbortError") {
-        return;
-      }
-    } finally {
-      controller = null;
-    }
-  };
+      const res = await fetch(endpoint({ countOnly }), {
+        signal: currentController.signal,
+        headers: { Accept: "application/json" },
+      });
 
-  const clearTimer = () => {
+      if (!res.ok) {
+        throw new Error(`webmentions-http-${res.status}`);
+      }
+
+      return await res.json();
+    } finally {
+      if (controller === currentController) {
+        controller = null;
+      }
+    }
+  }
+
+  async function refreshFull() {
+    const payload = await fetchJson({ countOnly: false });
+    const buckets = groupMentions(payload);
+    latestBuckets = buckets;
+    hasFetchedBuckets = true;
+    lastKnownCount = bucketCount(buckets);
+    render(buckets);
+  }
+
+  async function fetchCount() {
+    const payload = await fetchJson({ countOnly: true });
+    const count = Number(payload?.count);
+    if (!Number.isFinite(count) || count < 0) {
+      throw new Error("webmentions-invalid-count");
+    }
+    return count;
+  }
+
+  function clearTimer() {
     if (timer) {
       window.clearTimeout(timer);
       timer = null;
     }
-  };
+  }
 
-  const schedule = (delayMs) => {
-    if (!Number.isFinite(refreshSeconds) || refreshSeconds <= 0) return;
+  function withJitter(delayMs) {
+    const jitter = Math.floor(Math.random() * POLL_JITTER_MS);
+    return delayMs + jitter;
+  }
+
+  function computeDelay(baseDelayMs) {
+    if (consecutiveFailures <= 0) {
+      return withJitter(baseDelayMs);
+    }
+
+    const failureDelay = Math.min(
+      FAILURE_BACKOFF_MAX_MS,
+      FAILURE_BACKOFF_BASE_MS * 2 ** (consecutiveFailures - 1),
+    );
+
+    return withJitter(Math.max(baseDelayMs, failureDelay));
+  }
+
+  function schedule(delayMs) {
     if (paused || document.visibilityState === "hidden") return;
-    clearTimer();
-    const delay = typeof delayMs === "number" ? delayMs : refreshSeconds * 1000;
-    timer = window.setTimeout(async () => {
-      await refresh();
-      schedule();
-    }, delay);
-  };
 
-  const pause = () => {
+    clearTimer();
+    const base =
+      typeof delayMs === "number" ? delayMs : refreshSeconds * 1000;
+    timer = window.setTimeout(() => {
+      void poll();
+    }, computeDelay(base));
+  }
+
+  async function poll() {
+    if (paused || document.visibilityState === "hidden") return;
+
+    try {
+      if (!hasFetchedBuckets) {
+        await refreshFull();
+      } else {
+        const remoteCount = await fetchCount();
+        if (lastKnownCount === null || remoteCount !== lastKnownCount) {
+          await refreshFull();
+        }
+      }
+
+      consecutiveFailures = 0;
+    } catch (err) {
+      if (isAbortError(err)) {
+        return;
+      }
+      consecutiveFailures += 1;
+    }
+
+    schedule();
+  }
+
+  function pause() {
     paused = true;
     if (controller) controller.abort();
     clearTimer();
-  };
+  }
 
-  const resume = () => {
+  function resume() {
     if (!paused && timer) return;
     paused = false;
-    schedule(resumeBackoffMs);
-  };
+    schedule(RESUME_BACKOFF_MS);
+  }
 
-  refresh();
-  schedule();
+  void poll();
+
   document.addEventListener("th-i18n-ready", () => {
+    if (!hasFetchedBuckets) return;
     render(latestBuckets);
   });
 

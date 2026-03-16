@@ -7,10 +7,14 @@ import Handlebars from "handlebars";
 import {
   getSiteUrl,
   getCanonicalBlogPath,
-  isProductionBuild,
 } from "./lib/site-url.js";
 import { canonicalizeUrl, toAbsoluteUrl } from "./lib/url.js";
 import { sanitizeExternalUrl } from "./lib/sanitize-url.js";
+import {
+  BRIDGY_PUBLISH_TARGETS,
+  normalizeSyndicateTargets,
+  normalizeSyndicationMap,
+} from "./lib/bridgy-syndication.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -49,14 +53,71 @@ const WEBMENTION_FETCH_CONCURRENCY = (() => {
     ? raw
     : DEFAULT_WEBMENTION_FETCH_CONCURRENCY;
 })();
-const WEBMENTIONS_BUILD_FETCH_ENABLED = (() => {
-  const raw = String(process.env.WEBMENTIONS_BUILD_FETCH || "")
-    .trim()
-    .toLowerCase();
-  if (["0", "false", "off", "no"].includes(raw)) return false;
-  if (["1", "true", "on", "yes"].includes(raw)) return true;
-  return isProductionBuild();
-})();
+const WEBMENTIONS_BUILD_FETCH_ENABLED = false;
+
+const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
+const DEFAULT_EMPTY_FEED_UPDATED_ISO = "1970-01-01T00:00:00Z";
+
+function parsePostDate(value, source = "blog post") {
+  let raw = "";
+  if (value instanceof Date) {
+    if (Number.isNaN(value.getTime())) {
+      throw new Error(
+        `Invalid blog post date "${value}" in ${source}. Use YYYY-MM-DD or ISO 8601.`,
+      );
+    }
+    const iso = value.toISOString();
+    raw = iso.endsWith("T00:00:00.000Z") ? iso.slice(0, 10) : iso;
+  } else {
+    raw = String(value || "").trim();
+  }
+  if (!raw) {
+    throw new Error(
+      `Missing required blog post date in ${source}. Use YYYY-MM-DD or ISO 8601.`,
+    );
+  }
+
+  const parsed = DATE_ONLY_RE.test(raw)
+    ? new Date(`${raw}T12:00:00Z`)
+    : new Date(raw);
+
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error(
+      `Invalid blog post date "${raw}" in ${source}. Use YYYY-MM-DD or ISO 8601.`,
+    );
+  }
+
+  return { raw, parsed };
+}
+
+function resolveEmptyFeedUpdatedDate() {
+  const configured = String(
+    process.env.BLOG_EMPTY_FEED_UPDATED || DEFAULT_EMPTY_FEED_UPDATED_ISO,
+  ).trim();
+
+  try {
+    const { parsed } = parsePostDate(configured, "BLOG_EMPTY_FEED_UPDATED");
+    return parsed;
+  } catch (err) {
+    const { parsed } = parsePostDate(
+      DEFAULT_EMPTY_FEED_UPDATED_ISO,
+      "default empty feed date",
+    );
+    console.warn(
+      `${err?.message || "Invalid BLOG_EMPTY_FEED_UPDATED value."} Falling back to ${DEFAULT_EMPTY_FEED_UPDATED_ISO}.`,
+    );
+    return parsed;
+  }
+}
+
+const EMPTY_FEED_UPDATED_DATE = resolveEmptyFeedUpdatedDate();
+
+function toPublishedIso(rawDate, parsedDate) {
+  if (DATE_ONLY_RE.test(rawDate)) {
+    return `${rawDate}T00:00:00Z`;
+  }
+  return parsedDate.toISOString();
+}
 
 marked.setOptions({
   gfm: true,
@@ -66,9 +127,14 @@ marked.setOptions({
 });
 
 Handlebars.registerHelper("formatDate", function (date) {
-  const options = { year: "numeric", month: "long", day: "numeric" };
-  const utcDate = new Date(date + "T12:00:00Z");
-  return utcDate.toLocaleDateString("en-US", options);
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  };
+  const { parsed } = parsePostDate(date, "template date");
+  return parsed.toLocaleDateString("en-US", options);
 });
 
 Handlebars.registerHelper("formatDateTime", function (date) {
@@ -81,6 +147,7 @@ Handlebars.registerHelper("formatDateTime", function (date) {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: "UTC",
   });
 });
 
@@ -96,15 +163,6 @@ const SYNDICATION_SITES = {
   pronouns: { label: "Pronouns" },
 };
 
-const BRIDGY_PUBLISH_TARGETS = {
-  mastodon: "https://brid.gy/publish/mastodon",
-  bluesky: "https://brid.gy/publish/bluesky",
-};
-
-const TARGET_ALIASES = {
-  fediverse: "mastodon",
-};
-
 function normalizeSyndication(raw) {
   const links = [];
   if (!raw) return links;
@@ -113,10 +171,12 @@ function normalizeSyndication(raw) {
     if (!url || typeof url !== "string") return;
     const trimmed = url.trim();
     if (!trimmed) return;
+    const safeUrl = sanitizeExternalUrl(trimmed);
+    if (!safeUrl) return;
     const meta = site ? SYNDICATION_SITES[site] : null;
     const label = labelOverride || (meta && meta.label);
     if (!label) return;
-    links.push({ site, label, url: trimmed });
+    links.push({ site, label, url: safeUrl });
   }
 
   if (Array.isArray(raw)) {
@@ -146,91 +206,28 @@ function normalizeSyndication(raw) {
   return links;
 }
 
-function normalizeSyndicateTargets(raw) {
-  const targets = new Set();
+function resolveWebmentionTarget(attributes, canonicalUrl) {
+  if (!attributes || typeof attributes !== "object") return canonicalUrl;
 
-  const normalizeTarget = (value) => {
-    if (!value) return "";
-    const key = String(value).trim().toLowerCase();
-    return TARGET_ALIASES[key] || key;
-  };
+  const directCandidates = [
+    attributes.webmentionTarget,
+    attributes.socialUrl,
+    attributes.socialURL,
+    attributes.social,
+    attributes.linkedSocialUrl,
+    attributes.linkedSocialURL,
+    attributes.linkedSocial,
+    attributes.socialPost,
+    attributes.syndicationUrl,
+    attributes.syndicationURL,
+  ];
 
-  const addTarget = (value) => {
-    const key = normalizeTarget(value);
-    if (BRIDGY_PUBLISH_TARGETS[key]) {
-      targets.add(key);
-    }
-  };
-
-  if (Array.isArray(raw)) {
-    raw.forEach((entry) => {
-      if (!entry) return;
-      if (typeof entry === "string") {
-        addTarget(entry);
-        return;
-      }
-      if (typeof entry === "object") {
-        Object.entries(entry).forEach(([key, enabled]) => {
-          if (!enabled) return;
-          addTarget(key);
-        });
-      }
-    });
-  } else if (typeof raw === "object") {
-    Object.entries(raw).forEach(([key, enabled]) => {
-      if (!enabled) return;
-      addTarget(key);
-    });
-  } else if (typeof raw === "string") {
-    addTarget(raw);
+  for (const candidate of directCandidates) {
+    const safe = sanitizeExternalUrl(candidate);
+    if (safe) return safe;
   }
 
-  return Array.from(targets);
-}
-
-function getSyndicatedTargets(raw) {
-  const targets = new Set();
-  if (!raw) return targets;
-
-  const addTarget = (value) => {
-    if (!value) return;
-    const key = String(value).trim().toLowerCase();
-    if (BRIDGY_PUBLISH_TARGETS[key]) targets.add(key);
-    if (key === "fediverse") targets.add("mastodon");
-  };
-
-  if (Array.isArray(raw)) {
-    raw.forEach((entry) => {
-      if (!entry) return;
-      if (typeof entry === "string") return;
-      if (typeof entry === "object") {
-        const key = entry.site || entry.network || entry.service;
-        const url = entry.url || entry.href;
-        if (key && url) addTarget(key);
-      }
-    });
-    return targets;
-  }
-
-  if (typeof raw === "object") {
-    Object.entries(raw).forEach(([key, value]) => {
-      if (!value) return;
-      if (typeof value === "string") {
-        addTarget(key);
-        return;
-      }
-      if (Array.isArray(value)) {
-        if (value.length > 0) addTarget(key);
-        return;
-      }
-      if (typeof value === "object") {
-        const url = value.url || value.href;
-        if (url) addTarget(key);
-      }
-    });
-  }
-
-  return targets;
+  return canonicalUrl;
 }
 
 async function pathExists(p) {
@@ -274,6 +271,7 @@ async function copyDir(src, dest) {
   await fs.mkdir(dest, { recursive: true });
   const entries = await fs.readdir(src, { withFileTypes: true });
   for (const entry of entries) {
+    if (entry.name === ".DS_Store") continue;
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
     if (entry.isDirectory()) {
@@ -338,6 +336,13 @@ function generateResourcesHTML(config, siteUrl) {
   }
 
   if (siteUrl) {
+    let siteHost = "";
+    try {
+      siteHost = new URL(siteUrl).hostname;
+    } catch {
+      siteHost = "";
+    }
+
     html += `\n    <link rel="alternate" type="application/rss+xml" title="RSS" href="${toAbsoluteUrl(
       siteUrl,
       "/blog/rss.xml",
@@ -354,6 +359,20 @@ function generateResourcesHTML(config, siteUrl) {
       siteUrl,
       "/blog/",
     )}" />`;
+
+    if (siteHost) {
+      html += `\n    <link rel="webmention" href="https://webmention.io/${siteHost}/webmention" />`;
+      html += `\n    <link rel="pingback" href="https://webmention.io/${siteHost}/xmlrpc" />`;
+    }
+
+    const relMeLinks = Array.isArray(config?.meta?.relMe)
+      ? config.meta.relMe.filter((entry) => typeof entry === "string")
+      : [];
+    for (const href of relMeLinks) {
+      const trimmed = href.trim();
+      if (!trimmed) continue;
+      html += `\n    <link rel="me" href="${trimmed}" />`;
+    }
   }
 
   return html;
@@ -393,7 +412,9 @@ async function loadCapsules() {
 
 function injectResources(content, resourcesHTML, config) {
   const placeholder = "<!-- EXTERNAL_RESOURCES -->";
-  let output = content.replace(placeholder, resourcesHTML);
+  let output = content.includes(placeholder)
+    ? content.replace(placeholder, resourcesHTML)
+    : content.replace(/<\/head>/i, `${resourcesHTML}\n  </head>`);
 
   if (config.meta && config.meta.title) {
     const hasTitle = /<title>[\s\S]*?<\/title>/i.test(output);
@@ -415,6 +436,66 @@ function ensureCanonicalLink(html, canonicalUrl) {
     /<\/head>/i,
     `    <link rel="canonical" href="${canonicalUrl}" />\n  </head>`,
   );
+}
+
+function ensureI18nInitScript(html) {
+  if (/<script\s+[^>]*src=["']\/scripts\/i18n-init\.js["'][^>]*>/i.test(html)) {
+    return html;
+  }
+
+  const initTag = `    <script src="/scripts/i18n-init.js"></script>`;
+
+  if (/<script\s+[^>]*src=["']\/scripts\/theme-init\.js["'][^>]*>/i.test(html)) {
+    return html.replace(
+      /(<script\s+[^>]*src=["']\/scripts\/theme-init\.js["'][^>]*>)/i,
+      `${initTag}\n    $1`,
+    );
+  }
+
+  if (/<\/head>/i.test(html)) {
+    return html.replace(/<\/head>/i, `${initTag}\n  </head>`);
+  }
+
+  return `${initTag}\n${html}`;
+}
+
+function ensureSiteBundleScript(html) {
+  if (/<script\s+[^>]*src=["']\/scripts\.js["']/i.test(html)) {
+    return html;
+  }
+  return html.replace(/<\/body>/i, `    <script src="/scripts.js" defer></script>\n  </body>`);
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function ensureCapsuleScripts(html, usedCapsules, capsules) {
+  const scriptPaths = Array.from(usedCapsules)
+    .sort()
+    .map((name) => {
+      const cap = capsules[name];
+      if (!cap || !cap.jsPath) return null;
+      return `/capsules/${name}/${name}.js`;
+    })
+    .filter(Boolean);
+
+  if (scriptPaths.length === 0) return html;
+
+  const missing = scriptPaths.filter((src) => {
+    const pattern = new RegExp(
+      `<script\\s+[^>]*src=["']${escapeRegExp(src)}["']`,
+      "i",
+    );
+    return !pattern.test(html);
+  });
+  if (missing.length === 0) return html;
+
+  const tags = missing.map((src) => `    <script src="${src}" defer></script>`).join("\n");
+  if (/<\/body>/i.test(html)) {
+    return html.replace(/<\/body>/i, `${tags}\n  </body>`);
+  }
+  return `${html}\n${tags}`;
 }
 
 async function injectCapsules(content, capsules, pageName) {
@@ -466,7 +547,13 @@ async function injectCapsules(content, capsules, pageName) {
   return { html: result, used };
 }
 
-async function expandAllDrops(inputHtml, capsules, pageName, globalUsed) {
+async function expandAllDrops(
+  inputHtml,
+  capsules,
+  pageName,
+  globalUsed,
+  localUsed = null,
+) {
   const MAX_PASSES = 20;
   let html = inputHtml;
 
@@ -477,7 +564,10 @@ async function expandAllDrops(inputHtml, capsules, pageName, globalUsed) {
       capsules,
       `${pageName}#${pass}`,
     );
-    used.forEach((u) => globalUsed.add(u));
+    used.forEach((u) => {
+      globalUsed.add(u);
+      if (localUsed) localUsed.add(u);
+    });
     if (nextHtml === html) break;
     html = nextHtml;
   }
@@ -490,28 +580,68 @@ async function expandAllDrops(inputHtml, capsules, pageName, globalUsed) {
 }
 
 async function buildPages(capsules, config, globalUsed, siteUrl) {
-  const files = await fs.readdir(PAGES_DIR);
+  async function collectEntries(dir, base = dir) {
+    const entries = await fs.readdir(dir, { withFileTypes: true });
+    const files = [];
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.name === ".DS_Store") continue;
+      if (entry.isDirectory()) {
+        files.push(...(await collectEntries(fullPath, base)));
+        continue;
+      }
+      files.push({
+        relPath: path.relative(base, fullPath),
+        fullPath,
+      });
+    }
+    return files;
+  }
+
+  const files = await collectEntries(PAGES_DIR);
   const resourcesHTML = generateResourcesHTML(config, siteUrl);
 
   await Promise.all(
-    files.map(async (file) => {
-      const srcPath = path.join(PAGES_DIR, file);
-      const destPath = path.join(PUBLIC_DIR, file);
-      let content = await fs.readFile(srcPath, "utf-8");
+    files.map(async ({ relPath, fullPath }) => {
+      const normalizedRelPath = relPath.replace(/\\/g, "/");
+      const destPath = path.join(PUBLIC_DIR, relPath);
+
+      if (!normalizedRelPath.toLowerCase().endsWith(".html")) {
+        await fs.mkdir(path.dirname(destPath), { recursive: true });
+        await fs.copyFile(fullPath, destPath);
+        return;
+      }
+
+      let content = await fs.readFile(fullPath, "utf-8");
 
       content = injectResources(content, resourcesHTML, config);
-      const canonicalPath = file === "index.html" ? "/" : `/${file}`;
+      content = ensureI18nInitScript(content);
+      const canonicalPath =
+        normalizedRelPath === "index.html"
+          ? "/"
+          : normalizedRelPath.endsWith("/index.html")
+            ? `/${normalizedRelPath.slice(0, -"index.html".length)}`
+            : `/${normalizedRelPath}`;
       content = ensureCanonicalLink(
         content,
         canonicalizeUrl(siteUrl, canonicalPath),
       );
-      const contentFinal = await expandAllDrops(
+      const pageUsedCapsules = new Set();
+      const withCapsules = await expandAllDrops(
         content,
         capsules,
-        file,
+        normalizedRelPath,
         globalUsed,
+        pageUsedCapsules,
+      );
+      const withSiteBundle = ensureSiteBundleScript(withCapsules);
+      const contentFinal = ensureCapsuleScripts(
+        withSiteBundle,
+        pageUsedCapsules,
+        capsules,
       );
 
+      await fs.mkdir(path.dirname(destPath), { recursive: true });
       await fs.writeFile(destPath, contentFinal);
     }),
   );
@@ -652,9 +782,11 @@ function normalizeWebmentionReply(item) {
   const received = item["wm-received"] || item.published || "";
   const text = extractWebmentionText(item);
   const url = sanitizeExternalUrl(item.url);
+  const authorLink = author.authorUrl || url || null;
 
   return {
     ...author,
+    authorLink,
     published,
     received,
     text,
@@ -665,9 +797,11 @@ function normalizeWebmentionReply(item) {
 function normalizeWebmentionPerson(item) {
   const author = normalizeWebmentionAuthor(item);
   const url = sanitizeExternalUrl(item.url) || author.authorUrl || null;
+  const authorLink = author.authorUrl || url || null;
 
   return {
     ...author,
+    authorLink,
     url,
   };
 }
@@ -744,12 +878,18 @@ function xmlEscape(s = "") {
     .replace(/'/g, "&apos;");
 }
 
-function rfc2822(dateStr) {
-  return new Date(dateStr).toUTCString();
+function cdataEscape(s = "") {
+  return String(s).replace(/]]>/g, "]]]]><![CDATA[>");
 }
 
-function iso8601(dateStr) {
-  return new Date(dateStr).toISOString();
+function rfc2822(dateStr, source = "feed date") {
+  const { parsed } = parsePostDate(dateStr, source);
+  return parsed.toUTCString();
+}
+
+function iso8601(dateStr, source = "feed date") {
+  const { parsed } = parsePostDate(dateStr, source);
+  return parsed.toISOString();
 }
 
 function normalizeLanguageKey(value) {
@@ -783,10 +923,32 @@ function normalizeCategories(value) {
   return single ? [single] : [];
 }
 
+function normalizeFilterValue(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+}
+
+function buildFilterOptions(values) {
+  const byValue = new Map();
+  for (const raw of values) {
+    const label = String(raw || "").trim();
+    if (!label) continue;
+    const value = normalizeFilterValue(label);
+    if (!value || byValue.has(value)) continue;
+    byValue.set(value, label);
+  }
+  return Array.from(byValue.entries())
+    .sort((a, b) => a[1].localeCompare(b[1]))
+    .map(([value, label]) => ({ value, label }));
+}
+
 function stripMarkdown(markdown = "") {
   return String(markdown)
     .replace(/```[\s\S]*?```/g, "")
     .replace(/`[^`]*`/g, "")
+    .replace(/<[^>]+>/g, "")
     .replace(/!\[[^\]]*\]\([^\)]+\)/g, "")
     .replace(/\[[^\]]+\]\([^\)]+\)/g, "")
     .replace(/[#>*_~\-]+/g, " ")
@@ -835,7 +997,7 @@ function parseTranslationEntry(entry) {
   };
 }
 
-function parseLocalizedBodySections(markdown) {
+function parseLocalizedBodySections(markdown, source = "blog post content") {
   const sections = new Map();
   const lines = String(markdown || "").split("\n");
   const remainder = [];
@@ -875,8 +1037,9 @@ function parseLocalizedBodySections(markdown) {
   }
 
   if (activeLang) {
-    remainder.push(`:::lang ${activeLang}`);
-    remainder.push(...sectionLines);
+    throw new Error(
+      `Unclosed :::lang block for "${activeLang}" in ${source}. Add a closing ":::" line.`,
+    );
   }
 
   return {
@@ -885,22 +1048,27 @@ function parseLocalizedBodySections(markdown) {
   };
 }
 
-function buildLocalizedVariants(attributes, body, fallbackTitle) {
+function buildLocalizedVariants(attributes, body, fallbackTitle, source) {
   const defaultLang = normalizeLanguageKey(
     attributes.defaultLanguage || attributes.defaultLang || "en",
   );
   const declaredLanguages = normalizeLanguageList(
     attributes.languages || attributes.langs,
   );
-  const { sections: bodySections, remainder } = parseLocalizedBodySections(body);
-  const fallbackBodyFromSections =
-    bodySections.get(defaultLang)?.body ||
-    (declaredLanguages[0] ? bodySections.get(declaredLanguages[0])?.body : "") ||
-    Array.from(bodySections.values())[0]?.body ||
-    "";
+  const { sections: bodySections, remainder } = parseLocalizedBodySections(
+    body,
+    source || fallbackTitle || "blog post content",
+  );
+  const defaultSectionBody = bodySections.get(defaultLang)?.body || "";
+  const declaredSectionBody = declaredLanguages[0]
+    ? bodySections.get(declaredLanguages[0])?.body || ""
+    : "";
+  const firstSectionBody = Array.from(bodySections.values())[0]?.body || "";
   const baseBody =
-    (bodySections.size > 0 ? fallbackBodyFromSections : "") ||
+    defaultSectionBody ||
     remainder ||
+    declaredSectionBody ||
+    firstSectionBody ||
     (typeof body === "string" ? body : "");
   const baseVariant = {
     title: fallbackTitle,
@@ -923,7 +1091,6 @@ function buildLocalizedVariants(attributes, body, fallbackTitle) {
       if (!normalizedLang) return;
       languageSet.add(normalizedLang);
 
-      // Keep the first translation for a normalized key, but prefer exact base keys.
       if (!translationEntriesByLang.has(normalizedLang) || lang === normalizedLang) {
         translationEntriesByLang.set(normalizedLang, entry);
       }
@@ -958,6 +1125,7 @@ function buildLocalizedVariants(attributes, body, fallbackTitle) {
       content: marked(markdownBody),
       excerpt: toExcerpt(
         (parsedTranslation && parsedTranslation.excerpt) ||
+          attributes.excerpt ||
           "",
         markdownBody,
       ),
@@ -983,24 +1151,26 @@ function buildLocalizedVariants(attributes, body, fallbackTitle) {
 }
 
 function buildRSS(posts, meta, siteUrl) {
+  const channelUrl = toAbsoluteUrl(siteUrl, "/blog/");
+  const selfUrl = toAbsoluteUrl(siteUrl, "/blog/rss.xml");
   const lastBuild = posts[0]?.date
-    ? rfc2822(posts[0].date)
-    : new Date().toUTCString();
+    ? rfc2822(posts[0].date, "latest post date")
+    : EMPTY_FEED_UPDATED_DATE.toUTCString();
   const items = posts
     .map((p) => {
-      const link = toAbsoluteUrl(siteUrl, p.url);
+      const link = p.canonicalUrl || toAbsoluteUrl(siteUrl, p.url);
       const cats = (p.categories || [])
         .map((c) => `    <category>${xmlEscape(c)}</category>`)
         .join("\n");
       return [
         "  <item>",
         `    <title>${xmlEscape(p.title)}</title>`,
-        `    <link>${link}</link>`,
-        `    <guid isPermaLink=\"true\">${link}</guid>`,
-        `    <pubDate>${rfc2822(p.date)}</pubDate>`,
+        `    <link>${xmlEscape(link)}</link>`,
+        `    <guid isPermaLink="true">${xmlEscape(link)}</guid>`,
+        `    <pubDate>${rfc2822(p.date, `post "${p.title || p.url || "unknown"}"`)}</pubDate>`,
         cats,
         `    <description>${xmlEscape(p.excerpt || "")}</description>`,
-        `    <content:encoded><![CDATA[${p.content || ""}]]></content:encoded>`,
+        `    <content:encoded><![CDATA[${cdataEscape(p.content || "")}]]></content:encoded>`,
         "  </item>",
       ]
         .filter(Boolean)
@@ -1008,11 +1178,12 @@ function buildRSS(posts, meta, siteUrl) {
     })
     .join("\n");
 
-  return `<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<rss version=\"2.0\" xmlns:content=\"http://purl.org/rss/1.0/modules/content/\">
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
   <title>${xmlEscape(meta.title)}</title>
-  <link>${toAbsoluteUrl(siteUrl, "/blog/")}</link>
+  <link>${xmlEscape(channelUrl)}</link>
+  <atom:link href="${xmlEscape(selfUrl)}" rel="self" type="application/rss+xml" />
   <description>${xmlEscape(meta.description)}</description>
   <language>${xmlEscape(meta.language)}</language>
   <lastBuildDate>${lastBuild}</lastBuildDate>
@@ -1023,26 +1194,28 @@ ${items}
 }
 
 function buildAtom(posts, meta, siteUrl) {
+  const channelUrl = toAbsoluteUrl(siteUrl, "/blog/");
+  const selfUrl = toAbsoluteUrl(siteUrl, "/blog/atom.xml");
   const updated = posts[0]?.date
-    ? iso8601(posts[0].date)
-    : new Date().toISOString();
+    ? iso8601(posts[0].date, "latest post date")
+    : EMPTY_FEED_UPDATED_DATE.toISOString();
   const entries = posts
     .map((p) => {
-      const link = toAbsoluteUrl(siteUrl, p.url);
+      const link = p.canonicalUrl || toAbsoluteUrl(siteUrl, p.url);
       const cats = (p.categories || [])
-        .map((c) => `    <category term=\"${xmlEscape(c)}\"/>`)
+        .map((c) => `    <category term="${xmlEscape(c)}"/>`)
         .join("\n");
       return [
         "  <entry>",
         `    <title>${xmlEscape(p.title)}</title>`,
-        `    <id>${link}</id>`,
-        `    <link href=\"${link}\"/>`,
-        `    <updated>${iso8601(p.date)}</updated>`,
-        `    <published>${iso8601(p.date)}</published>`,
+        `    <id>${xmlEscape(link)}</id>`,
+        `    <link href="${xmlEscape(link)}"/>`,
+        `    <updated>${iso8601(p.date, `post "${p.title || p.url || "unknown"}"`)}</updated>`,
+        `    <published>${iso8601(p.date, `post "${p.title || p.url || "unknown"}"`)}</published>`,
         `    <author><name>${xmlEscape(p.author || meta.author)}</name></author>`,
         cats,
-        `    <summary type=\"html\">${xmlEscape(p.excerpt || "")}</summary>`,
-        `    <content type=\"html\">${xmlEscape(p.content || "")}</content>`,
+        `    <summary type="html">${xmlEscape(p.excerpt || "")}</summary>`,
+        `    <content type="html">${xmlEscape(p.content || "")}</content>`,
         "  </entry>",
       ]
         .filter(Boolean)
@@ -1050,13 +1223,13 @@ function buildAtom(posts, meta, siteUrl) {
     })
     .join("\n");
 
-  return `<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<feed xmlns=\"http://www.w3.org/2005/Atom\">
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
   <title>${xmlEscape(meta.title)}</title>
-  <id>${toAbsoluteUrl(siteUrl, "/blog/")}</id>
+  <id>${xmlEscape(channelUrl)}</id>
   <updated>${updated}</updated>
-  <link href=\"${toAbsoluteUrl(siteUrl, "/blog/atom.xml")}\" rel=\"self\"/>
-  <link href=\"${toAbsoluteUrl(siteUrl, "/blog/")}\"/>
+  <link href="${xmlEscape(selfUrl)}" rel="self"/>
+  <link href="${xmlEscape(channelUrl)}"/>
   <author><name>${xmlEscape(meta.author)}</name></author>
 ${entries}
 </feed>
@@ -1089,28 +1262,38 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
   const postTemplateRaw = await fs.readFile(postTemplatePath, "utf-8");
 
   const resourcesHTML = generateResourcesHTML(config, siteUrl);
-  const indexWithResources = injectResources(
-    indexTemplateRaw,
-    resourcesHTML,
-    config,
+  const indexWithResources = ensureI18nInitScript(
+    injectResources(indexTemplateRaw, resourcesHTML, config),
   );
-  const postWithResources = injectResources(
-    postTemplateRaw,
-    resourcesHTML,
-    config,
+  const postWithResources = ensureI18nInitScript(
+    injectResources(postTemplateRaw, resourcesHTML, config),
   );
 
-  const indexTemplateSource = await expandAllDrops(
+  const indexUsedCapsules = new Set();
+  const postUsedCapsules = new Set();
+  const indexTemplateSourceRaw = await expandAllDrops(
     indexWithResources,
     capsules,
     "blog-index",
     globalUsed,
+    indexUsedCapsules,
   );
-  const postTemplateSource = await expandAllDrops(
+  const postTemplateSourceRaw = await expandAllDrops(
     postWithResources,
     capsules,
     "blog-post",
     globalUsed,
+    postUsedCapsules,
+  );
+  const indexTemplateSource = ensureCapsuleScripts(
+    ensureSiteBundleScript(indexTemplateSourceRaw),
+    indexUsedCapsules,
+    capsules,
+  );
+  const postTemplateSource = ensureCapsuleScripts(
+    ensureSiteBundleScript(postTemplateSourceRaw),
+    postUsedCapsules,
+    capsules,
   );
 
   const indexTemplate = Handlebars.compile(indexTemplateSource);
@@ -1135,12 +1318,23 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
           attributes.title = path.basename(file, ".md");
         }
 
+        if (attributes.draft && process.env.BLOG_INCLUDE_DRAFTS !== "1") {
+          return null;
+        }
+        const { raw: normalizedDate, parsed: parsedDate } = parsePostDate(
+          attributes.date,
+          `frontmatter in ${filePath}`,
+        );
+        attributes.date = normalizedDate;
+
         const { localizedVariants } = buildLocalizedVariants(
           attributes,
           body,
           attributes.title,
+          filePath,
         );
         const primaryVariant = localizedVariants[0];
+        const primaryCategory = primaryVariant.categories[0] || "";
 
         const slug = path.basename(file, ".md");
         const defaultPath = getCanonicalBlogPath(slug);
@@ -1151,18 +1345,15 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         );
         const canonicalUrl = canonicalOverride || defaultCanonical;
 
-        let url = canonicalUrl;
-        try {
-          const parsed = new URL(canonicalUrl);
-          if (parsed.origin === siteUrl) {
-            url = parsed.pathname;
-          }
-        } catch {
-          url = canonicalUrl;
-        }
+        const url = defaultPath;
+        const syndicationMap = normalizeSyndicationMap(attributes.syndication);
+        const webmentionTarget = resolveWebmentionTarget(
+          attributes,
+          canonicalUrl,
+        );
 
         const webmentionPayload = await fetchWebmentions(
-          canonicalUrl,
+          webmentionTarget,
           functionsBaseUrl,
         );
         const webmentions = buildWebmentionBuckets(webmentionPayload);
@@ -1172,9 +1363,8 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         const syndicateTargets = normalizeSyndicateTargets(
           attributes.syndicate,
         );
-        const syndicatedTargets = getSyndicatedTargets(attributes.syndication);
         const pendingTargets = syndicateTargets.filter(
-          (target) => !syndicatedTargets.has(target),
+          (target) => !syndicationMap[target],
         );
         const bridgyPublishTargets = pendingTargets.map(
           (target) => BRIDGY_PUBLISH_TARGETS[target],
@@ -1185,15 +1375,24 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
           data: {
             title: primaryVariant.title,
             author: primaryVariant.author,
-            date: attributes.date,
+            date: normalizedDate,
+            dateIso: toPublishedIso(normalizedDate, parsedDate),
+            dateMs: parsedDate.getTime(),
             categories: primaryVariant.categories,
+            authorFilterKey: normalizeFilterValue(primaryVariant.author),
+            categoryFilterKey: normalizeFilterValue(primaryCategory),
             content: primaryVariant.content,
             excerpt: primaryVariant.excerpt,
             localizedVariants,
             url,
             siteUrl,
             canonicalUrl,
+            webmentionTarget,
+            ogImage: attributes.image
+              ? toAbsoluteUrl(siteUrl, attributes.image)
+              : `${siteUrl}/media/profile.svg`,
             syndicationLinks: normalizeSyndication(attributes.syndication),
+            blueskyDiscussionUrl: syndicationMap["bluesky"] || "https://bsky.app/profile/thayn.me",
             webmentions,
             hasWebmentions,
             bridgyPublishTargets,
@@ -1203,6 +1402,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
     );
 
     for (const entry of postEntries) {
+      if (!entry) continue;
       const filledTemplate = postTemplate(entry.data);
       const outputDir = path.join(BLOG_OUTPUT_DIR, entry.slug);
       await fs.mkdir(outputDir, { recursive: true });
@@ -1213,12 +1413,14 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
     }
   }
 
-  blogIndex.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+  blogIndex.sort((a, b) => b.dateMs - a.dateMs);
 
   const indexData = {
     posts: blogIndex,
+    authorOptions: buildFilterOptions(blogIndex.map((post) => post.author)),
+    categoryOptions: buildFilterOptions(
+      blogIndex.map((post) => post.categories[0] || ""),
+    ),
     siteUrl,
   };
   const filledIndexTemplate = indexTemplate(indexData);
@@ -1227,7 +1429,11 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
     filledIndexTemplate,
   );
 
-  const recentPosts = blogIndex.slice(0, 3).map((post) => ({
+  const recentCount = Math.max(
+    0,
+    Number.parseInt(process.env.BLOG_RECENT_COUNT || "3", 10) || 3,
+  );
+  const recentPosts = blogIndex.slice(0, recentCount).map((post) => ({
     title: post.title,
     date: post.date,
     category: post.categories[0] || "",

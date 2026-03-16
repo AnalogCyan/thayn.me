@@ -7,14 +7,15 @@
     "build": "node build.js",
     "dev": "npm run build && npx serve public -l 3000",
     "lint": "eslint .",
-    "format": "prettier --write .",
-    "syndicate": "node scripts/syndicate-bridgy.js"
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "front-matter": "^4.0.2",
+    "handlebars": "^4.7.8",
+    "marked": "^4.3.0"
   },
   "devDependencies": {
     "eslint": "^8.57.1",
-    "front-matter": "^4.0.2",
-    "handlebars": "^4.7.8",
-    "marked": "^4.3.0",
     "prettier": "^3.8.1",
     "serve": "14.2.4"
   },

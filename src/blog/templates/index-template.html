@@ -34,16 +34,6 @@
     <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
     <link rel="apple-touch-icon" href="/media/logo.svg" />
     <link rel="canonical" href="{{siteUrl}}/blog/" />
-    <link rel="webmention" href="https://webmention.io/thayn.me/webmention" />
-    <link rel="pingback" href="https://webmention.io/thayn.me/xmlrpc" />
-    <link rel="me" href="https://tech.lgbt/@AnalogCyan" />
-    <link rel="me" href="https://bsky.app/profile/thayn.me" />
-    <link rel="me" href="https://en.pronouns.page/@AnalogCyan" />
-    <link rel="me" href="https://www.instagram.com/analogcyan/" />
-    <link rel="me" href="https://beta.musicbrainz.org/user/AnalogCyan" />
-    <link rel="me" href="https://www.last.fm/user/AnalogCyan" />
-    <link rel="me" href="https://www.discogs.com/user/AnalogCyan" />
-    <link rel="me" href="https://github.com/AnalogCyan" />
 
     <!-- EXTERNAL_RESOURCES -->
 
@@ -54,6 +44,7 @@
     <link rel="stylesheet" href="/blog/styles.css" />
     <script src="/scripts.js" defer></script>
     <script src="/blog/scripts/localized-content.js" defer></script>
+    <script src="/blog/scripts/scripts.js" defer></script>
 
     <title>Cyan Thayn — Blog</title>
   </head>
@@ -73,9 +64,41 @@
 
       <section class="blog-list h-feed">
         {{#if posts.length}}
+        <div class="blog-filters glass section-card">
+          <div class="blog-filter-row">
+            <input
+              type="search"
+              id="blog-search"
+              class="blog-filter-input"
+              placeholder="Search posts..."
+              data-i18n-placeholder="blog.search"
+            />
+            {{#if authorOptions.length}}
+            <select id="author-filter" class="blog-filter-select">
+              <option value="" data-i18n="blog.allAuthors">All Authors</option>
+              {{#each authorOptions}}
+              <option value="{{value}}">{{label}}</option>
+              {{/each}}
+            </select>
+            {{/if}}
+            {{#if categoryOptions.length}}
+            <select id="category-filter" class="blog-filter-select">
+              <option value="" data-i18n="blog.allCategories">All Categories</option>
+              {{#each categoryOptions}}
+              <option value="{{value}}">{{label}}</option>
+              {{/each}}
+            </select>
+            {{/if}}
+          </div>
+        </div>
+
         <div class="blog-grid">
           {{#each posts}}
-          <article class="glass blog-card h-entry">
+          <article
+            class="glass blog-card h-entry"
+            data-author-key="{{authorFilterKey}}"
+            data-category-key="{{categoryFilterKey}}"
+          >
             <div class="blog-meta">
               <time datetime="{{date}}" class="dt-published"
                 >{{formatDate date}}</time
