@@ -1,6 +1,6 @@
 ---
 title: "How I Build for the Web"
-date: "2026-03-15"
+date: 2026-03-16
 categories:
   - "Web Dev"
 excerpt: "No frameworks, no bloat. Just standards, a custom build system, and opinions about glass."

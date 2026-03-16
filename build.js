@@ -114,7 +114,7 @@ const EMPTY_FEED_UPDATED_DATE = resolveEmptyFeedUpdatedDate();
 
 function toPublishedIso(rawDate, parsedDate) {
   if (DATE_ONLY_RE.test(rawDate)) {
-    return `${rawDate}T00:00:00Z`;
+    return `${rawDate}T12:00:00Z`;
   }
   return parsedDate.toISOString();
 }
