@@ -34,3 +34,21 @@
 .site-footer #quoteDisplay {
   color: var(--text);
 }
+
+@media (width <= 720px) {
+  .site-footer {
+    position: relative;
+  }
+
+  .site-footer::after {
+    content: "";
+    position: absolute;
+    bottom: calc(-1 * (var(--header-gap) + env(safe-area-inset-bottom, 0px)));
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100lvw;
+    height: calc(var(--header-gap) + env(safe-area-inset-bottom, 0px) + 4rem);
+    background: linear-gradient(to bottom, transparent, light-dark(#eef2ff, #0b1020));
+    pointer-events: none;
+  }
+}
