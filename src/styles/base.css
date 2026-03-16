@@ -6,6 +6,7 @@ html {
   background-color: var(--page-bg);
   min-height: 100%;
   scrollbar-width: none;
+  scroll-behavior: smooth;
 }
 
 html::-webkit-scrollbar {
@@ -57,6 +58,12 @@ h2,
 h3 {
   font-weight: 700;
   letter-spacing: -0.01em;
+  text-wrap: balance;
+  scroll-margin-top: 5rem;
+}
+
+section[id] {
+  scroll-margin-top: 5rem;
 }
 
 h1 {

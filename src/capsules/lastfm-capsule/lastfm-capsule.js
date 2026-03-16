@@ -4,7 +4,6 @@
   const DEFAULT_REFRESH_INTERVAL_MS = 4 * 60 * 1000;
   const MIN_REFRESH_INTERVAL_MS = 75 * 1000;
   const MAX_REFRESH_INTERVAL_MS = 10 * 60 * 1000;
-  const VIZ_TICK_MS = 220;
   const LIGHT_PAGE_LIGHTNESS = 95;
   const DARK_PAGE_LIGHTNESS = 8;
   const LIGHT_SURFACE = { r: 255, g: 255, b: 255, a: 0.58 };
@@ -332,37 +331,18 @@
   }
 
   function stopVisualizer(root) {
-    if (root.__lastfmVizTimer) {
-      window.clearInterval(root.__lastfmVizTimer);
-      root.__lastfmVizTimer = null;
-    }
-
     const { bars } = getEls(root);
     bars.forEach((bar) => {
-      bar.style.height = "10px";
+      bar.style.height = "";
     });
   }
 
   function startVisualizer(root) {
     const { bars } = getEls(root);
     if (bars.length === 0) return;
-
-    stopVisualizer(root);
-    let phase = Math.random() * Math.PI * 2;
-
-    const tick = () => {
-      phase += 0.42;
-      bars.forEach((bar, idx) => {
-        const base = 8;
-        const swing = Math.abs(Math.sin(phase + idx * 0.9)) * 12;
-        const jitter = Math.random() * 4;
-        const px = Math.max(8, Math.min(24, Math.round(base + swing + jitter)));
-        bar.style.height = `${px}px`;
-      });
-    };
-
-    tick();
-    root.__lastfmVizTimer = window.setInterval(tick, VIZ_TICK_MS);
+    bars.forEach((bar) => {
+      bar.style.height = "";
+    });
   }
 
   function setTrackUI(root, track, mode, profileUrl) {
