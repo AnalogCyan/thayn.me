@@ -115,8 +115,8 @@
     "by": "By",
     "alsoOn": "Also on:",
     "webmentions": {
-      "title": "Webmentions",
-      "empty": "No webmentions yet.",
+      "title": "Comments",
+      "empty": "No comments yet.",
       "likes": "Likes",
       "reposts": "Reposts",
       "mentions": "Mentions",
