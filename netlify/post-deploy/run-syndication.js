@@ -140,6 +140,8 @@ async function scanLocalPostsForWork() {
       );
     }
 
+    if (attributes.draft) continue;
+
     const syndicationMap = normalizeSyndicationMap(attributes.syndication);
     const syndicateTargets = normalizeSyndicateTargets(attributes.syndicate);
     const statusMap = normalizeStatusMap(attributes.syndicationStatus);
@@ -509,6 +511,9 @@ export async function runSyndicationPostDeploy() {
       const fetched = await getFileContent(filePath, branch);
       const parsedPost = fm(fetched.content);
       const attributes = parsedPost.attributes || {};
+
+      if (attributes.draft) continue;
+
       const syndicationMap = normalizeSyndicationMap(attributes.syndication);
       const syndicateTargets = normalizeSyndicateTargets(attributes.syndicate);
       const statusMap = normalizeStatusMap(attributes.syndicationStatus);
