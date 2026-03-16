@@ -115,126 +115,9 @@
         >
           <h2 data-i18n="blog.webmentions.title">Comments</h2>
 
-          {{#unless hasWebmentions}}
           <p class="webmentions-empty" data-i18n="blog.webmentions.empty">
             No comments yet.
           </p>
-          {{/unless}} {{#if webmentions.likes.length}}
-          <div class="webmentions-group webmentions-likes">
-            <h3>
-              <span data-i18n="blog.webmentions.likes">Likes</span>
-              ({{webmentions.likes.length}})
-            </h3>
-            <ul class="webmentions-people">
-              {{#each webmentions.likes}}
-              <li>
-                {{#if authorUrl}}
-                <a href="{{authorUrl}}" rel="nofollow ugc">
-                  <span>{{authorName}}</span>
-                </a>
-                {{else}}
-                <span>{{authorName}}</span>
-                {{/if}}
-              </li>
-              {{/each}}
-            </ul>
-          </div>
-          {{/if}} {{#if webmentions.reposts.length}}
-          <div class="webmentions-group webmentions-reposts">
-            <h3>
-              <span data-i18n="blog.webmentions.reposts">Reposts</span>
-              ({{webmentions.reposts.length}})
-            </h3>
-            <ul class="webmentions-people">
-              {{#each webmentions.reposts}}
-              <li>
-                {{#if authorUrl}}
-                <a href="{{authorUrl}}" rel="nofollow ugc">
-                  <span>{{authorName}}</span>
-                </a>
-                {{else}}
-                <span>{{authorName}}</span>
-                {{/if}}
-              </li>
-              {{/each}}
-            </ul>
-          </div>
-          {{/if}} {{#if webmentions.mentions.length}}
-          <div class="webmentions-group webmentions-mentions">
-            <h3>
-              <span data-i18n="blog.webmentions.mentions">Mentions</span>
-              ({{webmentions.mentions.length}})
-            </h3>
-            <ul class="webmentions-people">
-              {{#each webmentions.mentions}}
-              <li>
-                {{#if authorUrl}}
-                <a href="{{authorUrl}}" rel="nofollow ugc">
-                  <span>{{authorName}}</span>
-                </a>
-                {{else}}
-                <span>{{authorName}}</span>
-                {{/if}}
-              </li>
-              {{/each}}
-            </ul>
-          </div>
-          {{/if}} {{#if webmentions.bookmarks.length}}
-          <div class="webmentions-group webmentions-bookmarks">
-            <h3>
-              <span data-i18n="blog.webmentions.bookmarks">Bookmarks</span>
-              ({{webmentions.bookmarks.length}})
-            </h3>
-            <ul class="webmentions-people">
-              {{#each webmentions.bookmarks}}
-              <li>
-                {{#if authorUrl}}
-                <a href="{{authorUrl}}" rel="nofollow ugc">
-                  <span>{{authorName}}</span>
-                </a>
-                {{else}}
-                <span>{{authorName}}</span>
-                {{/if}}
-              </li>
-              {{/each}}
-            </ul>
-          </div>
-          {{/if}} {{#if webmentions.replies.length}}
-          <div class="webmentions-group webmentions-replies">
-            <h3>
-              <span data-i18n="blog.webmentions.replies">Replies</span>
-              ({{webmentions.replies.length}})
-            </h3>
-            <ul class="webmentions-replies">
-              {{#each webmentions.replies}}
-              <li class="webmention-reply">
-                <div class="webmention-meta">
-                  {{#if authorUrl}}
-                  <a href="{{authorUrl}}" rel="nofollow ugc">{{authorName}}</a>
-                  {{else}}
-                  <span>{{authorName}}</span>
-                  {{/if}} {{#if published}}
-                  <time datetime="{{published}}"
-                    >{{formatDateTime published}}</time
-                  >
-                  {{/if}}
-                </div>
-                {{#if text}}
-                <p>{{text}}</p>
-                {{/if}} {{#if url}}
-                <a
-                  class="webmention-source"
-                  href="{{url}}"
-                  rel="nofollow ugc"
-                  data-i18n="blog.webmentions.source"
-                  >View source</a
-                >
-                {{/if}}
-              </li>
-              {{/each}}
-            </ul>
-          </div>
-          {{/if}}
         </section>
         <footer class="blog-post-footer">
           {{#if bridgyPublishTargets.length}}
@@ -242,23 +125,6 @@
             {{#each bridgyPublishTargets}}
             <a href="{{this}}" rel="nofollow ugc">Bridgy Publish</a>
             {{/each}}
-          </div>
-          {{/if}} {{#if syndicationLinks.length}}
-          <div class="blog-syndication">
-            <span class="blog-syndication-label" data-i18n="blog.alsoOn"
-              >Also on:</span
-            >
-            <div class="blog-syndication-links">
-              {{#each syndicationLinks}}
-              <a
-                class="u-syndication"
-                href="{{url}}"
-                target="_blank"
-                rel="noreferrer noopener"
-                >{{label}}</a
-              >
-              {{/each}}
-            </div>
           </div>
           {{/if}}
           <nav class="client-link-group" aria-label="Post actions">
