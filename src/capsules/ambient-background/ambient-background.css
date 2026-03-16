@@ -1,9 +1,9 @@
 .gradient-background {
   position: fixed;
-  top: -5lvh;
+  top: -10lvh;
   left: 0;
   width: 100%;
-  height: 110lvh;
+  height: 120lvh;
   z-index: -1;
   overflow: hidden;
 }
