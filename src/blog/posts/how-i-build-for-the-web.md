@@ -11,10 +11,13 @@ syndication:
   {}
 syndicationStatus:
   bluesky: "requested"
+  mastodon: "requested"
 syndicationRequestedAt:
   bluesky: "2026-03-16T04:49:16.917Z"
+  mastodon: "2026-03-16T04:49:16.917Z"
 syndicationCheckedAt:
   bluesky: "2026-03-16T04:49:16.917Z"
+  mastodon: "2026-03-16T04:49:16.917Z"
 ---
 A few people have asked me about how I build my websites, what tools I use, and why everything looks and feels the way it does. So here's the rundown: my approach to web development, the principles behind it, and the tools that make it work.
 
