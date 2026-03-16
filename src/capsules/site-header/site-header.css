@@ -337,7 +337,7 @@
       var(--shadow-soft),
       inset 0 1px 0 rgba(255, 255, 255, 0.35);
     min-width: 220px;
-    max-width: min(320px, calc(100vw - 2 * var(--spacing-md)));
+    max-width: min(320px, calc(100lvw - 2 * var(--spacing-md)));
     width: max-content;
     opacity: 0;
     transform: translateY(-8px) scale(0.97);

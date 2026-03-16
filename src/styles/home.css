@@ -40,7 +40,7 @@
 }
 
 .name {
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2rem, 4lvw, 3rem);
   font-weight: 800;
   color: var(--text);
 }
@@ -160,8 +160,8 @@
 
 .profile-pic {
   grid-area: pic;
-  width: clamp(140px, 20vw, 200px);
-  height: clamp(140px, 20vw, 200px);
+  width: clamp(140px, 20lvw, 200px);
+  height: clamp(140px, 20lvw, 200px);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   object-fit: cover;

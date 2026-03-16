@@ -23,32 +23,32 @@
 }
 
 .gradient-node:nth-child(1) {
-  width: 40vh;
-  height: 40vh;
+  width: 40lvh;
+  height: 40lvh;
   background-color: hsla(var(--accent-hue, 205), 90%, 70%, 0.8);
   animation: float1 20s ease-in-out infinite;
   transform: translate3d(10%, 10%, 0) scale(1.5);
 }
 
 .gradient-node:nth-child(2) {
-  width: 50vh;
-  height: 50vh;
+  width: 50lvh;
+  height: 50lvh;
   background-color: hsla(calc(var(--accent-hue, 205) + 60), 90%, 72%, 0.8);
   animation: float2 25s ease-in-out infinite;
   transform: translate3d(60%, 20%, 0) scale(1.5);
 }
 
 .gradient-node:nth-child(3) {
-  width: 45vh;
-  height: 45vh;
+  width: 45lvh;
+  height: 45lvh;
   background-color: hsla(calc(var(--accent-hue, 205) + 160), 90%, 75%, 0.7);
   animation: float3 18s ease-in-out infinite;
   transform: translate3d(20%, 70%, 0) scale(1.5);
 }
 
 .gradient-node:nth-child(4) {
-  width: 60vh;
-  height: 60vh;
+  width: 60lvh;
+  height: 60lvh;
   background-color: hsla(calc(var(--accent-hue, 205) + 240), 90%, 65%, 0.7);
   animation: float4 22s ease-in-out infinite;
   transform: translate3d(70%, 70%, 0) scale(1.5);
