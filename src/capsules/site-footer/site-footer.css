@@ -48,7 +48,7 @@
     transform: translateX(-50%);
     width: 100lvw;
     height: calc(var(--header-gap) + env(safe-area-inset-bottom, 0px) + 4rem);
-    background: linear-gradient(to bottom, transparent, light-dark(#eef2ff, #0b1020));
+    background: linear-gradient(to bottom, transparent, var(--page-bg));
     pointer-events: none;
   }
 }
