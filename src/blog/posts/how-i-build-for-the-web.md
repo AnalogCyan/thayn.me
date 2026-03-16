@@ -4,20 +4,13 @@ date: "2026-03-15"
 categories:
   - "Web Dev"
 excerpt: "No frameworks, no bloat. Just standards, a custom build system, and opinions about glass."
-syndicate:
-  - "bluesky"
-  - "mastodon"
+syndicationComplete: true
 syndication:
-  {}
+  bluesky: "https://bsky.app/profile/thayn.me/post/3mh5nsmnmku2s"
+  mastodon: "https://tech.lgbt/@AnalogCyan/116237045767789142"
 syndicationStatus:
-  bluesky: "requested"
-  mastodon: "requested"
-syndicationRequestedAt:
-  bluesky: "2026-03-16T04:49:16.917Z"
-  mastodon: "2026-03-16T04:49:16.917Z"
-syndicationCheckedAt:
-  bluesky: "2026-03-16T04:49:16.917Z"
-  mastodon: "2026-03-16T04:49:16.917Z"
+  bluesky: "confirmed"
+  mastodon: "confirmed"
 ---
 A few people have asked me about how I build my websites, what tools I use, and why everything looks and feels the way it does. So here's the rundown: my approach to web development, the principles behind it, and the tools that make it work.
 
