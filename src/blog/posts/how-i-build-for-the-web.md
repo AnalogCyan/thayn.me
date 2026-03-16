@@ -6,8 +6,8 @@ categories:
 excerpt: "No frameworks, no bloat. Just standards, a custom build system, and opinions about glass."
 syndicationComplete: true
 syndication:
-  bluesky: "https://bsky.app/profile/thayn.me/post/3mh5nsmnmku2s"
-  mastodon: "https://tech.lgbt/@AnalogCyan/116237045767789142"
+  bluesky: "https://bsky.app/profile/thayn.me/post/3mh5oerkcpc2m"
+  mastodon: "https://tech.lgbt/@AnalogCyan/116237086956188701"
 syndicationStatus:
   bluesky: "confirmed"
   mastodon: "confirmed"
