@@ -261,25 +261,36 @@
             </div>
           </div>
           {{/if}}
-          <a
-            href="{{blueskyDiscussionUrl}}"
-            class="button secondary"
-            target="_blank"
-            rel="noreferrer noopener"
-            data-i18n="blog.discussBluesky"
-            ><i class="ri-bluesky-line" aria-hidden="true"></i> Discuss on
-            Bluesky</a
-          >
-          <a
-            href="{{mastodonDiscussionUrl}}"
-            class="button secondary"
-            target="_blank"
-            rel="noreferrer noopener"
-            data-i18n="blog.discussMastodon"
-            ><i class="ri-mastodon-line" aria-hidden="true"></i> Discuss on
-            Mastodon</a
-          >
-          <a href="/blog/" class="button secondary">Back to Blog</a>
+          <nav class="client-link-group" aria-label="Post actions">
+            <a
+              href="/blog/"
+              class="button secondary client-link client-link--first"
+              data-i18n="blog.backToBlog"
+            >
+              <i class="ri-arrow-left-line" aria-hidden="true"></i>
+              <span>Back to Blog</span>
+            </a>
+            <a
+              href="{{blueskyDiscussionUrl}}"
+              class="button secondary client-link client-link--middle"
+              target="_blank"
+              rel="noreferrer noopener"
+              data-i18n="blog.discussBluesky"
+            >
+              <i class="ri-bluesky-line" aria-hidden="true"></i>
+              <span>Bluesky</span>
+            </a>
+            <a
+              href="{{mastodonDiscussionUrl}}"
+              class="button secondary client-link client-link--last"
+              target="_blank"
+              rel="noreferrer noopener"
+              data-i18n="blog.discussMastodon"
+            >
+              <i class="ri-mastodon-line" aria-hidden="true"></i>
+              <span>Mastodon</span>
+            </a>
+          </nav>
         </footer>
       </article>
     </main>
