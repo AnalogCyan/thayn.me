@@ -87,7 +87,7 @@
   color: var(--text);
   box-shadow: var(--shadow-soft);
   transition:
-    transform var(--transition-fast),
+    translate var(--transition-fast),
     box-shadow var(--transition-fast);
   flex: 0 0 auto;
 }
@@ -109,9 +109,8 @@
   cursor: pointer;
 }
 
-.lastfm-link:hover,
-.lastfm-toggle:hover {
-  transform: translateY(-1px);
+:is(.lastfm-link, .lastfm-toggle):hover {
+  translate: 0 -1px;
   box-shadow: var(--shadow-md);
 }
 
@@ -250,7 +249,7 @@
     color-mix(in srgb, var(--bg-secondary) 82%, transparent);
   color: inherit;
   transition:
-    transform var(--transition-fast),
+    translate var(--transition-fast),
     box-shadow var(--transition-fast),
     border-color var(--transition-fast);
 }
@@ -265,9 +264,8 @@
   border-bottom-right-radius: 0.75rem;
 }
 
-.lastfm-recent-link:hover,
-.lastfm-recent-link:focus-visible {
-  transform: translateY(-1px);
+.lastfm-recent-link:is(:hover, :focus-visible) {
+  translate: 0 -1px;
   box-shadow: var(--shadow-soft);
   border-color: color-mix(in srgb, var(--accent) 44%, var(--glass-border));
 }
@@ -333,7 +331,7 @@
     color-mix(in srgb, var(--bg-secondary) 76%, transparent);
 }
 
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .lastfm-capsule.section-card {
     padding: 0.85rem;
   }

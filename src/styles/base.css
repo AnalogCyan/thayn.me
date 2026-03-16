@@ -13,8 +13,7 @@ html::-webkit-scrollbar {
   display: none;
 }
 
-html[data-i18n-pending="true"] [data-i18n],
-html[data-i18n-pending="true"] [data-i18n-html] {
+html[data-i18n-pending="true"] :is([data-i18n], [data-i18n-html]) {
   visibility: hidden;
 }
 
@@ -195,15 +194,15 @@ main.spa-out {
   text-decoration: none;
   cursor: pointer;
   transition:
-    transform var(--transition-fast),
+    translate var(--transition-fast),
+    scale var(--transition-fast),
     box-shadow var(--transition-fast);
-  transform-origin: center;
   -webkit-tap-highlight-color: transparent;
 }
 
-.button:hover,
-.button-link:hover {
-  transform: translateY(-2px) scale(1.02);
+:is(.button, .button-link):hover {
+  translate: 0 -2px;
+  scale: 1.02;
   box-shadow: var(--shadow-md);
 }
 
@@ -276,14 +275,16 @@ main.spa-out {
   backdrop-filter: var(--bg-blur) var(--bg-saturation);
   -webkit-backdrop-filter: var(--bg-blur) var(--bg-saturation);
   transition:
-    transform var(--transition-fast),
+    translate var(--transition-fast),
+    scale var(--transition-fast),
     background-color var(--transition-fast),
     box-shadow var(--transition-fast),
     color var(--transition-fast);
 }
 
 .social-icons a:hover {
-  transform: translateY(-1px) scale(1.03);
+  translate: 0 -1px;
+  scale: 1.03;
   background:
     linear-gradient(
       135deg,
@@ -297,7 +298,7 @@ main.spa-out {
     inset 0 1px 0 var(--glass-highlight);
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   main {
     padding: 0 var(--container-padding-sm);
   }
@@ -315,7 +316,7 @@ main.spa-out {
   }
 }
 
-@media (max-width: 520px) {
+@media (width <= 520px) {
   h1 {
     font-size: 2rem;
   }

@@ -423,11 +423,6 @@
           break;
         case THEMES.AUTO:
         default:
-          if (systemPrefersDark.matches) {
-            document.documentElement.classList.add("dark-theme");
-          } else {
-            document.documentElement.classList.add("light-theme");
-          }
           mode = THEMES.AUTO;
           break;
       }

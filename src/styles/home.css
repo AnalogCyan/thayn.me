@@ -166,12 +166,14 @@
   box-shadow: var(--shadow-xl);
   object-fit: cover;
   border: 2px solid rgba(255, 255, 255, 0.4);
-  transition: transform var(--transition-fast);
-  transform-origin: center;
+  transition:
+    translate var(--transition-fast),
+    rotate var(--transition-fast);
 }
 
 .profile-pic:hover {
-  transform: translateY(-4px) rotate(1deg);
+  translate: 0 -4px;
+  rotate: 1deg;
 }
 
 .about,
@@ -208,7 +210,8 @@
     padding-top var(--transition-fast),
     padding-bottom var(--transition-fast),
     box-shadow var(--transition-fast),
-    transform var(--transition-fast);
+    translate var(--transition-fast),
+    scale var(--transition-fast);
 }
 
 .project:first-child {
@@ -229,7 +232,8 @@
 .project:hover {
   padding-top: calc(var(--spacing-lg) + 0.6rem);
   padding-bottom: calc(var(--spacing-lg) + 0.6rem);
-  transform: translateY(-2px) scale(1.02);
+  translate: 0 -2px;
+  scale: 1.02;
   box-shadow:
     var(--shadow-md),
     inset 0 1px 0 rgba(255, 255, 255, 0.35);
@@ -304,7 +308,7 @@
   color: #ff8a00;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .hero-card {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -319,7 +323,7 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .hero-actions {
     flex-direction: column;
     align-items: flex-start;
@@ -351,7 +355,7 @@
   justify-content: center;
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .nav-row {
     justify-content: space-between;
   }

@@ -109,27 +109,18 @@
   transition: opacity var(--transition-normal);
 }
 
-.nav-pill__link:hover,
-.nav-pill__link:focus-visible,
-.nav-pill__toggle:hover,
-.nav-pill__toggle:focus-visible {
+:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible) {
   color: var(--text);
 }
 
-.nav-pill__link:hover::before,
-.nav-pill__link:focus-visible::before,
+:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible)::before,
 .nav-pill__link.is-active::before,
-.nav-pill__toggle:hover::before,
-.nav-pill__toggle:focus-visible::before,
 .nav-pill--open .nav-pill__toggle::before {
   opacity: 1;
 }
 
-.nav-pill__link:hover::after,
-.nav-pill__link:focus-visible::after,
+:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible)::after,
 .nav-pill__link.is-active::after,
-.nav-pill__toggle:hover::after,
-.nav-pill__toggle:focus-visible::after,
 .nav-pill--open .nav-pill__toggle::after {
   opacity: 1;
 }
@@ -246,7 +237,7 @@
   opacity: 0 !important;
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .nav-pill .sliding-pill,
   .nav-pill .sliding-pill__overlay {
     display: none !important;
@@ -257,20 +248,15 @@
   }
 }
 
-.nav-pill__link i,
-.nav-pill__text,
-.nav-pill__toggle i {
-  transition: transform var(--transition-normal);
-  transform-origin: center;
+:is(.nav-pill__link i, .nav-pill__text, .nav-pill__toggle i) {
+  transition:
+    translate var(--transition-normal),
+    scale var(--transition-normal);
 }
 
-.nav-pill__link:hover i,
-.nav-pill__link:focus i,
-.nav-pill__link.is-active i,
-.nav-pill__link:hover .nav-pill__text,
-.nav-pill__link:focus .nav-pill__text,
-.nav-pill__link.is-active .nav-pill__text {
-  transform: translateY(-1px) scale(1.03);
+.nav-pill__link:is(:hover, :focus, .is-active) :is(i, .nav-pill__text) {
+  translate: 0 -1px;
+  scale: 1.03;
 }
 
 
@@ -284,7 +270,7 @@
   line-height: 1;
 }
 
-@media (max-width: 720px) {
+@media (width <= 720px) {
   .nav-pill-wrap {
     gap: var(--spacing-xs);
     width: 100%;
@@ -513,32 +499,27 @@
   z-index: 0;
 }
 
-.theme-toggle__button:hover::before,
-.theme-toggle__button:focus-visible::before {
+.theme-toggle__button:is(:hover, :focus-visible)::before,
+.theme-toggle__button:is(:hover, :focus-visible)::after {
   opacity: 1;
 }
 
-.theme-toggle__button:hover::after,
-.theme-toggle__button:focus-visible::after {
-  opacity: 1;
-}
-
-.theme-toggle__icon,
-.lang-toggle__icon {
+:is(.theme-toggle__icon, .lang-toggle__icon) {
   font-size: 1.2rem;
-  transition: transform var(--transition-normal);
-  transform-origin: center;
+  transition:
+    translate var(--transition-normal),
+    scale var(--transition-normal);
   position: relative;
   z-index: 1;
 }
 
-.theme-toggle__text,
-.lang-toggle__text {
+:is(.theme-toggle__text, .lang-toggle__text) {
   font-weight: 600;
   font-size: 0.65rem;
   line-height: 1;
-  transition: transform var(--transition-normal);
-  transform-origin: center;
+  transition:
+    translate var(--transition-normal),
+    scale var(--transition-normal);
   position: relative;
   z-index: 1;
 }
@@ -548,27 +529,17 @@
   padding: 0 0.9rem;
 }
 
-.theme-toggle[data-compact="true"] .theme-toggle__icon,
-.theme-toggle[data-compact="true"] .lang-toggle__icon {
+.theme-toggle[data-compact="true"] :is(.theme-toggle__icon, .lang-toggle__icon) {
   font-size: 1.3rem;
 }
 
-.theme-toggle__button:hover .theme-toggle__icon,
-.theme-toggle__button:hover .lang-toggle__icon,
-.theme-toggle__button:focus-visible .theme-toggle__icon,
-.theme-toggle__button:focus-visible .lang-toggle__icon,
-.theme-toggle__button:hover .theme-toggle__text,
-.theme-toggle__button:hover .lang-toggle__text,
-.theme-toggle__button:focus-visible .theme-toggle__text,
-.theme-toggle__button:focus-visible .lang-toggle__text {
-  transform: translateY(-1px) scale(1.03);
+.theme-toggle__button:is(:hover, :focus-visible) :is(.theme-toggle__icon, .lang-toggle__icon, .theme-toggle__text, .lang-toggle__text) {
+  translate: 0 -1px;
+  scale: 1.03;
 }
 
-@media (max-width: 720px) {
-  .theme-toggle__button {
-    min-width: var(--nav-item-width-sm);
-  }
-
+@media (width <= 720px) {
+  .theme-toggle__button,
   .theme-toggle[data-compact="true"] .theme-toggle__button {
     min-width: var(--nav-item-width-sm);
   }
