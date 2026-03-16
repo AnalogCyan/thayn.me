@@ -22,7 +22,7 @@ My rule is simple: **stick to vanilla web standards unless a framework genuinely
 
 That's not framework-bashing for its own sake. If you're building a complex app with shared state and dozens of contributors, frameworks can absolutely make sense. But for personal sites, portfolios, blogs? The platform is more than enough, and the result is faster, lighter, and more durable. Your site won't break because a dependency you never heard of pushed a bad update.
 
-If you're curious about just how far CSS has come, I'd recommend [You no longer need JavaScript](https://lyra.horse/blog/2025/08/you-dont-need-js/) by Lyra. It made me realize CSS has become even more powerful than I thought, and I've been rethinking where I draw the line between CSS and JS ever since.
+If you're curious about just how far CSS has come, I'd recommend [You no longer need JavaScript](https://lyra.horse/blog/2025/08/you-dont-need-js/) by lyra. It made me realize CSS has become even more powerful than I thought, and I've been rethinking where I draw the line between CSS and JS ever since.
 
 ## GachaKit
 
