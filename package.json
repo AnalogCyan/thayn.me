@@ -12,10 +12,10 @@
   "dependencies": {
     "front-matter": "^4.0.2",
     "handlebars": "^4.7.9",
-    "marked": "^4.3.0"
+    "marked": "^17.0.5"
   },
   "devDependencies": {
-    "eslint": "^8.57.1",
+    "eslint": "^10.1.0",
     "prettier": "^3.8.1",
     "serve": "14.2.6"
   },
