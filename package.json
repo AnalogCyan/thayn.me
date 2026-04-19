@@ -10,6 +10,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@netlify/blobs": "^10.7.4",
     "front-matter": "^4.0.2",
     "handlebars": "^4.7.9",
     "marked": "^18.0.2"
