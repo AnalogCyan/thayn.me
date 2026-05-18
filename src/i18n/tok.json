@@ -57,6 +57,18 @@
       "mobs": {
         "title": "More Vanilla Mobs",
         "desc": "Minecraft 1.17+ data pack that implements some of the mobs that technically exist in the game, but don't appear in survival."
+      },
+      "frostbound": {
+        "title": "Frostbound Peaks",
+        "desc": "A custom ice-themed Minecraft survival experience with floating islands, a frozen nether, and custom advancements."
+      },
+      "splork": {
+        "title": "splork",
+        "desc": "Tomodachi Life: Living the Dream art drawer/printer for Raspberry Pi Pico, with 84-color palette support and automatic editor setup."
+      },
+      "vitadocklite": {
+        "title": "VitaDockLite",
+        "desc": "A standalone utility to stream your PlayStation Vita to your PC. Personal fork with patched-in macOS support."
       }
     }
   },
