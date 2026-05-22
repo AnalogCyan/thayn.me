@@ -15,6 +15,8 @@ syndicationRequestedAt:
   bluesky: "2026-05-22T19:45:10.715Z"
 syndicationLastError:
   bluesky: "publish-status-400"
+syndicationCheckedAt:
+  bluesky: "2026-05-22T19:58:06.295Z"
 ---
 Being neurodivergent in a world built for neurotypicals is exhausting. The social scripts, the expected narration of your own thought process, the assumption that if you know something you must be able to explain how you know it. Lately I have been thinking a lot about how my brain actually works, mostly because people keep asking me to explain it, and I keep failing.
 
