@@ -4,6 +4,9 @@ date: 2026-05-22
 categories:
   - "Neurodiversity"
 excerpt: "Neurotypicals run on interpreted code. My brain compiled that shit years ago."
+syndicate:
+  - bluesky
+  - mastodon
 ---
 
 Being neurodivergent in a world built for neurotypicals is exhausting. The social scripts, the expected narration of your own thought process, the assumption that if you know something you must be able to explain how you know it. Lately I have been thinking a lot about how my brain actually works, mostly because people keep asking me to explain it, and I keep failing.
