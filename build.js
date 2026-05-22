@@ -78,7 +78,7 @@ function parsePostDate(value, source = "blog post") {
   }
 
   const parsed = DATE_ONLY_RE.test(raw)
-    ? new Date(`${raw}T12:00:00Z`)
+    ? new Date(`${raw}T00:00:00Z`)
     : new Date(raw);
 
   if (Number.isNaN(parsed.getTime())) {
@@ -114,7 +114,7 @@ const EMPTY_FEED_UPDATED_DATE = resolveEmptyFeedUpdatedDate();
 
 function toPublishedIso(rawDate, parsedDate) {
   if (DATE_ONLY_RE.test(rawDate)) {
-    return `${rawDate}T12:00:00Z`;
+    return `${rawDate}T00:00:00Z`;
   }
   return parsedDate.toISOString();
 }

@@ -1,6 +1,6 @@
 ---
 title: "Brain Blobs & Algorithms"
-date: "2026-05-22"
+date: 2026-05-22T19:45:00Z
 categories:
   - "Neurodiversity"
 excerpt: "Neurotypicals run on interpreted code. My brain compiled that shit years ago."
