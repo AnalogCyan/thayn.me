@@ -38,6 +38,28 @@ const BLUESKY_HOST_PATTERNS = [
   ".brid.gy",
 ];
 
+const DEFAULT_READY_TIMEOUT_MS = 90000;
+const DEFAULT_READY_INTERVAL_MS = 5000;
+const DEFAULT_READY_FETCH_TIMEOUT_MS = 10000;
+
+function parsePositiveInteger(value, fallback) {
+  const parsed = Number.parseInt(String(value || ""), 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+const READY_TIMEOUT_MS = parsePositiveInteger(
+  process.env.SYNDICATION_READY_TIMEOUT_MS,
+  DEFAULT_READY_TIMEOUT_MS,
+);
+const READY_INTERVAL_MS = parsePositiveInteger(
+  process.env.SYNDICATION_READY_INTERVAL_MS,
+  DEFAULT_READY_INTERVAL_MS,
+);
+const READY_FETCH_TIMEOUT_MS = parsePositiveInteger(
+  process.env.SYNDICATION_READY_FETCH_TIMEOUT_MS,
+  DEFAULT_READY_FETCH_TIMEOUT_MS,
+);
+
 function toSkipCiMessage(message) {
   if (/\[(?:skip ci|ci skip)\]/i.test(message)) {
     return message;
@@ -462,6 +484,78 @@ async function acquireConfirmLease({ filePath, branch, target, now }) {
   return { acquired: false, reason: "lease-conflict" };
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), READY_FETCH_TIMEOUT_MS);
+  try {
+    return await fetch(url, {
+      ...options,
+      headers: {
+        ...(options.headers || {}),
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function isUrlReady(url, { requiredText = "" } = {}) {
+  try {
+    const head = await fetchWithTimeout(url, { method: "HEAD" });
+    if (head.ok && !requiredText) return true;
+  } catch {
+    // Some CDNs reject HEAD before GET is ready.
+  }
+
+  try {
+    const res = await fetchWithTimeout(url, { method: "GET" });
+    if (!res.ok) return false;
+    if (!requiredText) return true;
+    const text = await res.text();
+    return text.includes(requiredText);
+  } catch {
+    return false;
+  }
+}
+
+async function waitForUrlReady(url, options = {}) {
+  const deadline = Date.now() + READY_TIMEOUT_MS;
+  let attempts = 0;
+
+  while (Date.now() <= deadline) {
+    attempts += 1;
+    if (await isUrlReady(url, options)) {
+      return { ok: true, attempts };
+    }
+    await sleep(READY_INTERVAL_MS);
+  }
+
+  return { ok: false, attempts };
+}
+
+async function waitForPublishAssets({ canonicalUrl, publishTargets = [] }) {
+  const bridgyTarget = publishTargets.find(
+    (target) => BRIDGY_PUBLISH_TARGETS[target],
+  );
+  const pageText = bridgyTarget ? BRIDGY_PUBLISH_TARGETS[bridgyTarget] : "";
+
+  const pageReady = await waitForUrlReady(canonicalUrl, {
+    requiredText: pageText,
+  });
+  if (!pageReady.ok) {
+    return { ok: false, reason: "page-not-ready", url: canonicalUrl };
+  }
+
+  return { ok: true };
+}
+
 export async function runSyndicationPostDeploy() {
   if (!isProductionDeploy()) {
     return { skipped: true, reason: "non-production" };
@@ -781,6 +875,25 @@ export async function runSyndicationPostDeploy() {
       }
       if (BRIDGY_PUBLISH_TARGETS[target]) {
         pendingTargets.push(target);
+      }
+    }
+
+    const allPublishTargets = syndicateTargets.filter(
+      (target) => BRIDGY_PUBLISH_TARGETS[target],
+    );
+
+    if (allPublishTargets.length > 0) {
+      const ready = await waitForPublishAssets({
+        canonicalUrl,
+        publishTargets: allPublishTargets,
+      });
+      if (!ready.ok) {
+        report.skipped.push({
+          file: filePath,
+          reason: ready.reason,
+          url: ready.url,
+        });
+        continue;
       }
     }
 
