@@ -46,3 +46,10 @@
   width: 88px;
   height: 31px;
 }
+
+@media (width <= 640px) {
+  .buttons-capsule {
+    padding-inline: 0;
+    justify-content: center;
+  }
+}
