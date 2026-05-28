@@ -1,5 +1,8 @@
 (function () {
+  var initialized = false;
+
   function init() {
+    if (initialized) return;
     try {
       var nodes = document.querySelectorAll(".gradient-node");
       if (!nodes.length) return;
@@ -92,6 +95,7 @@
       if (css) {
         style.textContent = css;
       }
+      initialized = true;
     } catch (e) {
       // fail silently
     }
@@ -102,5 +106,4 @@
   }
 
   init();
-  window.addEventListener("resize", init);
 })();

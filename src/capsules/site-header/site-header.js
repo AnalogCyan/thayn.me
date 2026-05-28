@@ -207,6 +207,15 @@
     }
 
     function returnToDefault() {
+      // Re-query current active link based on current page
+      const navPage = document.querySelector(".page-shell")?.dataset.navPage;
+      if (navPage) {
+        items.forEach((item) => {
+          if (item.dataset.nav === navPage) item.classList.add("is-active");
+          else item.classList.remove("is-active");
+        });
+      }
+
       var def = getDefault();
       if (def) moveTo(def);
       else hide();
