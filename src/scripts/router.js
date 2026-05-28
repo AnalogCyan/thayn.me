@@ -7,15 +7,15 @@
   var baseScripts = new Set(
     Array.from(document.querySelectorAll("script[src]")).map(function (s) {
       return s.getAttribute("src");
-    }),
+    })
   );
 
   var baseStylesheets = new Set(
     Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(
       function (l) {
         return l.getAttribute("href");
-      },
-    ),
+      }
+    )
   );
 
   function shouldIntercept(anchor) {
@@ -79,8 +79,7 @@
   function syncStylesheets(sheets) {
     sheets.forEach(function (href) {
       if (baseStylesheets.has(href)) return;
-      if (document.querySelector('link[data-spa][href="' + href + '"]'))
-        return;
+      if (document.querySelector('link[data-spa][href="' + href + '"]')) return;
       var link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = href;
@@ -168,10 +167,14 @@
         var descEl = document.querySelector('meta[name="description"]');
         if (descEl) descEl.setAttribute("content", data.description);
 
-        updateNavActive(data.navPage);
         syncStylesheets(data.stylesheets);
 
         return syncScripts(data.scripts).then(function () {
+          document.dispatchEvent(
+            new CustomEvent("th-nav-changed", {
+              detail: { navPage: data.navPage },
+            })
+          );
           if (push !== false) {
             history.pushState(null, "", url);
           }

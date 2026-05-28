@@ -123,9 +123,10 @@
     "subtitle": "Notes, updates, and experiments.",
     "empty": "No posts yet",
     "emptyBody": "Check back soon for updates.",
-    "readMore": "Read More →",
-    "by": "By",
+    "readMore": "Read More <i class=\"ri-arrow-right-up-line\" aria-hidden=\"true\"></i>",
     "alsoOn": "Also on:",
+    "filterTag": "o lukin e kulupu toki",
+    "allTags": "kulupu toki ale",
     "webmentions": {
       "title": "Comments",
       "empty": "No comments yet.",

@@ -19,7 +19,7 @@
     />
     <meta name="theme-color" content="#46b3ff" />
 
-    <meta property="og:title" content="Cyan Thayn — Blog" />
+    <meta property="og:title" content="Cyan's Blog" />
     <meta
       property="og:description"
       content="Notes, updates, and experiments."
@@ -46,7 +46,7 @@
     <script src="/blog/scripts/localized-content.js" defer></script>
     <script src="/blog/scripts/scripts.js" defer></script>
 
-    <title>Cyan Thayn — Blog</title>
+    <title>Cyan's Blog</title>
   </head>
   <body>
     <drop capsule="ambient-background"></drop>
@@ -60,96 +60,71 @@
           <h2 data-i18n="blog.title">Blog</h2>
         </div>
         <p data-i18n="blog.subtitle">Notes, updates, and experiments.</p>
+        <div class="blog-filter-row">
+          <input
+            type="search"
+            id="blog-search"
+            class="blog-filter-input"
+            placeholder="Search posts..."
+            aria-label="Search posts"
+            data-i18n-placeholder="blog.search"
+            data-i18n-attr="aria-label:blog.search"
+          />
+          {{#if tagOptions.length}}
+          <select id="tag-filter" class="blog-filter-select" aria-label="Filter by tag" data-i18n-attr="aria-label:blog.filterTag">
+            <option value="" data-i18n="blog.allTags">All Tags</option>
+            {{#each tagOptions}}
+            <option value="{{value}}">{{label}}</option>
+            {{/each}}
+          </select>
+          {{/if}}
+        </div>
       </section>
 
       <section class="blog-list h-feed">
         {{#if posts.length}}
-        <div class="blog-filters glass section-card">
-          <div class="blog-filter-row">
-            <input
-              type="search"
-              id="blog-search"
-              class="blog-filter-input"
-              placeholder="Search posts..."
-              aria-label="Search posts"
-              data-i18n-placeholder="blog.search"
-              data-i18n-attr="aria-label:blog.search"
-            />
-            {{#if authorOptions.length}}
-            <select id="author-filter" class="blog-filter-select" aria-label="Filter by author" data-i18n-attr="aria-label:blog.filterAuthor">
-              <option value="" data-i18n="blog.allAuthors">All Authors</option>
-              {{#each authorOptions}}
-              <option value="{{value}}">{{label}}</option>
-              {{/each}}
-            </select>
-            {{/if}}
-            {{#if categoryOptions.length}}
-            <select id="category-filter" class="blog-filter-select" aria-label="Filter by category" data-i18n-attr="aria-label:blog.filterCategory">
-              <option value="" data-i18n="blog.allCategories">All Categories</option>
-              {{#each categoryOptions}}
-              <option value="{{value}}">{{label}}</option>
-              {{/each}}
-            </select>
-            {{/if}}
-          </div>
-        </div>
-
         <div class="blog-grid">
           {{#each posts}}
           <article
             class="glass blog-card h-entry"
-            data-author-key="{{authorFilterKey}}"
-            data-category-key="{{categoryFilterKey}}"
+            data-tag-key="{{tagFilterKey}}"
           >
-            <div class="blog-meta">
-              <time datetime="{{date}}" class="dt-published"
-                >{{formatDate date}}</time
-              >
-              {{#if categories.length}}
-              <span class="tag" data-blog-l10n-group>
-                {{#each localizedVariants}}
-                <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
-                  >{{categories.[0]}}</span
+            <a href="{{url}}" class="u-url">
+              <div class="blog-meta">
+                <time datetime="{{date}}" class="dt-published"
+                  >{{formatDate date}}</time
                 >
-                {{/each}}
-              </span>
-              {{/if}}
-            </div>
-            <h3 class="p-name">
-              <span data-blog-l10n-group>
-                {{#each localizedVariants}}
-                <a
-                  class="u-url"
-                  href="{{../url}}"
-                  data-blog-lang="{{lang}}"
-                  {{#unless isDefault}}hidden{{/unless}}
-                  >{{title}}</a
-                >
-                {{/each}}
-              </span>
-            </h3>
-            <p class="p-summary" data-blog-l10n-group>
-              {{#each localizedVariants}}
-              <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
-                >{{excerpt}}</span
-              >
-              {{/each}}
-            </p>
-            <div class="blog-footer">
-              <span>
-                <span data-i18n="blog.by">By</span>
-                <span class="p-author" data-blog-l10n-group>
+                {{#if tags.length}}
+                <span class="tag" data-blog-l10n-group>
                   {{#each localizedVariants}}
                   <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
-                    >{{author}}</span
+                    >{{tags.[0]}}</span
                   >
                   {{/each}}
                 </span>
-              </span>
-              <a href="{{url}}" class="read-more" data-i18n="blog.readMore"
-                >Read More →</a
-              >
-            </div>
+                {{/if}}
+              </div>
+              <h3 class="p-name" data-blog-l10n-group>
+                {{#each localizedVariants}}
+                <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
+                  >{{title}}</span
+                >
+                {{/each}}
+              </h3>
+              <p class="p-summary" data-blog-l10n-group>
+                {{#each localizedVariants}}
+                <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
+                  >{{excerpt}}</span
+                >
+                {{/each}}
+              </p>
+              <div class="blog-footer">
+                <span hidden aria-hidden="true" class="p-author">Cyan Thayn</span>
+                <span class="read-more" data-i18n-html="blog.readMore"
+                  >Read More <i class="ri-arrow-right-up-line" aria-hidden="true"></i></span
+                >
+              </div>
+            </a>
           </article>
           {{/each}}
         </div>

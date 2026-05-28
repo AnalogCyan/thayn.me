@@ -77,7 +77,11 @@
     if (items.length === 0) return;
 
     var cloneSource = opts.cloneSource || container;
-    var getDefault = opts.getDefault || function () { return null; };
+    var getDefault =
+      opts.getDefault ||
+      function () {
+        return null;
+      };
     var mediaQuery = opts.mediaQuery || null;
     var listenTarget = opts.listenTarget || container;
 
@@ -97,10 +101,14 @@
     function buildClone() {
       var c = cloneSource.cloneNode(true);
       c.querySelectorAll(".sliding-pill, .sliding-pill__overlay").forEach(
-        function (el) { el.remove(); }
+        function (el) {
+          el.remove();
+        }
       );
       c.removeAttribute("id");
-      c.querySelectorAll("[id]").forEach(function (el) { el.removeAttribute("id"); });
+      c.querySelectorAll("[id]").forEach(function (el) {
+        el.removeAttribute("id");
+      });
       c.querySelectorAll("a, button").forEach(function (el) {
         el.setAttribute("tabindex", "-1");
         el.removeAttribute("aria-controls");
@@ -129,8 +137,8 @@
       } else {
         var sRect = cloneSource.getBoundingClientRect();
         clone.style.position = "absolute";
-        clone.style.left = (sRect.left - cRect.left - bL) + "px";
-        clone.style.top = (sRect.top - cRect.top - bT) + "px";
+        clone.style.left = sRect.left - cRect.left - bL + "px";
+        clone.style.top = sRect.top - cRect.top - bT + "px";
         clone.style.width = sRect.width + "px";
       }
     }
@@ -164,7 +172,15 @@
       indicator.classList.add("is-visible");
 
       overlay.style.clipPath =
-        "inset(" + top + "px " + right + "px " + bottom + "px " + left + "px round 9999px)";
+        "inset(" +
+        top +
+        "px " +
+        right +
+        "px " +
+        bottom +
+        "px " +
+        left +
+        "px round 9999px)";
 
       if (animate === false) {
         indicator.offsetHeight;
@@ -200,8 +216,12 @@
     if (def) moveTo(def, false);
 
     items.forEach(function (item) {
-      item.addEventListener("mouseenter", function () { moveTo(item); });
-      item.addEventListener("focus", function () { moveTo(item); });
+      item.addEventListener("mouseenter", function () {
+        moveTo(item);
+      });
+      item.addEventListener("focus", function () {
+        moveTo(item);
+      });
     });
 
     listenTarget.addEventListener("mouseleave", returnToDefault);
@@ -235,7 +255,12 @@
     if (opts.watchChanges) {
       var timer = null;
       new MutationObserver(function (mutations) {
-        if (mutations.every(function (m) { return overlay.contains(m.target); })) return;
+        if (
+          mutations.every(function (m) {
+            return overlay.contains(m.target);
+          })
+        )
+          return;
         if (timer) return;
         timer = requestAnimationFrame(function () {
           timer = null;
@@ -250,9 +275,12 @@
         subtree: true,
         characterData: true,
         attributes: true,
-        attributeFilter: ["class"]
+        attributeFilter: ["class"],
       });
     }
+
+    // Re-evaluate active item when SPA navigates
+    document.addEventListener("th-nav-changed", returnToDefault);
   }
 
   function initPillIndicators(root) {
@@ -294,7 +322,7 @@
     };
 
     const toggles = Array.from(
-      root.querySelectorAll("[data-theme-button='true']"),
+      root.querySelectorAll("[data-theme-button='true']")
     );
     const langButtons = Array.from(root.querySelectorAll(".language-toggle"));
     if (toggles.length === 0) return;
@@ -349,7 +377,7 @@
         toggle.dataset.themeMode = mode;
         toggle.setAttribute(
           "aria-label",
-          `${t("theme.label", "Theme")}: ${t(meta.key, meta.fallback)}`,
+          `${t("theme.label", "Theme")}: ${t(meta.key, meta.fallback)}`
         );
         const iconEl = toggle.querySelector(".theme-toggle__icon");
         const textEl = toggle.querySelector(".theme-toggle__text");
@@ -358,7 +386,7 @@
           iconEl.classList.remove(
             "ri-contrast-2-line",
             "ri-sun-line",
-            "ri-moon-line",
+            "ri-moon-line"
           );
           iconEl.classList.add(meta.icon);
         }
@@ -392,7 +420,7 @@
         if (textEl) textEl.textContent = code;
         button.setAttribute(
           "aria-label",
-          `${t("language.label", "Language")}: ${code}`,
+          `${t("language.label", "Language")}: ${code}`
         );
       });
     }
@@ -491,7 +519,7 @@
       if (viewportWidth <= mobileBreakpoint) {
         document.documentElement.style.setProperty(
           "--container-max-width",
-          `${viewportWidth}px`,
+          `${viewportWidth}px`
         );
         return;
       }
@@ -504,7 +532,7 @@
 
       document.documentElement.style.setProperty(
         "--container-max-width",
-        `${width}px`,
+        `${width}px`
       );
     }
 

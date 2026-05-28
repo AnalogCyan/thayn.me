@@ -111,45 +111,6 @@
   }
 }
 
-.client-link__logo {
-  width: 0.98rem;
-  height: 0.98rem;
-  display: inline-block;
-  flex: 0 0 auto;
-  background-color: currentColor;
-  -webkit-mask-repeat: no-repeat;
-  -webkit-mask-position: center;
-  -webkit-mask-size: contain;
-  mask-repeat: no-repeat;
-  mask-position: center;
-  mask-size: contain;
-
-  &--feishin {
-    -webkit-mask-image: url("/media/feishin.png");
-    mask-image: url("/media/feishin.png");
-  }
-
-  &--navic {
-    -webkit-mask-image: url("/media/navic.svg");
-    mask-image: url("/media/navic.svg");
-  }
-
-  &--musicbrainz {
-    -webkit-mask-image: url("/media/musicbrainz.svg");
-    mask-image: url("/media/musicbrainz.svg");
-  }
-
-  &--discogs {
-    -webkit-mask-image: url("/media/discogs.svg");
-    mask-image: url("/media/discogs.svg");
-  }
-
-  &--bandcamp {
-    -webkit-mask-image: url("/media/bandcamp.svg");
-    mask-image: url("/media/bandcamp.svg");
-  }
-}
-
 .client-link__favicon {
   width: 0.98rem;
   height: 0.98rem;

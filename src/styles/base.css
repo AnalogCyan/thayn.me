@@ -77,7 +77,7 @@ h1 {
 
 h2 {
   font-size: 2.2rem;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 h3 {
@@ -247,6 +247,12 @@ a {
   }
 }
 
+.hero-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
 .social-icons {
   display: flex;
   gap: var(--spacing-md);
@@ -310,6 +316,13 @@ a {
 
   .section-card {
     padding: var(--spacing-xl);
+  }
+}
+
+@media (width <= 640px) {
+  .hero-actions {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 
