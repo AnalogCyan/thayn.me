@@ -157,6 +157,10 @@
 
         swapMain(main, data.mainHTML);
 
+        if (window.JG_I18N) {
+          window.JG_I18N.refresh();
+        }
+
         var shell = document.querySelector(".page-shell");
         if (shell) {
           shell.setAttribute("data-hero", data.hero);
