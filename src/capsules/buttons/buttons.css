@@ -4,7 +4,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
-  justify-content: flex-start;
+  justify-content: center;
   margin-inline: auto;
   max-width: calc(7 * 88px + 6 * var(--spacing-sm));
 }
