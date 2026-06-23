@@ -10,8 +10,6 @@
     "projects",
     "photos",
     "music",
-    "now",
-    "uses",
     "more",
   ];
 
