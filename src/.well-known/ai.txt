@@ -1,0 +1,16 @@
+# ai.txt — AI usage policy for thayn.me
+# IETF draft: https://datatracker.ietf.org/doc/draft-car-ai-txt-wellknown/
+# See /.well-known/robots.txt for crawler-level access rules
+
+Spec-Version: 1.0
+Site-Name: thayn.me
+Site-URL: https://thayn.me
+Contact: security@thayn.me
+Policy-URL: https://thayn.me/.well-known/humans.txt
+
+Training: deny
+Scraping: allow
+Indexing: allow
+Caching: allow
+
+Attribution: required

@@ -1,0 +1,36 @@
+/* thayn.me – view-transitions.css – SPA slide animation keyframes */
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes spa-slide-out-left {
+    to {
+      transform: translateX(-28vw);
+      opacity: 0;
+    }
+  }
+  @keyframes spa-slide-out-right {
+    to {
+      transform: translateX(28vw);
+      opacity: 0;
+    }
+  }
+  @keyframes spa-slide-in-left {
+    from {
+      transform: translateX(28vw);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+  @keyframes spa-slide-in-right {
+    from {
+      transform: translateX(-28vw);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+}

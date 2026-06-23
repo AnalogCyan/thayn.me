@@ -1,8 +1,12 @@
+/* thayn.me – buttons.css – 88x31 button capsule layout */
+
 .buttons-capsule {
   display: flex;
   flex-wrap: wrap;
   gap: var(--spacing-sm);
-  padding-inline: calc((100% - 7 * 88px - 6 * var(--spacing-sm)) / 2);
+  justify-content: flex-start;
+  margin-inline: auto;
+  max-width: calc(7 * 88px + 6 * var(--spacing-sm));
 }
 
 .buttons-capsule :is(a, div) {
@@ -45,11 +49,4 @@
   display: block;
   width: 88px;
   height: 31px;
-}
-
-@media (width <= 640px) {
-  .buttons-capsule {
-    padding-inline: 0;
-    justify-content: center;
-  }
 }

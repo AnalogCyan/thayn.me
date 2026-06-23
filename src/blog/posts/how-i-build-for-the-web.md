@@ -12,13 +12,14 @@ syndicationStatus:
   bluesky: "confirmed"
   mastodon: "confirmed"
 ---
+
 A few people have asked me about how I build my websites, what tools I use, and why everything looks and feels the way it does. So here's the rundown: my approach to web development, the principles behind it, and the tools that make it work.
 
 ## Standards First
 
 The web platform is incredibly powerful in 2026. Native CSS can do things that required JavaScript or preprocessors just a couple years ago: `light-dark()` for theming, `:has()` for parent selection, `@starting-style` for entry animations, individual transform properties, container queries, native nesting. The list keeps growing.
 
-My rule is simple: **stick to vanilla web standards unless a framework genuinely earns its place.** HTML, CSS, and JavaScript can do the job. The browser *is* the framework. I don't need React to render a page. I don't need Tailwind to write styles. I don't need webpack to bundle three dependencies.
+My rule is simple: **stick to vanilla web standards unless a framework genuinely earns its place.** HTML, CSS, and JavaScript can do the job. The browser _is_ the framework. I don't need React to render a page. I don't need Tailwind to write styles. I don't need webpack to bundle three dependencies.
 
 That's not framework-bashing for its own sake. If you're building a complex app with shared state and dozens of contributors, frameworks can absolutely make sense. But for personal sites, portfolios, blogs? The platform is more than enough, and the result is faster, lighter, and more durable. Your site won't break because a dependency you never heard of pushed a bad update.
 
@@ -36,7 +37,7 @@ The core idea is **capsules**: self-contained, reusable components that bundle t
 
 The full toolset is pretty short:
 
-- **Terminal + VS Code** for writing code
+- **Terminal (Ghostty) + Zed** for writing code
 - **Node.js** for the build system (begrudgingly, but it's useful and widely supported)
 - **GitHub** for version control and hosting the source
 - **Netlify** for publishing, edge functions, and serverless functions

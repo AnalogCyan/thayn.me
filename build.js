@@ -22,7 +22,7 @@ const STYLES_DIR = path.join(SRC_DIR, "styles");
 const SCRIPTS_DIR = path.join(SRC_DIR, "scripts");
 const PUBLIC_DIR = path.join(__dirname, "public");
 const CONFIG_PATH = path.join(SRC_DIR, "config.json");
-const STANDALONE_SCRIPTS = new Set(["theme-init.js", "i18n-init.js"]);
+const STANDALONE_SCRIPTS = new Set(["theme-init.js"]);
 
 const BLOG_DIR = path.join(SRC_DIR, "blog");
 const BLOG_POSTS_DIR = path.join(BLOG_DIR, "posts");
@@ -450,31 +450,8 @@ function ensureCanonicalLink(html, canonicalUrl) {
   );
 }
 
-function ensureI18nInitScript(html) {
-  if (/<script\s+[^>]*src=["']\/scripts\/i18n-init\.js["'][^>]*>/i.test(html)) {
-    return html;
-  }
-
-  const initTag = `    <script src="/scripts/i18n-init.js"></script>`;
-
-  if (
-    /<script\s+[^>]*src=["']\/scripts\/theme-init\.js["'][^>]*>/i.test(html)
-  ) {
-    return html.replace(
-      /(<script\s+[^>]*src=["']\/scripts\/theme-init\.js["'][^>]*>)/i,
-      `${initTag}\n    $1`
-    );
-  }
-
-  if (/<\/head>/i.test(html)) {
-    return html.replace(/<\/head>/i, `${initTag}\n  </head>`);
-  }
-
-  return `${initTag}\n${html}`;
-}
-
 function ensureSiteBundleScript(html) {
-  if (/<script\s+[^>]*src=["']\/scripts\.js["']/i.test(html)) {
+  if (/<script\s+[^>]*src=["'][^"']*scripts\.js["']/i.test(html)) {
     return html;
   }
   return html.replace(
@@ -487,39 +464,10 @@ function escapeRegExp(value) {
   return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-function ensureCapsuleScripts(html, usedCapsules, capsules) {
-  const scriptPaths = Array.from(usedCapsules)
-    .sort()
-    .map((name) => {
-      const cap = capsules[name];
-      if (!cap || !cap.jsPath) return null;
-      return `/capsules/${name}/${name}.js`;
-    })
-    .filter(Boolean);
-
-  if (scriptPaths.length === 0) return html;
-
-  const missing = scriptPaths.filter((src) => {
-    const pattern = new RegExp(
-      `<script\\s+[^>]*src=["']${escapeRegExp(src)}["']`,
-      "i"
-    );
-    return !pattern.test(html);
-  });
-  if (missing.length === 0) return html;
-
-  const tags = missing
-    .map((src) => `    <script src="${src}" defer></script>`)
-    .join("\n");
-  if (/<\/body>/i.test(html)) {
-    return html.replace(/<\/body>/i, `${tags}\n  </body>`);
-  }
-  return `${html}\n${tags}`;
-}
-
 async function injectCapsules(content, capsules, pageName) {
   const used = new Set();
-  const dropRegex = /<drop\s+capsule=['"]([^'" ]+)['"]([^>]*)><\/drop>/g;
+  const dropRegex =
+    /<drop\s+capsule=['"]([^'" ]+)['"]([^>]*)>([\s\S]*?)<\/drop>/g;
 
   let result = "";
   let lastIndex = 0;
@@ -529,6 +477,7 @@ async function injectCapsules(content, capsules, pageName) {
     result += content.slice(lastIndex, match.index);
     const capsuleName = match[1];
     const attributes = match[2];
+    const slotContent = match[3];
     const capsule = capsules[capsuleName];
 
     if (!capsule || !capsule.html) {
@@ -551,8 +500,12 @@ async function injectCapsules(content, capsules, pageName) {
       }
     }
 
+    if (capsuleHtml.includes("{{slot}}") && slotContent.trim()) {
+      capsuleHtml = capsuleHtml.replace("{{slot}}", slotContent);
+    }
+
     capsuleHtml = capsuleHtml.replace(
-      /{{\s*([a-zA-Z0-9_-]+)\s*}}/g,
+      /{{\s*(?!slot\b)([a-zA-Z0-9_-]+)\s*}}/g,
       (_, key) => {
         return key in dataAttrs ? String(dataAttrs[key]) : "";
       }
@@ -634,7 +587,6 @@ async function buildPages(capsules, config, globalUsed, siteUrl) {
       let content = await fs.readFile(fullPath, "utf-8");
 
       content = injectResources(content, resourcesHTML, config);
-      content = ensureI18nInitScript(content);
       const canonicalPath =
         normalizedRelPath === "index.html"
           ? "/"
@@ -654,11 +606,7 @@ async function buildPages(capsules, config, globalUsed, siteUrl) {
         pageUsedCapsules
       );
       const withSiteBundle = ensureSiteBundleScript(withCapsules);
-      const contentFinal = ensureCapsuleScripts(
-        withSiteBundle,
-        pageUsedCapsules,
-        capsules
-      );
+      const contentFinal = withSiteBundle;
 
       await fs.mkdir(path.dirname(destPath), { recursive: true });
       await fs.writeFile(destPath, contentFinal);
@@ -721,21 +669,12 @@ async function bundleScripts(usedCapsules, capsules) {
   }
 
   const orderedCapsules = Array.from(usedCapsules).sort();
-  const capsuleScripts = orderedCapsules.filter(
-    (capName) => capsules[capName] && capsules[capName].jsPath
-  );
-  if (capsuleScripts.length > 0) {
-    const capsulesDir = path.join(PUBLIC_DIR, "capsules");
-    await fs.mkdir(capsulesDir, { recursive: true });
-    await Promise.all(
-      capsuleScripts.map(async (capName) => {
-        const cap = capsules[capName];
-        if (!cap || !cap.jsPath) return;
-        const destDir = path.join(capsulesDir, capName);
-        await fs.mkdir(destDir, { recursive: true });
-        await fs.copyFile(cap.jsPath, path.join(destDir, `${capName}.js`));
-      })
-    );
+  for (const capName of orderedCapsules) {
+    const cap = capsules[capName];
+    if (cap && cap.jsPath) {
+      const js = await fs.readFile(cap.jsPath, "utf-8");
+      output += `\n// === Capsule: ${capName} ===\n${js}`;
+    }
   }
 
   await fs.writeFile(path.join(PUBLIC_DIR, "scripts.js"), output);
@@ -747,8 +686,6 @@ async function copyStatic() {
     path.join(SRC_DIR, ".well-known"),
     path.join(PUBLIC_DIR, ".well-known")
   );
-  await copyDir(path.join(SRC_DIR, "i18n"), path.join(PUBLIC_DIR, "i18n"));
-
   const manifestSrc = path.join(SRC_DIR, "manifest.json");
   if (await pathExists(manifestSrc)) {
     await fs.copyFile(manifestSrc, path.join(PUBLIC_DIR, "manifest.json"));
@@ -760,10 +697,6 @@ async function copyStatic() {
     await fs.mkdir(libOutDir, { recursive: true });
     await fs.copyFile(sanitizeUrlSrc, path.join(libOutDir, "sanitize-url.js"));
   }
-}
-
-function getFunctionsBaseUrl(siteUrl) {
-  return siteUrl;
 }
 
 function initWebmentionBuckets() {
@@ -911,28 +844,6 @@ function iso8601(dateStr, source = "feed date") {
   return parsed.toISOString();
 }
 
-function normalizeLanguageKey(value) {
-  if (!value) return "en";
-  const normalized = String(value).trim().toLowerCase();
-  if (!normalized) return "en";
-  return normalized.split(/[-_]/)[0] || "en";
-}
-
-function normalizeLanguageList(value) {
-  if (Array.isArray(value)) {
-    return value
-      .map((item) => normalizeLanguageKey(item))
-      .filter((item, index, array) => item && array.indexOf(item) === index);
-  }
-  if (typeof value === "string") {
-    return value
-      .split(",")
-      .map((item) => normalizeLanguageKey(item))
-      .filter((item, index, array) => item && array.indexOf(item) === index);
-  }
-  return [];
-}
-
 function normalizeTags(value) {
   if (Array.isArray(value)) {
     return value.map((item) => String(item).trim()).filter(Boolean);
@@ -980,192 +891,6 @@ function toExcerpt(rawExcerpt, markdownBody) {
   const candidate = String(rawExcerpt || "").trim() || plainBody.slice(0, 180);
   if (!candidate) return "";
   return /[.!?…]$/.test(candidate) ? candidate : `${candidate}…`;
-}
-
-function parseTranslationEntry(entry) {
-  if (typeof entry === "string") {
-    return { body: entry };
-  }
-  if (!entry || typeof entry !== "object") return null;
-
-  const bodyValue =
-    typeof entry.body === "string"
-      ? entry.body
-      : typeof entry.content === "string"
-        ? entry.content
-        : typeof entry.markdown === "string"
-          ? entry.markdown
-          : null;
-
-  return {
-    title:
-      typeof entry.title === "string" && entry.title.trim()
-        ? entry.title.trim()
-        : null,
-    excerpt:
-      typeof entry.excerpt === "string" && entry.excerpt.trim()
-        ? entry.excerpt.trim()
-        : null,
-    author:
-      typeof entry.author === "string" && entry.author.trim()
-        ? entry.author.trim()
-        : null,
-    tags: entry.categories != null ? normalizeTags(entry.categories) : null,
-    body: bodyValue,
-  };
-}
-
-function parseLocalizedBodySections(markdown, source = "blog post content") {
-  const sections = new Map();
-  const lines = String(markdown || "").split("\n");
-  const remainder = [];
-
-  let activeLang = null;
-  let sectionLines = [];
-
-  const startPattern = /^:::lang\s+([a-zA-Z0-9_-]+)\s*$/;
-  const endPattern = /^:::\s*$/;
-
-  function flushSection() {
-    if (!activeLang) return;
-    const sectionBody = sectionLines.join("\n").trim();
-    sections.set(activeLang, { body: sectionBody });
-    activeLang = null;
-    sectionLines = [];
-  }
-
-  for (const line of lines) {
-    if (!activeLang) {
-      const start = line.match(startPattern);
-      if (start) {
-        activeLang = normalizeLanguageKey(start[1]);
-        sectionLines = [];
-        continue;
-      }
-      remainder.push(line);
-      continue;
-    }
-
-    if (endPattern.test(line)) {
-      flushSection();
-      continue;
-    }
-
-    sectionLines.push(line);
-  }
-
-  if (activeLang) {
-    throw new Error(
-      `Unclosed :::lang block for "${activeLang}" in ${source}. Add a closing ":::" line.`
-    );
-  }
-
-  return {
-    sections,
-    remainder: remainder.join("\n").trim(),
-  };
-}
-
-function buildLocalizedVariants(attributes, body, fallbackTitle, source) {
-  const defaultLang = normalizeLanguageKey(
-    attributes.defaultLanguage || attributes.defaultLang || "en"
-  );
-  const declaredLanguages = normalizeLanguageList(
-    attributes.languages || attributes.langs
-  );
-  const { sections: bodySections, remainder } = parseLocalizedBodySections(
-    body,
-    source || fallbackTitle || "blog post content"
-  );
-  const defaultSectionBody = bodySections.get(defaultLang)?.body || "";
-  const declaredSectionBody = declaredLanguages[0]
-    ? bodySections.get(declaredLanguages[0])?.body || ""
-    : "";
-  const firstSectionBody = Array.from(bodySections.values())[0]?.body || "";
-  const baseBody =
-    defaultSectionBody ||
-    remainder ||
-    declaredSectionBody ||
-    firstSectionBody ||
-    (typeof body === "string" ? body : "");
-  const baseVariant = {
-    title: fallbackTitle,
-    author: attributes.author || "Cyan Thayn",
-    date: attributes.date,
-    tags: normalizeTags(attributes.categories || attributes.tags),
-    content: marked(baseBody),
-    excerpt: toExcerpt(attributes.excerpt, baseBody),
-  };
-
-  const variants = new Map([[defaultLang, baseVariant]]);
-  const translations = attributes.translations;
-  const translationEntriesByLang = new Map();
-  const languageSet = new Set([defaultLang, ...declaredLanguages]);
-
-  Array.from(bodySections.keys()).forEach((lang) => languageSet.add(lang));
-  if (translations && typeof translations === "object") {
-    Object.entries(translations).forEach(([lang, entry]) => {
-      const normalizedLang = normalizeLanguageKey(lang);
-      if (!normalizedLang) return;
-      languageSet.add(normalizedLang);
-
-      if (
-        !translationEntriesByLang.has(normalizedLang) ||
-        lang === normalizedLang
-      ) {
-        translationEntriesByLang.set(normalizedLang, entry);
-      }
-    });
-  }
-
-  for (const lang of languageSet) {
-    if (!lang) continue;
-    const translationEntry = translationEntriesByLang.get(lang) || null;
-    const parsedTranslation = parseTranslationEntry(translationEntry);
-    const section = bodySections.get(lang) || null;
-    const sectionBody = section ? section.body : "";
-
-    const markdownBody =
-      (parsedTranslation && typeof parsedTranslation.body === "string"
-        ? parsedTranslation.body
-        : "") ||
-      sectionBody ||
-      "" ||
-      baseBody;
-
-    variants.set(lang, {
-      title:
-        (parsedTranslation && parsedTranslation.title) || baseVariant.title,
-      author:
-        (parsedTranslation && parsedTranslation.author) || baseVariant.author,
-      date: baseVariant.date,
-      tags: (parsedTranslation && parsedTranslation.tags) || baseVariant.tags,
-      content: marked(markdownBody),
-      excerpt: toExcerpt(
-        (parsedTranslation && parsedTranslation.excerpt) ||
-          attributes.excerpt ||
-          "",
-        markdownBody
-      ),
-    });
-  }
-
-  const localizedVariants = Array.from(variants.entries())
-    .map(([lang, data]) => ({
-      lang,
-      isDefault: lang === defaultLang,
-      ...data,
-    }))
-    .sort((a, b) => {
-      if (a.isDefault && !b.isDefault) return -1;
-      if (!a.isDefault && b.isDefault) return 1;
-      return a.lang.localeCompare(b.lang);
-    });
-
-  return {
-    defaultLang,
-    localizedVariants,
-  };
 }
 
 function buildRSS(posts, meta, siteUrl) {
@@ -1280,11 +1005,15 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
   const postTemplateRaw = await fs.readFile(postTemplatePath, "utf-8");
 
   const resourcesHTML = generateResourcesHTML(config, siteUrl);
-  const indexWithResources = ensureI18nInitScript(
-    injectResources(indexTemplateRaw, resourcesHTML, config)
+  const indexWithResources = injectResources(
+    indexTemplateRaw,
+    resourcesHTML,
+    config
   );
-  const postWithResources = ensureI18nInitScript(
-    injectResources(postTemplateRaw, resourcesHTML, config)
+  const postWithResources = injectResources(
+    postTemplateRaw,
+    resourcesHTML,
+    config
   );
 
   const indexUsedCapsules = new Set();
@@ -1303,22 +1032,13 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
     globalUsed,
     postUsedCapsules
   );
-  const indexTemplateSource = ensureCapsuleScripts(
-    ensureSiteBundleScript(indexTemplateSourceRaw),
-    indexUsedCapsules,
-    capsules
-  );
-  const postTemplateSource = ensureCapsuleScripts(
-    ensureSiteBundleScript(postTemplateSourceRaw),
-    postUsedCapsules,
-    capsules
-  );
+  const indexTemplateSource = ensureSiteBundleScript(indexTemplateSourceRaw);
+  const postTemplateSource = ensureSiteBundleScript(postTemplateSourceRaw);
 
   const indexTemplate = Handlebars.compile(indexTemplateSource);
   const postTemplate = Handlebars.compile(postTemplateSource);
 
   let blogIndex = [];
-  const functionsBaseUrl = getFunctionsBaseUrl(siteUrl);
   if (await pathExists(BLOG_POSTS_DIR)) {
     const files = (await fs.readdir(BLOG_POSTS_DIR))
       .filter((file) => file.endsWith(".md"))
@@ -1345,14 +1065,10 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         );
         attributes.date = normalizedDate;
 
-        const { localizedVariants } = buildLocalizedVariants(
-          attributes,
-          body,
-          attributes.title,
-          filePath
+        const postTags = normalizeTags(
+          attributes.categories || attributes.tags
         );
-        const primaryVariant = localizedVariants[0];
-        const primaryTag = primaryVariant.tags[0] || "";
+        const primaryTag = postTags[0] || "";
 
         const slug = path.basename(file, ".md");
         const defaultPath = getCanonicalBlogPath(slug);
@@ -1372,7 +1088,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
 
         const webmentionPayload = await fetchWebmentions(
           webmentionTarget,
-          functionsBaseUrl
+          siteUrl
         );
         const webmentions = buildWebmentionBuckets(webmentionPayload);
         const hasWebmentions = Object.values(webmentions).some(
@@ -1391,16 +1107,15 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         return {
           slug,
           data: {
-            title: primaryVariant.title,
-            author: primaryVariant.author,
+            title: attributes.title,
+            author: attributes.author || "Cyan Thayn",
             date: normalizedDate,
             dateIso: toPublishedIso(normalizedDate, parsedDate),
             dateMs: parsedDate.getTime(),
-            tags: primaryVariant.tags,
+            tags: postTags,
             tagFilterKey: normalizeFilterValue(primaryTag),
-            content: primaryVariant.content,
-            excerpt: primaryVariant.excerpt,
-            localizedVariants,
+            content: marked(body),
+            excerpt: toExcerpt(attributes.excerpt, body),
             url,
             siteUrl,
             canonicalUrl,

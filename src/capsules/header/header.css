@@ -1,4 +1,5 @@
-/* === nav-bar.css === */
+/* thayn.me – header.css – Nav-pill header with sliding indicator and mobile menu */
+
 .nav-pill-wrap {
   display: inline-flex;
   align-items: stretch;
@@ -117,13 +118,21 @@
   color: var(--text);
 }
 
-:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible, :active)::before,
+:is(.nav-pill__link, .nav-pill__toggle):is(
+    :hover,
+    :focus-visible,
+    :active
+  )::before,
 .nav-pill__link.is-active::before,
 .nav-pill--open .nav-pill__toggle::before {
   opacity: 1;
 }
 
-:is(.nav-pill__link, .nav-pill__toggle):is(:hover, :focus-visible, :active)::after,
+:is(.nav-pill__link, .nav-pill__toggle):is(
+    :hover,
+    :focus-visible,
+    :active
+  )::after,
 .nav-pill__link.is-active::after,
 .nav-pill--open .nav-pill__toggle::after {
   opacity: 1;
@@ -261,9 +270,7 @@
   .nav-pill__link.is-active {
     color: var(--accent-secondary);
   }
-}
 
-@media (width <= 720px) {
   .nav-pill-wrap {
     gap: var(--spacing-xs);
     width: 100%;
@@ -389,9 +396,15 @@
   .nav-pill__text {
     font-size: 0.9rem;
   }
+
+  .theme-toggle__button,
+  .theme-toggle[data-compact="true"] .theme-toggle__button {
+    min-width: var(--nav-item-width-sm);
+  }
 }
 
-/* === theme-lang-toggle.css === */
+/* === Theme toggle (embedded in header) === */
+
 .theme-toggle {
   background:
     linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
@@ -465,6 +478,7 @@
   box-sizing: border-box;
   font-weight: 600;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
   transition: color var(--transition-fast);
 
   &::before {
@@ -473,9 +487,10 @@
     inset: 0;
     border-radius: inherit;
     background: var(--nav-highlight);
+    background-blend-mode: normal;
     opacity: 0;
     transition: opacity var(--transition-normal);
-    z-index: 0;
+    z-index: -1;
   }
 
   &::after {
@@ -488,22 +503,27 @@
     opacity: 0;
     transition: opacity var(--transition-normal);
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
   }
 
-  &:is(:hover, :focus-visible)::before,
-  &:is(:hover, :focus-visible)::after {
+  &:is(:hover, :focus-visible, :active)::before,
+  &:is(:hover, :focus-visible, :active)::after {
     opacity: 1;
+  }
+
+  &:active::before,
+  &:active::after {
+    transition-duration: 0s;
   }
 }
 
-:is(.theme-toggle__icon, .lang-toggle__icon) {
+.theme-toggle__icon {
   font-size: 1.2rem;
   position: relative;
   z-index: 1;
 }
 
-:is(.theme-toggle__text, .lang-toggle__text) {
+.theme-toggle__text {
   font-weight: 600;
   font-size: 0.65rem;
   line-height: 1;
@@ -517,14 +537,7 @@
     padding: 0 0.9rem;
   }
 
-  & :is(.theme-toggle__icon, .lang-toggle__icon) {
+  & .theme-toggle__icon {
     font-size: 1.3rem;
-  }
-}
-
-@media (width <= 720px) {
-  .theme-toggle__button,
-  .theme-toggle[data-compact="true"] .theme-toggle__button {
-    min-width: var(--nav-item-width-sm);
   }
 }

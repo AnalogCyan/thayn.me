@@ -1,3 +1,5 @@
+/* thayn.me – home.css – Home page specific styles including projects grid */
+
 .page-shell {
   display: flex;
   flex-direction: column;
@@ -50,75 +52,6 @@
   color: var(--text-muted);
 }
 
-.hero-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  flex-wrap: wrap;
-}
-
-.client-link-group {
-  display: flex;
-  gap: 0.08rem;
-  width: min(100%, 52rem);
-  margin-inline: auto;
-}
-
-.client-link {
-  --client-pill-radius: 1.375rem;
-  --client-radius-edge: 0.84rem;
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 2.75rem;
-  justify-content: center;
-  text-align: center;
-  border-radius: var(--client-pill-radius);
-  transition:
-    flex-grow var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
-
-  &.client-link--first {
-    border-radius: var(--client-pill-radius) var(--client-radius-edge)
-      var(--client-radius-edge) var(--client-pill-radius);
-  }
-
-  &.client-link--middle {
-    border-radius: var(--client-radius-edge);
-  }
-
-  &.client-link--last {
-    border-radius: var(--client-radius-edge) var(--client-pill-radius)
-      var(--client-pill-radius) var(--client-radius-edge);
-  }
-}
-
-.client-link-group:hover .client-link:not(:hover) {
-  flex-grow: 0.88;
-}
-
-.client-link:hover {
-  flex-grow: 1.12;
-}
-
-.client-link__badges {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  line-height: 1;
-
-  & i {
-    font-size: 1rem;
-  }
-}
-
-.client-link__favicon {
-  width: 0.98rem;
-  height: 0.98rem;
-  display: inline-block;
-  flex: 0 0 auto;
-  object-fit: contain;
-}
-
 .profile-pic {
   grid-area: pic;
   width: clamp(140px, 20lvw, 200px);
@@ -142,120 +75,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-}
-
-.project-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 0.08rem;
-
-  &:hover .project:not(:hover) {
-    padding-top: calc(var(--spacing-lg) - 0.1rem);
-    padding-bottom: calc(var(--spacing-lg) - 0.1rem);
-  }
-}
-
-.project {
-  padding: var(--spacing-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  border-radius: 0.84rem;
-  background:
-    linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
-    var(--bg-main);
-  border: 1px solid var(--glass-border);
-  box-shadow:
-    var(--shadow-soft),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  backdrop-filter: var(--bg-blur) var(--bg-saturation);
-  -webkit-backdrop-filter: var(--bg-blur) var(--bg-saturation);
-  position: relative;
-  overflow: hidden;
-  transition:
-    padding-top var(--transition-fast),
-    padding-bottom var(--transition-fast),
-    box-shadow var(--transition-fast),
-    translate var(--transition-fast),
-    scale var(--transition-fast);
-
-  &:first-child {
-    border-top-left-radius: 1.375rem;
-    border-top-right-radius: 1.375rem;
-  }
-
-  &:last-child {
-    border-bottom-left-radius: 1.375rem;
-    border-bottom-right-radius: 1.375rem;
-  }
-
-  &:hover {
-    padding-top: calc(var(--spacing-lg) + 0.6rem);
-    padding-bottom: calc(var(--spacing-lg) + 0.6rem);
-    translate: 0 -2px;
-    scale: 1.02;
-    box-shadow:
-      var(--shadow-md),
-      inset 0 1px 0 rgba(255, 255, 255, 0.35);
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(circle at 20% 10%, var(--glass-highlight), transparent 45%),
-      radial-gradient(circle at 80% 0%, var(--glass-edge), transparent 40%),
-      url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-    background-repeat: no-repeat, no-repeat, repeat;
-    background-size:
-      100% 100%,
-      100% 100%,
-      120px 120px;
-    background-blend-mode: screen;
-    opacity: var(--bg-noise-opacity);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    border: 1px solid transparent;
-    background: linear-gradient(
-        135deg,
-        var(--glass-highlight),
-        transparent 50%,
-        transparent 65%,
-        var(--glass-edge)
-      )
-      border-box;
-    -webkit-mask:
-      linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask:
-      linear-gradient(#fff 0 0) padding-box,
-      linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  & > a {
-    position: relative;
-    z-index: 1;
-    color: inherit;
-    text-decoration: none;
-  }
-}
-
-.project-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--spacing-sm);
 }
 
 .tags {
@@ -284,42 +103,32 @@
   }
 }
 
-@media (width <= 640px) {
-  .hero-actions {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .client-link-group {
-    flex-direction: column;
-    width: min(20rem, 100%);
-    align-self: center;
-  }
-
-  .client-link {
-    &.client-link--first {
-      border-radius: var(--client-pill-radius) var(--client-pill-radius)
-        var(--client-radius-edge) var(--client-radius-edge);
-    }
-
-    &.client-link--middle {
-      border-radius: var(--client-radius-edge);
-    }
-
-    &.client-link--last {
-      border-radius: var(--client-radius-edge) var(--client-radius-edge)
-        var(--client-pill-radius) var(--client-pill-radius);
-    }
-  }
-}
-
-.nav-row {
+.nav-center {
   display: flex;
   justify-content: center;
 }
 
-@media (width <= 720px) {
-  .nav-row {
-    justify-content: space-between;
-  }
+/* Footer slot content styles */
+footer[data-capsule="footer"] .footer-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  align-items: center;
+  justify-content: center;
+}
+
+footer[data-capsule="footer"] .footer-ring {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+  justify-content: center;
+}
+
+footer[data-capsule="footer"] .footer-link {
+  color: var(--text);
+  font-weight: 600;
+}
+
+footer[data-capsule="footer"] .quote-display {
+  color: var(--text);
 }

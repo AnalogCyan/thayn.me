@@ -1,5 +1,7 @@
+/* thayn.me – webmentions.js – Fetches and displays webmention counts */
+
 (() => {
-  const footer = document.querySelector('[data-capsule="site-footer"]');
+  const footer = document.querySelector('[data-capsule="footer"]');
   if (!footer) return;
 
   const counter = footer.querySelector("[data-webmention-count]");

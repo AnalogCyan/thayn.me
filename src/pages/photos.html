@@ -1,3 +1,4 @@
+<!-- thayn.me – photos.html – Photos page (under construction) -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -33,44 +34,129 @@
     <meta name="twitter:site" content="@AnalogCyan" />
     <meta name="twitter:creator" content="@AnalogCyan" />
 
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
     <link rel="apple-touch-icon" href="/media/logo.svg" />
     <!-- EXTERNAL_RESOURCES -->
 
-    <script src="/scripts/i18n-init.js"></script>
     <script src="/scripts/theme-init.js"></script>
 
     <link rel="stylesheet" href="./styles.css" />
-    <script src="./scripts.js" defer></script>
+    <script src="/scripts.js" defer></script>
 
     <title>Cyan Thayn — Photos</title>
   </head>
-  <body>
-    <drop capsule="ambient-background"></drop>
-    <drop capsule="hero-card" data-hero="false" data-nav-page="photos"></drop>
+  <body class="page-shell" data-hero="false" data-nav-page="photos">
+    <drop capsule="gradient-background" data-animated="true"></drop>
+    <div class="container nav-center">
+      <drop capsule="header" data-theme-key="thayn_theme">
+        <li class="nav-pill__item">
+          <a href="/" class="nav-pill__link" aria-label="Home" data-nav="home">
+            <i class="ri-home-5-line"></i>
+            <span class="nav-pill__text">Home</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/about.html"
+            class="nav-pill__link"
+            aria-label="About"
+            data-nav="about"
+          >
+            <i class="ri-user-heart-line"></i>
+            <span class="nav-pill__text">About</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/blog/"
+            class="nav-pill__link"
+            aria-label="Blog"
+            data-nav="blog"
+          >
+            <i class="ri-article-line"></i>
+            <span class="nav-pill__text">Blog</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/projects.html"
+            class="nav-pill__link"
+            aria-label="Projects"
+            data-nav="projects"
+          >
+            <i class="ri-folder-3-line"></i>
+            <span class="nav-pill__text">Projects</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/photos.html"
+            class="nav-pill__link"
+            aria-label="Photos"
+            data-nav="photos"
+          >
+            <i class="ri-camera-3-line"></i>
+            <span class="nav-pill__text">Photos</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/music.html"
+            class="nav-pill__link"
+            aria-label="Music"
+            data-nav="music"
+          >
+            <i class="ri-music-2-line"></i>
+            <span class="nav-pill__text">Music</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/more.html"
+            class="nav-pill__link"
+            aria-label="More"
+            data-nav="more"
+          >
+            <i class="ri-more-line" aria-hidden="true"></i>
+            <span class="nav-pill__text">More</span>
+          </a>
+        </li>
+      </drop>
+    </div>
 
     <main>
-      <section class="glass section-card" id="photos">
-        <div class="section-title">
-          <h2 data-i18n="photos.title">Photos</h2>
-        </div>
-        <p data-i18n="photos.body">
-          A space for photo sets, experiments, and visual notes. I’ll be adding
-          galleries and highlights here soon.
-        </p>
-        <p data-i18n="photos.prompt">Want a peek in the meantime?</p>
-        <div class="hero-actions">
-          <a
-            class="button secondary"
-            href="https://www.instagram.com/analogcyan/"
-            data-i18n="photos.cta"
-            >Instagram →</a
-          >
-        </div>
-      </section>
+      <drop capsule="under-construction"></drop>
     </main>
 
-    <drop capsule="site-footer"></drop>
+    <drop capsule="footer">
+      <div class="footer-links">
+        <span
+          class="footer-link webmention-count"
+          role="status"
+          aria-label="Webmentions"
+          title="Webmentions"
+        >
+          <i class="ri-chat-3-line" aria-hidden="true"></i>
+          <span data-webmention-count data-url="">0</span>
+        </span>
+        <div class="footer-ring">
+          <a
+            href="https://fediring.net/previous?host=thayn.me"
+            class="footer-link"
+            aria-label="Previous site"
+            >←</a
+          >
+          <a href="https://fediring.net/" class="footer-link">Fediring</a>
+          <a
+            href="https://fediring.net/next?host=thayn.me"
+            class="footer-link"
+            aria-label="Next site"
+            >→</a
+          >
+        </div>
+      </div>
+      <div class="quote-display">Are you ready to embrace uncertainty?</div>
+    </drop>
   </body>
 </html>

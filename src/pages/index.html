@@ -1,3 +1,4 @@
+<!-- thayn.me – index.html – Home page with hero card and profile -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -9,7 +10,6 @@
     <meta
       name="description"
       content="Cyan Thayn's personal website showcasing her projects and interests."
-      data-i18n-attr="content:home.meta.description"
     />
     <meta
       name="theme-color"
@@ -34,64 +34,294 @@
     <meta name="twitter:site" content="@AnalogCyan" />
     <meta name="twitter:creator" content="@AnalogCyan" />
 
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
     <link rel="apple-touch-icon" href="/media/logo.svg" />
     <!-- EXTERNAL_RESOURCES -->
 
-    <script src="/scripts/i18n-init.js"></script>
     <script src="/scripts/theme-init.js"></script>
 
     <link rel="stylesheet" href="./styles.css" />
-    <script src="./scripts.js" defer></script>
+    <script src="/scripts.js" defer></script>
 
     <title>Cyan Thayn</title>
   </head>
-  <body>
-    <drop capsule="ambient-background"></drop>
-    <div class="h-card">
-      <drop capsule="hero-card" data-hero="true" data-nav-page="home"></drop>
+  <body class="page-shell" data-hero="true" data-nav-page="home">
+    <drop capsule="gradient-background" data-animated="true"></drop>
+    <div class="container nav-center">
+      <drop capsule="header" data-theme-key="thayn_theme">
+        <li class="nav-pill__item">
+          <a href="/" class="nav-pill__link" aria-label="Home" data-nav="home">
+            <i class="ri-home-5-line"></i>
+            <span class="nav-pill__text">Home</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/about.html"
+            class="nav-pill__link"
+            aria-label="About"
+            data-nav="about"
+          >
+            <i class="ri-user-heart-line"></i>
+            <span class="nav-pill__text">About</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/blog/"
+            class="nav-pill__link"
+            aria-label="Blog"
+            data-nav="blog"
+          >
+            <i class="ri-article-line"></i>
+            <span class="nav-pill__text">Blog</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/projects.html"
+            class="nav-pill__link"
+            aria-label="Projects"
+            data-nav="projects"
+          >
+            <i class="ri-folder-3-line"></i>
+            <span class="nav-pill__text">Projects</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/photos.html"
+            class="nav-pill__link"
+            aria-label="Photos"
+            data-nav="photos"
+          >
+            <i class="ri-camera-3-line"></i>
+            <span class="nav-pill__text">Photos</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/music.html"
+            class="nav-pill__link"
+            aria-label="Music"
+            data-nav="music"
+          >
+            <i class="ri-music-2-line"></i>
+            <span class="nav-pill__text">Music</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/more.html"
+            class="nav-pill__link"
+            aria-label="More"
+            data-nav="more"
+          >
+            <i class="ri-more-line" aria-hidden="true"></i>
+            <span class="nav-pill__text">More</span>
+          </a>
+        </li>
+      </drop>
     </div>
 
     <main>
-      <section class="glass section-card hero-card" id="top">
-        <div class="hero-details">
-          <div>
-            <h2 class="name p-name" data-i18n="hero.name">Cyan Thayn</h2>
-            <div class="subhead p-note" data-i18n="hero.role">
-              Programmer · Tinkerer
-            </div>
-            <a
-              class="u-url u-uid"
-              href="https://thayn.me/"
-              aria-hidden="true"
-              tabindex="-1"
-            ></a>
-          </div>
-          <p data-i18n-html="hero.intro">
-            Hi, I'm Cyan! Online I go by <strong>AnalogCyan</strong>. I build
-            playful tools, fix broken tech, and chase weird ideas across the
-            stack.
-            <a class="hero-link" href="/about.html">
-              Learn more
-              <i class="ri-arrow-right-up-line" aria-hidden="true"></i>
-            </a>
-          </p>
-        </div>
-        <img
-          src="/media/profile.svg"
-          width="1080"
-          height="1080"
-          id="profile"
-          alt="Profile Picture"
-          data-i18n-attr="alt:hero.alt"
-          class="profile-pic u-photo"
-        />
-      </section>
+      <div class="h-card">
+        <drop capsule="hero-card"></drop>
+      </div>
 
-      <drop capsule="buttons"></drop>
+      <drop capsule="buttons">
+        <div>
+          <img
+            src="/media/buttons/flag-lesbian.png"
+            width="88"
+            height="31"
+            alt="Lesbian Pride"
+          />
+        </div>
+        <div>
+          <img
+            src="/media/buttons/love_blahaj.gif"
+            width="88"
+            height="31"
+            alt="I love Blahaj"
+          />
+        </div>
+        <a
+          href="https://www.ifixit.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/righttorepair.gif"
+            width="88"
+            height="31"
+            alt="Right to Repair"
+          />
+        </a>
+        <a
+          href="https://www.defectivebydesign.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/drm.gif"
+            width="88"
+            height="31"
+            alt="Defective by Design — DRM"
+          />
+        </a>
+
+        <a href="https://lyra.horse/" target="_blank" rel="noopener noreferrer">
+          <img
+            src="/media/buttons/horse.png"
+            width="88"
+            height="31"
+            alt="lyra.horse"
+          />
+        </a>
+        <a
+          href="https://maia.crimew.gay/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/maia-crimew.png"
+            width="88"
+            height="31"
+            alt="maia.crimew.gay"
+          />
+        </a>
+        <a
+          href="https://www.tomscott.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/tom-scott.webp"
+            width="88"
+            height="31"
+            alt="Tom Scott"
+          />
+        </a>
+
+        <a
+          href="https://www.debian.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/powered-by-debian.gif"
+            width="88"
+            height="31"
+            alt="Powered by Debian"
+          />
+        </a>
+        <a
+          href="https://www.firefox.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/firefox.gif"
+            width="88"
+            height="31"
+            alt="Get Firefox"
+          />
+        </a>
+        <a
+          href="https://ublockorigin.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/ublock.png"
+            width="88"
+            height="31"
+            alt="uBlock Origin"
+          />
+        </a>
+        <a
+          href="https://fediverse.party/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/fediverse.gif"
+            width="88"
+            height="31"
+            alt="Fediverse"
+          />
+        </a>
+
+        <a
+          href="https://archive.org/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/archive.gif"
+            width="88"
+            height="31"
+            alt="Internet Archive"
+          />
+        </a>
+
+        <a
+          href="https://github.com/AnalogCyan/thayn.me/blob/main/LICENSE"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/agplv3.png"
+            width="88"
+            height="31"
+            alt="GNU AGPLv3"
+          />
+        </a>
+        <a
+          href="https://github.com/AnalogCyan/thayn.me/blob/main/LICENSE-CONTENT"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <img
+            src="/media/buttons/cc-by-sa.png"
+            width="88"
+            height="31"
+            alt="CC BY-SA 4.0"
+          />
+        </a>
+      </drop>
     </main>
 
-    <drop capsule="site-footer"></drop>
+    <drop capsule="footer">
+      <div class="footer-links">
+        <span
+          class="footer-link webmention-count"
+          role="status"
+          aria-label="Webmentions"
+          title="Webmentions"
+        >
+          <i class="ri-chat-3-line" aria-hidden="true"></i>
+          <span data-webmention-count data-url="">0</span>
+        </span>
+        <div class="footer-ring">
+          <a
+            href="https://fediring.net/previous?host=thayn.me"
+            class="footer-link"
+            aria-label="Previous site"
+            >←</a
+          >
+          <a href="https://fediring.net/" class="footer-link">Fediring</a>
+          <a
+            href="https://fediring.net/next?host=thayn.me"
+            class="footer-link"
+            aria-label="Next site"
+            >→</a
+          >
+        </div>
+      </div>
+      <div class="quote-display">Are you ready to embrace uncertainty?</div>
+    </drop>
   </body>
 </html>

@@ -5,16 +5,6 @@
     "documentation": "https://platform.openai.com/docs/gptbot"
   },
   {
-    "name": "OpenAI ChatGPT User",
-    "pattern": "chatgpt-user",
-    "documentation": "https://platform.openai.com/docs/gptbot"
-  },
-  {
-    "name": "OpenAI ChatGPT Bot",
-    "pattern": "chatgpt",
-    "documentation": "https://platform.openai.com/docs/gptbot"
-  },
-  {
     "name": "Anthropic ClaudeBot",
     "pattern": "claudebot",
     "documentation": "https://docs.anthropic.com/claude/docs/claudebot-web-crawler"
@@ -45,11 +35,6 @@
     "documentation": "https://developer.amazon.com/support/amazonbot"
   },
   {
-    "name": "Applebot",
-    "pattern": "applebot",
-    "documentation": "https://support.apple.com/HT204683"
-  },
-  {
     "name": "ByteDance Bytespider",
     "pattern": "bytespider",
     "documentation": "https://www.bytedance.com/en/bytespider"
@@ -65,6 +50,21 @@
     "documentation": "https://www.perplexity.ai/hc/en/articles/2087021059"
   },
   {
+    "name": "Meta-ExternalAgent",
+    "pattern": "meta-externalagent",
+    "documentation": "https://developers.facebook.com/docs/sharing/webmasters/web-crawlers/"
+  },
+  {
+    "name": "FacebookBot",
+    "pattern": "facebookbot",
+    "documentation": "https://developers.facebook.com/docs/sharing/webmasters/web-crawlers/"
+  },
+  {
+    "name": "Cohere AI",
+    "pattern": "cohere-ai",
+    "documentation": "https://docs.cohere.com/docs/crawler"
+  },
+  {
     "name": "You.com crawler",
     "pattern": "youbot",
     "documentation": "https://about.you.com/youbot"
@@ -78,11 +78,6 @@
     "name": "Diffbot",
     "pattern": "diffbot",
     "documentation": "https://docs.diffbot.com/docs/why-is-diffbot-crawling-my-site"
-  },
-  {
-    "name": "NeevaAI",
-    "pattern": "neeva",
-    "documentation": "https://neeva.com/neevabot"
   },
   {
     "name": "Omgili data crawler",

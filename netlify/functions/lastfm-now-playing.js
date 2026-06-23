@@ -94,7 +94,7 @@ export const handler = async (event) => {
     return json(
       503,
       { error: "Last.fm API not configured" },
-      CDN_CACHE_CONTROL_ERROR,
+      CDN_CACHE_CONTROL_ERROR
     );
   }
 
@@ -116,7 +116,7 @@ export const handler = async (event) => {
       return json(
         502,
         { error: "Last.fm upstream request failed" },
-        CDN_CACHE_CONTROL_ERROR,
+        CDN_CACHE_CONTROL_ERROR
       );
     }
 
@@ -145,13 +145,13 @@ export const handler = async (event) => {
         },
         recent: recentTracks,
       },
-      CDN_CACHE_CONTROL_OK,
+      CDN_CACHE_CONTROL_OK
     );
   } catch {
     return json(
       502,
       { error: "Last.fm fetch failed" },
-      CDN_CACHE_CONTROL_ERROR,
+      CDN_CACHE_CONTROL_ERROR
     );
   }
 };

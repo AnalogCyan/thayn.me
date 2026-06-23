@@ -1,13 +1,12 @@
-const ALLOWED_TARGET_HOST_SUFFIXES = [
-  ".thayn.me",
-  ".thayn.netlify.app",
-];
+const ALLOWED_TARGET_HOST_SUFFIXES = [".thayn.me", ".thayn.netlify.app"];
 const MAX_TARGET_LENGTH = 2048;
 const FULL_CACHE_CONTROL = "public, max-age=30";
 const COUNT_CACHE_CONTROL = "public, max-age=120";
 
 function hasAllowedHost(hostname) {
-  const host = `.${String(hostname || "").trim().toLowerCase()}`;
+  const host = `.${String(hostname || "")
+    .trim()
+    .toLowerCase()}`;
   if (!host || host === ".") return false;
   return ALLOWED_TARGET_HOST_SUFFIXES.some((suffix) => host.endsWith(suffix));
 }

@@ -48,7 +48,7 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
   function bucketCount(buckets) {
     return Object.values(buckets).reduce(
       (total, items) => total + (Array.isArray(items) ? items.length : 0),
-      0,
+      0
     );
   }
 
@@ -59,13 +59,6 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
     }
     return `/.netlify/functions/webmentions?${params.toString()}`;
   }
-
-  const t = (key, fallback) => {
-    if (window.JG_I18N && typeof window.JG_I18N.t === "function") {
-      return window.JG_I18N.t(key, fallback);
-    }
-    return fallback;
-  };
 
   const extractText = (item) => {
     if (!item || !item.content) return "";
@@ -152,10 +145,30 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
   };
 
   const REACTION_TYPES = [
-    { key: "likes", iconClass: "ri-heart-3-fill", iconColor: "#e11d48", labelKey: "blog.webmentions.likes", labelFallback: "Likes" },
-    { key: "reposts", iconClass: "ri-repeat-fill", iconColor: "#16a34a", labelKey: "blog.webmentions.reposts", labelFallback: "Reposts" },
-    { key: "mentions", iconClass: "ri-at-line", iconColor: "#2563eb", labelKey: "blog.webmentions.mentions", labelFallback: "Mentions" },
-    { key: "bookmarks", iconClass: "ri-bookmark-fill", iconColor: "#d97706", labelKey: "blog.webmentions.bookmarks", labelFallback: "Bookmarks" },
+    {
+      key: "likes",
+      iconClass: "ri-heart-3-fill",
+      iconColor: "#e11d48",
+      labelFallback: "Likes",
+    },
+    {
+      key: "reposts",
+      iconClass: "ri-repeat-fill",
+      iconColor: "#16a34a",
+      labelFallback: "Reposts",
+    },
+    {
+      key: "mentions",
+      iconClass: "ri-at-line",
+      iconColor: "#2563eb",
+      labelFallback: "Mentions",
+    },
+    {
+      key: "bookmarks",
+      iconClass: "ri-bookmark-fill",
+      iconColor: "#d97706",
+      labelFallback: "Bookmarks",
+    },
   ];
 
   const renderReactions = (buckets) => {
@@ -169,11 +182,11 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
     }
 
     reactionsContainer.hidden = false;
-    for (const { key, iconClass, iconColor, labelKey, labelFallback } of active) {
+    for (const { key, iconClass, iconColor, labelFallback } of active) {
       const count = buckets[key].length;
       const pill = document.createElement("span");
       pill.className = "post-reaction";
-      pill.setAttribute("aria-label", `${count} ${t(labelKey, labelFallback)}`);
+      pill.setAttribute("aria-label", `${count} ${labelFallback}`);
 
       const icon = document.createElement("i");
       icon.className = iconClass;
@@ -192,13 +205,13 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
     container.textContent = "";
 
     const title = document.createElement("h2");
-    title.textContent = t("blog.webmentions.title", "Comments");
+    title.textContent = "Comments";
     container.appendChild(title);
 
     if (buckets.replies.length === 0) {
       const empty = document.createElement("p");
       empty.className = "webmentions-empty";
-      empty.textContent = t("blog.webmentions.empty", "No comments yet.");
+      empty.textContent = "No comments yet.";
       container.appendChild(empty);
       return;
     }
@@ -254,7 +267,7 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
         source.className = "webmention-source";
         source.href = item.url;
         source.rel = "nofollow ugc";
-        source.textContent = t("blog.webmentions.source", "View source");
+        source.textContent = "View source";
         li.appendChild(source);
       }
 
@@ -331,7 +344,7 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
 
     const failureDelay = Math.min(
       FAILURE_BACKOFF_MAX_MS,
-      FAILURE_BACKOFF_BASE_MS * 2 ** (consecutiveFailures - 1),
+      FAILURE_BACKOFF_BASE_MS * 2 ** (consecutiveFailures - 1)
     );
 
     return withJitter(Math.max(baseDelayMs, failureDelay));
@@ -341,8 +354,7 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
     if (paused || document.visibilityState === "hidden") return;
 
     clearTimer();
-    const base =
-      typeof delayMs === "number" ? delayMs : refreshSeconds * 1000;
+    const base = typeof delayMs === "number" ? delayMs : refreshSeconds * 1000;
     timer = window.setTimeout(() => {
       void poll();
     }, computeDelay(base));
@@ -385,11 +397,6 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
   }
 
   void poll();
-
-  document.addEventListener("th-i18n-ready", () => {
-    if (!hasFetchedBuckets) return;
-    render(latestBuckets);
-  });
 
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") {

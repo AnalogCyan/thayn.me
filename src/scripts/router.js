@@ -1,7 +1,21 @@
+/* thayn.me – router.js – SPA navigation with sliding animations */
+
 (function () {
   if (!window.history || !window.history.pushState) return;
 
-  var TRANSITION_MS = 180;
+  var NAV_ORDER = [
+    "home",
+    "about",
+    "blog",
+    "projects",
+    "photos",
+    "music",
+    "now",
+    "uses",
+    "more",
+  ];
+
+  var TRANSITION_MS = 300;
   var navigating = false;
 
   var baseScripts = new Set(
@@ -17,6 +31,34 @@
       }
     )
   );
+
+  function getPageKey(url) {
+    var path;
+    try {
+      path = new URL(url, location.href).pathname;
+    } catch {
+      return null;
+    }
+
+    if (path === "/" || path === "/index.html") return "home";
+
+    var page = path
+      .replace(/^\//, "")
+      .replace(/\.html$/, "")
+      .replace(/\/$/, "");
+
+    if (page === "blog" || page.startsWith("blog/")) return "blog";
+
+    return page || "home";
+  }
+
+  function getDirection(from, to) {
+    if (!from || !to || from === to) return null;
+    var fromIdx = NAV_ORDER.indexOf(from);
+    var toIdx = NAV_ORDER.indexOf(to);
+    if (fromIdx === -1 || toIdx === -1) return null;
+    return toIdx > fromIdx ? "slide-left" : "slide-right";
+  }
 
   function shouldIntercept(anchor) {
     if (anchor.target === "_blank") return false;
@@ -137,17 +179,27 @@
       return;
     }
 
+    var fromPage = getPageKey(location.href);
+    var toPage = getPageKey(url);
+    var dir = getDirection(fromPage, toPage);
+    if (!dir) dir = "slide-left";
+    var dirClass = "dir-" + dir;
+
+    var footerEl = document.querySelector('[data-capsule="footer"]');
+    var footerFirst = footerEl ? footerEl.getBoundingClientRect().top : null;
+
     var fetchDone = fetch(url).then(function (r) {
       if (!r.ok) throw new Error(r.status);
       return r.text();
     });
 
-    main.classList.add("spa-out");
-    var fadeDone = new Promise(function (r) {
+    main.classList.add("spa-out", dirClass);
+
+    var outDone = new Promise(function (r) {
       setTimeout(r, TRANSITION_MS);
     });
 
-    Promise.all([fetchDone, fadeDone])
+    Promise.all([fetchDone, outDone])
       .then(function (results) {
         var html = results[0];
         var doc = new DOMParser().parseFromString(html, "text/html");
@@ -155,10 +207,24 @@
 
         if (data.mainHTML == null) throw new Error("no main");
 
+        main.classList.remove("spa-out", "dir-slide-left", "dir-slide-right");
+
         swapMain(main, data.mainHTML);
 
-        if (window.JG_I18N) {
-          window.JG_I18N.refresh();
+        if (footerEl && footerFirst !== null) {
+          var footerLast = footerEl.getBoundingClientRect().top;
+          var delta = Math.round(footerLast - footerFirst);
+          if (Math.abs(delta) >= 3) {
+            footerEl.style.transform = "translateY(" + -delta + "px)";
+            footerEl.getBoundingClientRect();
+            footerEl.style.transition =
+              "transform 0.3s cubic-bezier(0.68, -0.3, 0.27, 1.3)";
+            footerEl.style.transform = "translateY(0)";
+            setTimeout(function () {
+              footerEl.style.transition = "";
+              footerEl.style.transform = "";
+            }, 300);
+          }
         }
 
         var shell = document.querySelector(".page-shell");
@@ -172,31 +238,36 @@
         if (descEl) descEl.setAttribute("content", data.description);
 
         syncStylesheets(data.stylesheets);
+        syncScripts(data.scripts);
 
-        return syncScripts(data.scripts).then(function () {
-          document.dispatchEvent(
-            new CustomEvent("th-nav-changed", {
-              detail: { navPage: data.navPage },
-            })
-          );
-          if (push !== false) {
-            history.pushState(null, "", url);
-          }
+        main.classList.add("spa-in");
+        if (dirClass) main.classList.add(dirClass);
 
-          window.scrollTo(0, 0);
+        if (push !== false) {
+          history.pushState(null, "", url);
+        }
 
-          if (window.JG_I18N) {
-            document.dispatchEvent(new Event("th-i18n-ready"));
-          }
+        window.scrollTo(0, 0);
+        window.dispatchEvent(new Event("resize"));
 
-          window.dispatchEvent(new Event("resize"));
+        document.dispatchEvent(
+          new CustomEvent("th-nav-changed", {
+            detail: { navPage: data.navPage },
+          })
+        );
 
-          main.classList.remove("spa-out");
+        setTimeout(function () {
+          main.classList.remove("spa-in", dirClass);
           navigating = false;
-        });
+        }, TRANSITION_MS);
       })
       .catch(function () {
-        main.classList.remove("spa-out");
+        main.classList.remove(
+          "spa-out",
+          "spa-in",
+          "dir-slide-left",
+          "dir-slide-right"
+        );
         navigating = false;
         location.href = url;
       });

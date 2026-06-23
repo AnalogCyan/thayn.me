@@ -12,6 +12,7 @@ syndicationStatus:
   bluesky: "confirmed"
   mastodon: "confirmed"
 ---
+
 Being neurodivergent in a world built for neurotypicals is exhausting. The social scripts, the expected narration of your own thought process, the assumption that if you know something you must be able to explain how you know it. Lately I have been thinking a lot about how my brain actually works, mostly because people keep asking me to explain it, and I keep failing.
 
 For every domain in my life, my brain has built an algorithm over years of knowledge ingestion, hands-on experience, trial and error, and hyperfocus. And that algorithm? It is an **amorphous blob**. I do not know how it works. I just know that if I follow the blob, the thing gets done correctly. If I try to break out of the blob to explain it to someone, everything crashes.

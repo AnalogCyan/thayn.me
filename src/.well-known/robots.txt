@@ -1,11 +1,9 @@
-# Generative AI and large-scale scrapers (updated Oct 2024 guidance)
+# thayn.me — AI crawler policy
+# Block training scrapers. Allow search/retrieval + user-triggered bots.
+# Last updated: 2026-06
+
+# ── Training crawlers (block) ──
 User-agent: GPTBot
-Disallow: /
-
-User-agent: ChatGPT-User
-Disallow: /
-
-User-agent: ChatGPT
 Disallow: /
 
 User-agent: ClaudeBot
@@ -14,30 +12,42 @@ Disallow: /
 User-agent: anthropic-ai
 Disallow: /
 
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: PerplexityBot
+Disallow: /
+
+# ── Opt-out tokens (training only, not real crawlers) ──
 User-agent: Google-Extended
 Disallow: /
 
+User-agent: Applebot-Extended
+Disallow: /
+
+# ── Google R&D crawlers (block) ──
 User-agent: GoogleOther
 Disallow: /
 
 User-agent: GoogleOther-Image
 Disallow: /
 
-User-agent: Amazonbot
-Disallow: /
-
-User-agent: Applebot
-Disallow: /
-
-User-agent: Bytespider
-Disallow: /
-
-User-agent: CCBot
-Disallow: /
-
-User-agent: PerplexityBot
-Disallow: /
-
+# ── Data extraction (block) ──
 User-agent: YouBot
 Disallow: /
 
@@ -47,12 +57,33 @@ Disallow: /
 User-agent: Diffbot
 Disallow: /
 
-User-agent: NeevaAI
-Disallow: /
-
 User-agent: Omgili
 Disallow: /
 
-# Default directives
+# ── Search/retrieval crawlers (allow — referral value) ──
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+# ── User-triggered fetchers (allow — real users) ──
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+# ── General-purpose search (allow for discoverability) ──
+User-agent: Applebot
+Allow: /
+
+# ── Default: allow everything else ──
 User-agent: *
 Allow: /

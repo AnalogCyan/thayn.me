@@ -4,9 +4,6 @@
     const MIDNIGHT_UTC_RE = /T00:00:00(?:\.000)?Z$/i;
 
     function formatDates() {
-      const locale = window.JG_I18N
-        ? window.JG_I18N.getState().locale
-        : undefined;
       document.querySelectorAll("time[datetime]").forEach((el) => {
         const raw = el.getAttribute("datetime");
         if (!raw) return;
@@ -17,7 +14,7 @@
         if (Number.isNaN(date.getTime())) return;
 
         if (isDateOnly) {
-          el.textContent = date.toLocaleDateString(locale, {
+          el.textContent = date.toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric",
@@ -25,7 +22,7 @@
           return;
         }
 
-        el.textContent = date.toLocaleString(locale, {
+        el.textContent = date.toLocaleString("en-US", {
           year: "numeric",
           month: "short",
           day: "numeric",
@@ -37,7 +34,7 @@
 
     const blogSearch = document.getElementById("blog-search");
     const tagFilter = document.getElementById("tag-filter");
-    const posts = document.querySelectorAll(".blog-card");
+    const posts = document.querySelectorAll(".card-list__item");
 
     let debounceTimeout;
 
@@ -59,14 +56,31 @@
         .replace(/\s+/g, " ");
     }
 
-    function getVisibleLocalizedText(container, selector) {
+    function getVisibleText(container, selector) {
       const target = container.querySelector(selector);
       if (!target) return "";
-      const localized = target.querySelector?.(
-        "[data-blog-lang]:not([hidden])"
-      );
-      const content = localized || target;
-      return normalizeValue(content.textContent);
+      return normalizeValue(target.textContent);
+    }
+
+    function updateCardRadius() {
+      const list = document.querySelector(".card-list");
+      if (!list) return;
+
+      list.querySelectorAll(".card-list__item").forEach((item) => {
+        item.classList.remove(
+          "card-list__item--first",
+          "card-list__item--last"
+        );
+      });
+
+      const visible = Array.from(
+        list.querySelectorAll(".card-list__item")
+      ).filter((item) => !item.classList.contains("hidden"));
+
+      if (visible.length > 0) {
+        visible[0].classList.add("card-list__item--first");
+        visible[visible.length - 1].classList.add("card-list__item--last");
+      }
     }
 
     function filterPosts() {
@@ -74,9 +88,9 @@
       const selectedTag = normalizeValue(tagFilter?.value || "");
 
       posts.forEach((post) => {
-        const postTitle = getVisibleLocalizedText(post, "h3");
-        const postExcerpt = getVisibleLocalizedText(post, ".p-summary");
-        const postTagText = getVisibleLocalizedText(post, ".tag");
+        const postTitle = getVisibleText(post, "h3");
+        const postExcerpt = getVisibleText(post, ".p-summary");
+        const postTagText = getVisibleText(post, ".tag");
         const postTagKey = normalizeValue(post.dataset.tagKey);
 
         const matchesSearch =
@@ -89,18 +103,12 @@
 
         if (matchesSearch && matchesTag) {
           post.classList.remove("hidden");
-          requestAnimationFrame(() => post.classList.remove("fade-out"));
         } else {
-          post.classList.add("fade-out");
-          const onFade = (event) => {
-            if (event.propertyName !== "opacity") return;
-            if (post.classList.contains("fade-out")) {
-              post.classList.add("hidden");
-            }
-          };
-          post.addEventListener("transitionend", onFade, { once: true });
+          post.classList.add("hidden");
         }
       });
+
+      updateCardRadius();
     }
 
     const debouncedFilter = debounce(filterPosts, 300);
@@ -109,15 +117,11 @@
     tagFilter?.addEventListener("change", filterPosts);
 
     posts.forEach((post) => {
-      post.classList.remove("hidden", "fade-out");
+      post.classList.remove("hidden");
     });
     filterPosts();
 
     formatDates();
-    document.addEventListener("th-i18n-ready", () => {
-      formatDates();
-      filterPosts();
-    });
   }
 
   if (document.readyState === "loading") {

@@ -12,13 +12,13 @@
   Repository: https://github.com/AnalogCyan/thayn.me
   Hosting: Netlify
   Tooling: GitHub Actions (CodeQL), Codacy quality checks
-  Last update: 2025-10-07
+  Last update: 2026-06-22
 
 /* AI & ROBOTS */
-  Policy: AI scraping not permitted
+  Policy: AI training not permitted. Search/retrieval crawlers allowed.
   Directives: X-Robots-Tag noai, noimageai; AI-Training none
-  Enforcement: Netlify edge function bots.ts blocks crawlers listed in netlify/edge-functions/agents.json
-  Robots: See /.well-known/robots.txt for disallowed agents
+  Enforcement: Netlify edge function bots.ts blocks training crawlers listed in netlify/edge-functions/agents.json
+  Robots: See /.well-known/robots.txt for the full policy
 
 /* THANKS */
   Inspiration: humanstxt.org and the open web community

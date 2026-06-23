@@ -1,0 +1,15 @@
+/* thayn.me – footer.css – Footer styles */
+
+footer[data-capsule="footer"] {
+  padding-top: 0;
+  padding-bottom: var(--spacing-md);
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+  text-align: center;
+  opacity: 0.75;
+}

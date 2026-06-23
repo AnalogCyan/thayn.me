@@ -35,6 +35,10 @@ Three production dependencies: `front-matter`, `handlebars`, `marked`.
 - **Edge functions** block AI crawlers. Serverless functions proxy Last.fm data
   and fetch webmentions.
 
+## TODO
+
+- **Reduce JS-driven inlines.** Migrate JS-driven elements native CSS where practical. Consolidating them would simplify the CSP policy and significantly reduce JS reliance.
+
 ## Local development
 
 Requires Node.js **>= v24**.

@@ -14,7 +14,9 @@ function runSyndicationScript(scriptPath) {
         resolve();
         return;
       }
-      reject(new Error(`Post-deploy syndication script exited with code ${code}`));
+      reject(
+        new Error(`Post-deploy syndication script exited with code ${code}`)
+      );
     });
   });
 }
@@ -23,7 +25,7 @@ module.exports = {
   onSuccess: async () => {
     const scriptPath = path.resolve(
       process.cwd(),
-      "netlify/post-deploy/run-syndication.js",
+      "netlify/post-deploy/run-syndication.js"
     );
     await runSyndicationScript(scriptPath);
   },

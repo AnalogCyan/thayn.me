@@ -1,5 +1,35 @@
+/* thayn.me – gradient-background.js – Randomizes gradient node positions and animations */
+
 (function () {
   var initialized = false;
+  var STORAGE_KEY = "th_gradient_cfg";
+
+  function getTheme() {
+    var root = document.documentElement;
+    if (root.classList.contains("light-theme")) return "light";
+    if (root.classList.contains("dark-theme")) return "dark";
+    return "system";
+  }
+
+  function saveConfig(config) {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(config));
+    } catch {
+      // ignore
+    }
+  }
+
+  function loadConfig() {
+    try {
+      var raw = sessionStorage.getItem(STORAGE_KEY);
+      if (!raw) return null;
+      var config = JSON.parse(raw);
+      if (config.theme !== getTheme()) return null;
+      return config;
+    } catch {
+      return null;
+    }
+  }
 
   function init() {
     if (initialized) return;
@@ -14,9 +44,7 @@
       var vw = window.innerWidth;
       var vh = window.innerHeight;
 
-      // Node CSS sizes: 40lvh, 50lvh, 45lvh, 60lvh
       var nodeSizesLVH = [0.4, 0.5, 0.45, 0.6];
-      // gradient-background: top: -10lvh, height: 120lvh, left: 0, width: 100%
       var containerTop = -0.1 * vh;
       var containerHeight = 1.2 * vh;
 
@@ -26,24 +54,34 @@
         style.id = "ambient-bg-style";
         document.head.appendChild(style);
       }
+
+      var config = loadConfig();
+      if (config && (config.vw !== vw || config.vh !== vh)) {
+        config = null;
+      }
+
       var css = "";
+      var nodeData = [];
 
       for (var i = 0; i < nodes.length; i++) {
         var nodeSize = vh * nodeSizesLVH[i];
         var maxX = vw - nodeSize;
         var maxY = containerHeight - nodeSize;
 
-        var startX = Math.random() * maxX;
-        var startY = Math.random() * maxY + containerTop;
+        var startX, startY, duration, wp;
 
-        nodes[i].style.transform =
-          "translate3d(" + startX + "px," + startY + "px, 0)";
-
-        if (!prefersReducedMotion) {
-          var duration = 18 + Math.random() * 14;
+        if (config && config.nodes && config.nodes[i]) {
+          var saved = config.nodes[i];
+          startX = saved.startX;
+          startY = saved.startY;
+          duration = saved.duration;
+          wp = saved.wp;
+        } else {
+          startX = Math.random() * maxX;
+          startY = Math.random() * maxY + containerTop;
+          duration = 18 + Math.random() * 14;
           var deviation = 0.16 * Math.min(vw, vh);
-
-          var wp = [];
+          wp = [];
           for (var k = 0; k < 4; k++) {
             wp.push({
               x: clamp(startX + (Math.random() - 0.5) * 2 * deviation, 0, maxX),
@@ -55,7 +93,12 @@
               scale: 1.3 + Math.random() * 0.5,
             });
           }
+        }
 
+        nodes[i].style.transform =
+          "translate3d(" + startX + "px," + startY + "px, 0)";
+
+        if (!prefersReducedMotion) {
           var name = "ambient-float-" + i;
 
           css +=
@@ -90,11 +133,28 @@
           nodes[i].style.animation =
             name + " " + duration + "s ease-in-out infinite";
         }
+
+        nodeData.push({
+          startX: startX,
+          startY: startY,
+          duration: duration,
+          wp: wp,
+        });
       }
 
       if (css) {
         style.textContent = css;
       }
+
+      if (!config) {
+        saveConfig({
+          theme: getTheme(),
+          vw: vw,
+          vh: vh,
+          nodes: nodeData,
+        });
+      }
+
       initialized = true;
     } catch (e) {
       // fail silently

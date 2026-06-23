@@ -1,3 +1,5 @@
+/* thayn.me – theme-init.js – Instant theme class injection to prevent flash */
+
 (() => {
   try {
     const root = document.documentElement;
@@ -9,8 +11,20 @@
       root.classList.add("dark-theme");
     }
 
-    // Randomize background gradient hue for variety across page loads
-    const hue = Math.floor(Math.random() * 360);
+    let hue;
+    try {
+      hue = sessionStorage.getItem("th_accent_hue");
+    } catch {
+      // ignore
+    }
+    if (hue === null) {
+      hue = Math.floor(Math.random() * 360);
+      try {
+        sessionStorage.setItem("th_accent_hue", hue);
+      } catch {
+        // ignore
+      }
+    }
     root.style.setProperty("--accent-hue", hue);
   } catch {
     // ignore theme init failures

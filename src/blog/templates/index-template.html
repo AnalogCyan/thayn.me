@@ -1,3 +1,4 @@
+<!-- thayn.me – index-template.html – Blog index page template -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -37,29 +38,100 @@
 
     <!-- EXTERNAL_RESOURCES -->
 
-    <script src="/scripts/i18n-init.js"></script>
     <script src="/scripts/theme-init.js"></script>
 
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/blog/styles.css" />
     <script src="/scripts.js" defer></script>
-    <script src="/blog/scripts/localized-content.js" defer></script>
     <script src="/blog/scripts/scripts.js" defer></script>
 
     <title>Cyan's Blog</title>
   </head>
-  <body>
-    <drop capsule="ambient-background"></drop>
-    <div class="h-card">
-      <drop capsule="hero-card" data-hero="false" data-nav-page="blog"></drop>
+  <body class="page-shell" data-hero="false" data-nav-page="blog">
+    <drop capsule="gradient-background" data-animated="true"></drop>
+    <div class="container nav-center">
+      <drop capsule="header" data-theme-key="thayn_theme">
+        <li class="nav-pill__item">
+          <a href="/" class="nav-pill__link" aria-label="Home" data-nav="home">
+            <i class="ri-home-5-line"></i>
+            <span class="nav-pill__text">Home</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/about.html"
+            class="nav-pill__link"
+            aria-label="About"
+            data-nav="about"
+          >
+            <i class="ri-user-heart-line"></i>
+            <span class="nav-pill__text">About</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/blog/"
+            class="nav-pill__link"
+            aria-label="Blog"
+            data-nav="blog"
+          >
+            <i class="ri-article-line"></i>
+            <span class="nav-pill__text">Blog</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/projects.html"
+            class="nav-pill__link"
+            aria-label="Projects"
+            data-nav="projects"
+          >
+            <i class="ri-folder-3-line"></i>
+            <span class="nav-pill__text">Projects</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/photos.html"
+            class="nav-pill__link"
+            aria-label="Photos"
+            data-nav="photos"
+          >
+            <i class="ri-camera-3-line"></i>
+            <span class="nav-pill__text">Photos</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/music.html"
+            class="nav-pill__link"
+            aria-label="Music"
+            data-nav="music"
+          >
+            <i class="ri-music-2-line"></i>
+            <span class="nav-pill__text">Music</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/more.html"
+            class="nav-pill__link"
+            aria-label="More"
+            data-nav="more"
+          >
+            <i class="ri-more-line" aria-hidden="true"></i>
+            <span class="nav-pill__text">More</span>
+          </a>
+        </li>
+      </drop>
     </div>
 
     <main>
       <section class="glass section-card blog-hero">
         <div class="section-title">
-          <h2 data-i18n="blog.title">Blog</h2>
+          <h2>Blog</h2>
         </div>
-        <p data-i18n="blog.subtitle">Notes, updates, and experiments.</p>
+        <p>Notes, updates, and experiments.</p>
         <div class="blog-filter-row">
           <input
             type="search"
@@ -67,12 +139,14 @@
             class="blog-filter-input"
             placeholder="Search posts..."
             aria-label="Search posts"
-            data-i18n-placeholder="blog.search"
-            data-i18n-attr="aria-label:blog.search"
           />
           {{#if tagOptions.length}}
-          <select id="tag-filter" class="blog-filter-select" aria-label="Filter by tag" data-i18n-attr="aria-label:blog.filterTag">
-            <option value="" data-i18n="blog.allTags">All Tags</option>
+          <select
+            id="tag-filter"
+            class="blog-filter-select"
+            aria-label="Filter by tag"
+          >
+            <option value="">All Tags</option>
             {{#each tagOptions}}
             <option value="{{value}}">{{label}}</option>
             {{/each}}
@@ -81,12 +155,13 @@
         </div>
       </section>
 
+      <drop capsule="card-list"></drop>
       <section class="blog-list h-feed">
         {{#if posts.length}}
-        <div class="blog-grid">
+        <div class="card-list card-list--dense">
           {{#each posts}}
           <article
-            class="glass blog-card h-entry"
+            class="glass card-list__item h-entry"
             data-tag-key="{{tagFilterKey}}"
           >
             <a href="{{url}}" class="u-url">
@@ -95,34 +170,19 @@
                   >{{formatDate date}}</time
                 >
                 {{#if tags.length}}
-                <span class="tag" data-blog-l10n-group>
-                  {{#each localizedVariants}}
-                  <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
-                    >{{tags.[0]}}</span
-                  >
-                  {{/each}}
-                </span>
+                <span class="tag">{{tags.[0]}}</span>
                 {{/if}}
               </div>
-              <h3 class="p-name" data-blog-l10n-group>
-                {{#each localizedVariants}}
-                <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
-                  >{{title}}</span
-                >
-                {{/each}}
-              </h3>
-              <p class="p-summary" data-blog-l10n-group>
-                {{#each localizedVariants}}
-                <span data-blog-lang="{{lang}}" {{#unless isDefault}}hidden{{/unless}}
-                  >{{excerpt}}</span
-                >
-                {{/each}}
-              </p>
+              <h3 class="p-name">{{title}}</h3>
+              <p class="p-summary">{{excerpt}}</p>
               <div class="blog-footer">
-                <span hidden aria-hidden="true" class="p-author">Cyan Thayn</span>
-                <span class="read-more" data-i18n-html="blog.readMore"
-                  >Read More <i class="ri-arrow-right-up-line" aria-hidden="true"></i></span
+                <span hidden aria-hidden="true" class="p-author"
+                  >Cyan Thayn</span
                 >
+                <span class="read-more"
+                  >Read More
+                  <i class="ri-arrow-right-up-line" aria-hidden="true"></i
+                ></span>
               </div>
             </a>
           </article>
@@ -130,13 +190,41 @@
         </div>
         {{else}}
         <article class="glass section-card blog-empty">
-          <h3 data-i18n="blog.empty">No posts yet</h3>
-          <p data-i18n="blog.emptyBody">Check back soon for updates.</p>
+          <h3>No posts yet</h3>
+          <p>Check back soon for updates.</p>
         </article>
         {{/if}}
       </section>
     </main>
 
-    <drop capsule="site-footer"></drop>
+    <drop capsule="footer">
+      <div class="footer-links">
+        <span
+          class="footer-link webmention-count"
+          role="status"
+          aria-label="Webmentions"
+          title="Webmentions"
+        >
+          <i class="ri-chat-3-line" aria-hidden="true"></i>
+          <span data-webmention-count data-url="">0</span>
+        </span>
+        <div class="footer-ring">
+          <a
+            href="https://fediring.net/previous?host=thayn.me"
+            class="footer-link"
+            aria-label="Previous site"
+            >←</a
+          >
+          <a href="https://fediring.net/" class="footer-link">Fediring</a>
+          <a
+            href="https://fediring.net/next?host=thayn.me"
+            class="footer-link"
+            aria-label="Next site"
+            >→</a
+          >
+        </div>
+      </div>
+      <div class="quote-display">Are you ready to embrace uncertainty?</div>
+    </drop>
   </body>
 </html>

@@ -1,0 +1,27 @@
+/* thayn.me – under-construction.css – Styles for the under-construction placeholder capsule */
+
+.under-construction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl);
+  text-align: center;
+}
+
+.under-construction-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.under-construction-inner i {
+  font-size: 2.5rem;
+  color: var(--accent);
+}
+
+.under-construction-inner p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}

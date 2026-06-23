@@ -66,7 +66,7 @@ export default async function botShield(request: Request, context: Context) {
 
     if (matchedAgent) {
       context.log(
-        `Blocked ${matchedAgent.name} via user-agent: ${userAgent ?? "<missing>"}`,
+        `Blocked ${matchedAgent.name} via user-agent: ${userAgent ?? "<missing>"}`
       );
 
       return new Response("AI scraping is not permitted on this site.", {

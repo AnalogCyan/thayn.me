@@ -1,3 +1,5 @@
+/* thayn.me – lastfm-capsule.css – Last.fm widget styling and visualizer */
+
 .lastfm-capsule.section-card {
   padding: 0.95rem 1.15rem;
   gap: 0;
@@ -142,33 +144,68 @@
 }
 
 @keyframes viz-bar-1 {
-  0%, 100% { height: 8px; }
-  40% { height: 20px; }
-  70% { height: 12px; }
+  0%,
+  100% {
+    height: 8px;
+  }
+  40% {
+    height: 20px;
+  }
+  70% {
+    height: 12px;
+  }
 }
 
 @keyframes viz-bar-2 {
-  0%, 100% { height: 10px; }
-  30% { height: 22px; }
-  60% { height: 9px; }
+  0%,
+  100% {
+    height: 10px;
+  }
+  30% {
+    height: 22px;
+  }
+  60% {
+    height: 9px;
+  }
 }
 
 @keyframes viz-bar-3 {
-  0%, 100% { height: 9px; }
-  50% { height: 18px; }
-  80% { height: 14px; }
+  0%,
+  100% {
+    height: 9px;
+  }
+  50% {
+    height: 18px;
+  }
+  80% {
+    height: 14px;
+  }
 }
 
 @keyframes viz-bar-4 {
-  0%, 100% { height: 11px; }
-  35% { height: 24px; }
-  65% { height: 10px; }
+  0%,
+  100% {
+    height: 11px;
+  }
+  35% {
+    height: 24px;
+  }
+  65% {
+    height: 10px;
+  }
 }
 
 @keyframes viz-bar-5 {
-  0%, 100% { height: 8px; }
-  45% { height: 16px; }
-  75% { height: 21px; }
+  0%,
+  100% {
+    height: 8px;
+  }
+  45% {
+    height: 16px;
+  }
+  75% {
+    height: 21px;
+  }
 }
 
 .lastfm-wave span {
@@ -186,12 +223,24 @@
     animation-fill-mode: both;
   }
 
-  & span:nth-child(1) { animation: viz-bar-1 1.1s infinite ease-in-out; }
-  & span:nth-child(2) { animation: viz-bar-2 1.3s infinite ease-in-out; }
-  & span:nth-child(3) { animation: viz-bar-3 0.9s infinite ease-in-out; }
-  & span:nth-child(4) { animation: viz-bar-4 1.4s infinite ease-in-out; }
-  & span:nth-child(5) { animation: viz-bar-5 1.0s infinite ease-in-out; }
-  & span:nth-child(n+6) { animation: viz-bar-1 1.2s infinite ease-in-out; }
+  & span:nth-child(1) {
+    animation: viz-bar-1 1.1s infinite ease-in-out;
+  }
+  & span:nth-child(2) {
+    animation: viz-bar-2 1.3s infinite ease-in-out;
+  }
+  & span:nth-child(3) {
+    animation: viz-bar-3 0.9s infinite ease-in-out;
+  }
+  & span:nth-child(4) {
+    animation: viz-bar-4 1.4s infinite ease-in-out;
+  }
+  & span:nth-child(5) {
+    animation: viz-bar-5 1s infinite ease-in-out;
+  }
+  & span:nth-child(n + 6) {
+    animation: viz-bar-1 1.2s infinite ease-in-out;
+  }
 }
 
 .lastfm-recent {

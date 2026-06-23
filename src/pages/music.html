@@ -1,3 +1,4 @@
+<!-- thayn.me – music.html – Music library, profiles, and Last.fm capsule -->
 <!doctype html>
 <html lang="en">
   <head>
@@ -33,35 +34,109 @@
     <meta name="twitter:site" content="@AnalogCyan" />
     <meta name="twitter:creator" content="@AnalogCyan" />
 
-    <link rel="manifest" href="manifest.json" />
+    <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
     <link rel="apple-touch-icon" href="/media/logo.svg" />
     <!-- EXTERNAL_RESOURCES -->
 
-    <script src="/scripts/i18n-init.js"></script>
     <script src="/scripts/theme-init.js"></script>
 
     <link rel="stylesheet" href="./styles.css" />
-    <script src="./scripts.js" defer></script>
+    <script src="/scripts.js" defer></script>
 
     <title>Cyan Thayn — Music</title>
   </head>
-  <body>
-    <drop capsule="ambient-background"></drop>
-    <drop capsule="hero-card" data-hero="false" data-nav-page="music"></drop>
+  <body class="page-shell" data-hero="false" data-nav-page="music">
+    <drop capsule="gradient-background" data-animated="true"></drop>
+    <div class="container nav-center">
+      <drop capsule="header" data-theme-key="thayn_theme">
+        <li class="nav-pill__item">
+          <a href="/" class="nav-pill__link" aria-label="Home" data-nav="home">
+            <i class="ri-home-5-line"></i>
+            <span class="nav-pill__text">Home</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/about.html"
+            class="nav-pill__link"
+            aria-label="About"
+            data-nav="about"
+          >
+            <i class="ri-user-heart-line"></i>
+            <span class="nav-pill__text">About</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/blog/"
+            class="nav-pill__link"
+            aria-label="Blog"
+            data-nav="blog"
+          >
+            <i class="ri-article-line"></i>
+            <span class="nav-pill__text">Blog</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/projects.html"
+            class="nav-pill__link"
+            aria-label="Projects"
+            data-nav="projects"
+          >
+            <i class="ri-folder-3-line"></i>
+            <span class="nav-pill__text">Projects</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/photos.html"
+            class="nav-pill__link"
+            aria-label="Photos"
+            data-nav="photos"
+          >
+            <i class="ri-camera-3-line"></i>
+            <span class="nav-pill__text">Photos</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/music.html"
+            class="nav-pill__link"
+            aria-label="Music"
+            data-nav="music"
+          >
+            <i class="ri-music-2-line"></i>
+            <span class="nav-pill__text">Music</span>
+          </a>
+        </li>
+        <li class="nav-pill__item">
+          <a
+            href="/more.html"
+            class="nav-pill__link"
+            aria-label="More"
+            data-nav="more"
+          >
+            <i class="ri-more-line" aria-hidden="true"></i>
+            <span class="nav-pill__text">More</span>
+          </a>
+        </li>
+      </drop>
+    </div>
 
     <main>
       <drop capsule="lastfm-capsule"></drop>
 
       <section class="glass section-card" id="library">
         <div class="section-title">
-          <h2 data-i18n="music.libraryTitle">Library</h2>
+          <h2>Library</h2>
         </div>
-        <p data-i18n-html="music.clientsBody">
+        <p>
           I host my personal music library on Valkyrie, my homelab server, using
           <a href="https://www.navidrome.org/">Navidrome</a>.
         </p>
-        <p data-i18n="music.clientsBody2">
+        <p>
           Every album I care about lives there in full quality, properly tagged,
           with artwork and metadata exactly how I want it. I prefer owning my
           music instead of renting access to it. Streaming is convenient, but it
@@ -69,90 +144,126 @@
           yours. It works offline, does not get pulled because of licensing
           changes, and does not change unless you decide to change it.
         </p>
-        <p data-i18n="music.clientsBody3">
+        <p>
           If that approach appeals to you, it is more approachable than it
           sounds. All you really need are your files, a small server or spare
           machine, and the right client apps to access your collection from
           anywhere.
         </p>
-        <p data-i18n="music.clientsLead">These are the clients I recommend:</p>
-        <nav class="client-link-group" aria-label="Recommended music clients">
+        <p>These are the clients I recommend:</p>
+        <drop capsule="button-array"></drop>
+        <nav class="button-group" aria-label="Recommended music clients">
           <a
-            class="button secondary client-link client-link--first"
+            class="button secondary button-group__item button-group__item--first"
             href="https://github.com/jeffvli/feishin"
-            target="_blank" rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <span class="client-link__badges" aria-hidden="true">
+            <span class="button-group__badge" aria-hidden="true">
               <i class="ri-headphone-line"></i>
             </span>
-            <span data-i18n="music.clientsDesktop">Feishin</span>
+            <span>Feishin</span>
           </a>
           <a
-            class="button secondary client-link client-link--middle"
+            class="button secondary button-group__item button-group__item--middle"
             href="https://codeberg.org/paige/Navic"
-            target="_blank" rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <span class="client-link__badges" aria-hidden="true">
+            <span class="button-group__badge" aria-hidden="true">
               <i class="ri-smartphone-line"></i>
             </span>
-            <span data-i18n="music.clientsAndroid">Navic</span>
+            <span>Navic</span>
           </a>
           <a
-            class="button secondary client-link client-link--last"
+            class="button secondary button-group__item button-group__item--last"
             href="https://testflight.apple.com/join/LDWqgjAs"
-            target="_blank" rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <span class="client-link__badges" aria-hidden="true">
+            <span class="button-group__badge" aria-hidden="true">
               <i class="ri-music-line"></i>
             </span>
-            <span data-i18n="music.clientsIos">Arpeggi</span>
+            <span>Arpeggi</span>
           </a>
         </nav>
       </section>
 
       <section class="glass section-card" id="profiles">
         <div class="section-title">
-          <h2 data-i18n="music.profilesTitle">Profiles</h2>
+          <h2>Profiles</h2>
         </div>
-        <p data-i18n="music.body">
+        <p>
           You can find me on a variety of music related platforms. Not every
           profile is up-to-date, but they are all collected here for the sake of
           completeness.
         </p>
-        <p data-i18n="music.body2">
+        <p>
           For a live look at what is actually in rotation, the Last.fm widget at
           the top of the page mirrors my current listening activity from my
           library and links directly to my profile there.
         </p>
-        <nav class="client-link-group" aria-label="Music profile links">
+        <drop capsule="button-array"></drop>
+        <nav class="button-group" aria-label="Music profile links">
           <a
-            class="button secondary client-link client-link--first"
+            class="button secondary button-group__item button-group__item--first"
             href="https://beta.musicbrainz.org/user/AnalogCyan"
-            target="_blank" rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <i class="ri-fingerprint-line" aria-hidden="true"></i>
-            <span data-i18n="music.musicbrainz">MusicBrainz</span>
+            <span>MusicBrainz</span>
           </a>
           <a
-            class="button secondary client-link client-link--middle"
+            class="button secondary button-group__item button-group__item--middle"
             href="https://www.discogs.com/user/AnalogCyan/collection?folder=4319456"
-            target="_blank" rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <i class="ri-disc-line" aria-hidden="true"></i>
-            <span data-i18n="music.discogs">Discogs</span>
+            <span>Discogs</span>
           </a>
           <a
-            class="button secondary client-link client-link--last"
+            class="button secondary button-group__item button-group__item--last"
             href="https://bandcamp.com/analogcyan"
-            target="_blank" rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <i class="ri-music-line" aria-hidden="true"></i>
-            <span data-i18n="music.bandcamp">Bandcamp</span>
+            <span>Bandcamp</span>
           </a>
         </nav>
       </section>
     </main>
 
-    <drop capsule="site-footer"></drop>
+    <drop capsule="footer">
+      <div class="footer-links">
+        <span
+          class="footer-link webmention-count"
+          role="status"
+          aria-label="Webmentions"
+          title="Webmentions"
+        >
+          <i class="ri-chat-3-line" aria-hidden="true"></i>
+          <span data-webmention-count data-url="">0</span>
+        </span>
+        <div class="footer-ring">
+          <a
+            href="https://fediring.net/previous?host=thayn.me"
+            class="footer-link"
+            aria-label="Previous site"
+            >←</a
+          >
+          <a href="https://fediring.net/" class="footer-link">Fediring</a>
+          <a
+            href="https://fediring.net/next?host=thayn.me"
+            class="footer-link"
+            aria-label="Next site"
+            >→</a
+          >
+        </div>
+      </div>
+      <div class="quote-display">Are you ready to embrace uncertainty?</div>
+    </drop>
   </body>
 </html>

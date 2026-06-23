@@ -1,3 +1,5 @@
+/* thayn.me – variables.css – Design tokens, colors, spacing, and typography */
+
 :root {
   interpolate-size: allow-keywords;
   color-scheme: light dark;
@@ -108,7 +110,7 @@
 
 @media (height <= 820px) {
   :root {
-  --header-gap: var(--spacing-xl);
+    --header-gap: var(--spacing-xl);
   }
 }
 
