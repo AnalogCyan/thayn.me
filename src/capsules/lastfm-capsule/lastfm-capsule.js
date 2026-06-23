@@ -1,3 +1,5 @@
+/* thayn.me – lastfm-capsule.js – Fetches and renders Last.fm now-playing data */
+
 (() => {
   const LASTFM_USER = "AnalogCyan";
   const PROFILE_URL = `https://www.last.fm/user/${encodeURIComponent(LASTFM_USER)}`;
@@ -74,20 +76,13 @@
     }
   }
 
-  function t(key, fallback) {
-    if (window.JG_I18N && typeof window.JG_I18N.t === "function") {
-      return window.JG_I18N.t(key, fallback);
-    }
-    return fallback;
-  }
-
   function formatRelativeTime(unixSeconds) {
     if (!unixSeconds) return "";
     const ms = Number(unixSeconds) * 1000;
     if (!Number.isFinite(ms)) return "";
 
     const deltaSec = Math.max(0, Math.round((Date.now() - ms) / 1000));
-    if (deltaSec < 60) return t("music.lastfmCapsule.justNow", "just now");
+    if (deltaSec < 60) return "just now";
 
     const rtf = new Intl.RelativeTimeFormat(undefined, { numeric: "auto" });
     if (deltaSec < 3600)
@@ -136,11 +131,10 @@
       const bb = Math.min(255, Math.round(b * boost));
       root.__lastfmSampledColor = { r: rr, g: gg, b: bb };
       root.__lastfmVizColorsByTheme = computeVisualizerColorsByTheme(
-        root.__lastfmSampledColor,
+        root.__lastfmSampledColor
       );
       applyThemeAdjustedVisualizerColor(root);
-    } catch {
-    }
+    } catch {}
   }
 
   function compositeOver(fg, bg) {
@@ -220,7 +214,7 @@
   function getSurfaceColorForTheme(themeMode) {
     const htmlStyles = getComputedStyle(document.documentElement);
     const accentHue = Number.parseFloat(
-      htmlStyles.getPropertyValue("--accent-hue"),
+      htmlStyles.getPropertyValue("--accent-hue")
     );
     const hue = Number.isFinite(accentHue) ? accentHue : 205;
     const pageLightness =
@@ -294,7 +288,7 @@
     if (!adjusted) return;
     root.style.setProperty(
       "--lastfm-viz-color",
-      `rgb(${adjusted.r} ${adjusted.g} ${adjusted.b})`,
+      `rgb(${adjusted.r} ${adjusted.g} ${adjusted.b})`
     );
   }
 
@@ -326,7 +320,7 @@
     return clamp(
       Math.round(avgSec * 1000),
       MIN_REFRESH_INTERVAL_MS,
-      MAX_REFRESH_INTERVAL_MS,
+      MAX_REFRESH_INTERVAL_MS
     );
   }
 
@@ -349,10 +343,8 @@
     const { art, trackLink, name, artist, context, profileLink, wave } =
       getEls(root);
 
-    const safeName =
-      track?.name || t("music.lastfmCapsule.unknownTrack", "Unknown track");
-    const safeArtist =
-      track?.artist || t("music.lastfmCapsule.unknownArtist", "Unknown artist");
+    const safeName = track?.name || "Unknown track";
+    const safeArtist = track?.artist || "Unknown artist";
 
     if (name) name.textContent = safeName;
     if (artist) artist.textContent = safeArtist;
@@ -368,12 +360,12 @@
     if (art) {
       art.src = track?.image || "/media/logo.svg";
       art.alt = `${safeName} album art`;
-      art.onerror = () => {
+      art.addEventListener("error", () => {
         art.src = "/media/logo.svg";
-      };
-      art.onload = () => {
+      });
+      art.addEventListener("load", () => {
         applyVisualizerColorFromImage(root, art);
-      };
+      });
       if (art.complete && art.naturalWidth > 0) {
         applyVisualizerColorFromImage(root, art);
       }
@@ -385,7 +377,7 @@
       trackLink.href = targetUrl;
       trackLink.setAttribute(
         "aria-label",
-        trackUrl ? `Open ${safeName} on Last.fm` : "Open profile on Last.fm",
+        trackUrl ? `Open ${safeName} on Last.fm` : "Open profile on Last.fm"
       );
     }
     if (profileLink) {
@@ -434,11 +426,8 @@
       const title = document.createElement("span");
       const subtitle = document.createElement("span");
       const time = document.createElement("span");
-      const name =
-        track.name || t("music.lastfmCapsule.unknownTrack", "Unknown track");
-      const artist =
-        track.artist ||
-        t("music.lastfmCapsule.unknownArtist", "Unknown artist");
+      const name = track.name || "Unknown track";
+      const artist = track.artist || "Unknown artist";
       const when = formatRelativeTime(track.dateUts);
 
       item.className = "lastfm-recent-item";
@@ -481,7 +470,7 @@
     toggle.setAttribute("aria-expanded", open ? "true" : "false");
     toggle.setAttribute(
       "aria-label",
-      open ? "Hide recent tracks" : "Show recent tracks",
+      open ? "Hide recent tracks" : "Show recent tracks"
     );
     recent.classList.toggle("is-open", open);
   }
@@ -531,16 +520,13 @@
     setTrackUI(
       root,
       {
-        name: t("music.lastfmCapsule.error", "Unavailable"),
-        artist: t(
-          "music.lastfmCapsule.errorBody",
-          "Could not load Last.fm right now. Try again in a bit.",
-        ),
+        name: "Unavailable",
+        artist: "Could not load Last.fm right now. Try again in a bit.",
         image: "/media/logo.svg",
         url: profileUrl,
       },
       "idle",
-      profileUrl,
+      profileUrl
     );
 
     const { context } = getEls(root);
@@ -578,7 +564,7 @@
         url: profileUrl,
       },
       "idle",
-      profileUrl,
+      profileUrl
     );
 
     setToggleVisible(root, false);
@@ -594,7 +580,7 @@
 
         if (!response.ok) {
           throw new Error(
-            data && data.error ? data.error : "Last.fm request failed",
+            data && data.error ? data.error : "Last.fm request failed"
           );
         }
 
@@ -652,8 +638,11 @@
       .forEach((root) => loadForCapsule(root));
   }
 
-  document.addEventListener("th-i18n-ready", init, { once: true });
-  if (!window.JG_I18N) {
-    init();
-  }
+  init();
+
+  document.addEventListener("th-nav-changed", () => {
+    document
+      .querySelectorAll('[data-capsule="lastfm-capsule"]')
+      .forEach((root) => loadForCapsule(root));
+  });
 })();
