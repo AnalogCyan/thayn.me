@@ -10,14 +10,14 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@netlify/blobs": "^10.7.4",
+    "@netlify/blobs": "^10.7.9",
     "front-matter": "^4.0.2",
     "handlebars": "^4.7.9",
-    "marked": "^18.0.2"
+    "marked": "^18.0.5"
   },
   "devDependencies": {
-    "eslint": "^10.2.1",
-    "prettier": "^3.8.3",
+    "eslint": "^10.5.0",
+    "prettier": "^3.8.4",
     "serve": "14.2.6"
   },
   "engines": {
