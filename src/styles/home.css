@@ -42,9 +42,11 @@
 }
 
 .name {
-  font-size: clamp(2rem, 4lvw, 3rem);
+  font-size: 3rem;
   font-weight: 800;
   color: var(--text);
+  line-height: 1;
+  margin-bottom: 0.32em;
 }
 
 .subhead {
@@ -54,8 +56,8 @@
 
 .profile-pic {
   grid-area: pic;
-  width: clamp(140px, 20lvw, 200px);
-  height: clamp(140px, 20lvw, 200px);
+  width: 200px;
+  height: 200px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-xl);
   object-fit: cover;
@@ -100,6 +102,12 @@
 
   .profile-pic {
     justify-self: start;
+    width: 140px;
+    height: 140px;
+  }
+
+  .name {
+    font-size: 2rem;
   }
 }
 
