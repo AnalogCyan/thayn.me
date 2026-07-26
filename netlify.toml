@@ -11,6 +11,60 @@ NODE_VERSION = "24"
 [[plugins]]
 package = "./netlify/plugins/post-deploy-syndication"
 
+[[plugins]]
+package = "@netlify/plugin-sitemap"
+
+  [plugins.inputs]
+  # keep error page and under-construction stubs out of the sitemap
+  # (excludes are globs matched against built file paths, not URLs)
+  exclude = ["**/404.html", "**/photos.html", "**/now.html", "**/uses.html", "**/more.html"]
+
+[[plugins]]
+package = "netlify-plugin-minify-html"
+
+  [plugins.inputs.minifierOptions]
+  removeComments = true
+  collapseWhitespace = false
+  collapseInlineTagWhitespace = false
+  minifyJS = false
+  minifyCSS = false
+
+[[plugins]]
+package = "@netlify/plugin-lighthouse"
+
+  # report-only: scores surface in deploy log/UI, build never fails
+  [plugins.inputs.thresholds]
+  performance = 0.9
+  accessibility = 1.0
+  best-practices = 1.0
+  seo = 1.0
+
+  [[plugins.inputs.audits]]
+  path = "/"
+
+  [[plugins.inputs.audits]]
+  path = "about"
+
+  [[plugins.inputs.audits]]
+  path = "projects"
+
+  [[plugins.inputs.audits]]
+  path = "music"
+
+  [[plugins.inputs.audits]]
+  path = "blog"
+
+  [[plugins.inputs.audits]]
+  path = "blog/how-i-build-for-the-web"
+
+[[plugins]]
+package = "netlify-plugin-webmentions"
+
+  [plugins.inputs]
+  baseUrl = "https://thayn.me"
+  feedPath = "blog/atom.xml"
+  limit = 20
+
 [[edge_functions]]
 path = "/*"
 function = "bots"
