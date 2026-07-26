@@ -1,5 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
+import { execFile } from "child_process";
+import { promisify } from "util";
 import { fileURLToPath } from "url";
 import fm from "front-matter";
 import { marked } from "marked";
@@ -114,6 +116,21 @@ function toPublishedIso(rawDate, parsedDate) {
     return `${rawDate}T00:00:00Z`;
   }
   return parsedDate.toISOString();
+}
+
+const execFileAsync = promisify(execFile);
+
+async function getGitLastCommitIso(filePath) {
+  try {
+    const { stdout } = await execFileAsync(
+      "git",
+      ["log", "-1", "--format=%cI", "--", filePath],
+      { cwd: __dirname }
+    );
+    return stdout.trim() || null;
+  } catch {
+    return null;
+  }
 }
 
 const markedRenderer = new marked.Renderer();
@@ -692,6 +709,10 @@ async function copyStatic() {
   if (await pathExists(manifestSrc)) {
     await fs.copyFile(manifestSrc, path.join(PUBLIC_DIR, "manifest.json"));
   }
+  const llmsSrc = path.join(SRC_DIR, "llms.txt");
+  if (await pathExists(llmsSrc)) {
+    await fs.copyFile(llmsSrc, path.join(PUBLIC_DIR, "llms.txt"));
+  }
 
   const sanitizeUrlSrc = path.join(__dirname, "lib", "sanitize-url.js");
   if (await pathExists(sanitizeUrlSrc)) {
@@ -941,9 +962,11 @@ ${items}
 function buildAtom(posts, meta, siteUrl) {
   const channelUrl = toAbsoluteUrl(siteUrl, "/blog/");
   const selfUrl = toAbsoluteUrl(siteUrl, "/blog/atom.xml");
-  const updated = posts[0]?.date
-    ? iso8601(posts[0].date, "latest post date")
-    : EMPTY_FEED_UPDATED_DATE.toISOString();
+  const updated = posts[0]?.updatedIso
+    ? posts[0].updatedIso
+    : posts[0]?.date
+      ? iso8601(posts[0].date, "latest post date")
+      : EMPTY_FEED_UPDATED_DATE.toISOString();
   const entries = posts
     .map((p) => {
       const link = p.canonicalUrl || toAbsoluteUrl(siteUrl, p.url);
@@ -955,7 +978,7 @@ function buildAtom(posts, meta, siteUrl) {
         `    <title>${xmlEscape(p.title)}</title>`,
         `    <id>${xmlEscape(link)}</id>`,
         `    <link href="${xmlEscape(link)}"/>`,
-        `    <updated>${iso8601(p.date, `post "${p.title || p.url || "unknown"}"`)}</updated>`,
+        `    <updated>${p.updatedIso || iso8601(p.date, `post "${p.title || p.url || "unknown"}"`)}</updated>`,
         `    <published>${iso8601(p.date, `post "${p.title || p.url || "unknown"}"`)}</published>`,
         `    <author><name>${xmlEscape(p.author || meta.author)}</name></author>`,
         cats,
@@ -1067,6 +1090,17 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         );
         attributes.date = normalizedDate;
 
+        let updatedIso = null;
+        if (attributes.updated) {
+          const { raw: rawUpdated, parsed: parsedUpdated } = parsePostDate(
+            attributes.updated,
+            `frontmatter in ${filePath}`
+          );
+          updatedIso = toPublishedIso(rawUpdated, parsedUpdated);
+        } else {
+          updatedIso = await getGitLastCommitIso(filePath);
+        }
+
         const postTags = normalizeTags(
           attributes.categories || attributes.tags
         );
@@ -1114,6 +1148,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             date: normalizedDate,
             dateIso: toPublishedIso(normalizedDate, parsedDate),
             dateMs: parsedDate.getTime(),
+            updatedIso,
             tags: postTags,
             tagFilterKey: normalizeFilterValue(primaryTag),
             content: marked(body),
@@ -1124,7 +1159,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             webmentionTarget,
             ogImage: attributes.image
               ? toAbsoluteUrl(siteUrl, attributes.image)
-              : `${siteUrl}/media/profile.svg`,
+              : `${siteUrl}/media/og-image.png`,
             syndicationLinks: normalizeSyndication(attributes.syndication),
             blueskyDiscussionUrl:
               syndicationMap["bluesky"] || "https://bsky.app/profile/thayn.me",
@@ -1133,6 +1168,29 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             webmentions,
             hasWebmentions,
             bridgyPublishTargets,
+            jsonLd: JSON.stringify(
+              {
+                "@context": "https://schema.org",
+                "@type": "BlogPosting",
+                headline: attributes.title,
+                description: toExcerpt(attributes.excerpt, body),
+                author: {
+                  "@type": "Person",
+                  name: attributes.author || "Cyan Thayn",
+                  url: `${siteUrl}/about`,
+                },
+                datePublished: toPublishedIso(normalizedDate, parsedDate),
+                ...(updatedIso ? { dateModified: updatedIso } : {}),
+                image: attributes.image
+                  ? toAbsoluteUrl(siteUrl, attributes.image)
+                  : `${siteUrl}/media/og-image.png`,
+                ...(postTags.length ? { keywords: postTags.join(", ") } : {}),
+                url: canonicalUrl,
+                mainEntityOfPage: canonicalUrl,
+              },
+              null,
+              2
+            ),
           },
         };
       }

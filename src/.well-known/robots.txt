@@ -87,3 +87,5 @@ Allow: /
 # ── Default: allow everything else ──
 User-agent: *
 Allow: /
+
+Sitemap: https://thayn.me/sitemap.xml

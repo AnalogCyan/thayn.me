@@ -1,0 +1,21 @@
+# Cyan Thayn
+
+> Personal site of Cyan Thayn — technician, programmer, and tinkerer.
+> Blog covers web development, self-hosting, and personal projects.
+
+## Pages
+
+- [About](https://thayn.me/about): Bio and social links
+- [Projects](https://thayn.me/projects): Project showcase
+- [Music](https://thayn.me/music): Music library and profiles
+- [Blog](https://thayn.me/blog): Notes, updates, and experiments
+
+## Feeds
+
+- [RSS](https://thayn.me/blog/rss.xml)
+- [Atom](https://thayn.me/blog/atom.xml)
+
+## Policies
+
+- [AI usage policy](https://thayn.me/.well-known/ai.txt)
+- [humans.txt](https://thayn.me/.well-known/humans.txt)
