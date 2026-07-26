@@ -587,16 +587,18 @@ async function buildPages(capsules, config, globalUsed, siteUrl) {
       let content = await fs.readFile(fullPath, "utf-8");
 
       content = injectResources(content, resourcesHTML, config);
-      const canonicalPath =
-        normalizedRelPath === "index.html"
-          ? "/"
-          : normalizedRelPath.endsWith("/index.html")
-            ? `/${normalizedRelPath.slice(0, -"index.html".length)}`
-            : `/${normalizedRelPath}`;
-      content = ensureCanonicalLink(
-        content,
-        canonicalizeUrl(siteUrl, canonicalPath)
-      );
+      if (normalizedRelPath !== "404.html") {
+        const canonicalPath =
+          normalizedRelPath === "index.html"
+            ? "/"
+            : normalizedRelPath.endsWith("/index.html")
+              ? `/${normalizedRelPath.slice(0, -"index.html".length)}`
+              : `/${normalizedRelPath.slice(0, -".html".length)}`;
+        content = ensureCanonicalLink(
+          content,
+          canonicalizeUrl(siteUrl, canonicalPath)
+        );
+      }
       const pageUsedCapsules = new Set();
       const withCapsules = await expandAllDrops(
         content,
