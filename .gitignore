@@ -106,3 +106,6 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 *.lnk
+
+# Local Netlify folder
+.netlify
