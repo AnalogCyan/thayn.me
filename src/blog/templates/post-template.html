@@ -24,13 +24,27 @@
     <meta property="og:description" content="{{excerpt}}" />
     <meta property="og:image" content="{{ogImage}}" />
     <meta property="og:url" content="{{canonicalUrl}}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="Cyan Thayn" />
+    <meta property="article:published_time" content="{{dateIso}}" />
+    {{#if updatedIso}}
+    <meta property="article:modified_time" content="{{updatedIso}}" />
+    {{/if}}
+    <meta property="article:author" content="{{author}}" />
+    {{#each tags}}
+    <meta property="article:tag" content="{{this}}" />
+    {{/each}}
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@AnalogCyan" />
     <meta name="twitter:creator" content="@AnalogCyan" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
-    <link rel="apple-touch-icon" href="/media/logo.svg" />
+    <link rel="apple-touch-icon" href="/media/apple-touch-icon.png" />
     <link rel="canonical" href="{{canonicalUrl}}" />
+
+    <script type="application/ld+json">
+      {{{jsonLd}}}
+    </script>
 
     <!-- EXTERNAL_RESOURCES -->
 
@@ -55,7 +69,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/about.html"
+            href="/about"
             class="nav-pill__link"
             aria-label="About"
             data-nav="about"
@@ -77,7 +91,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/projects.html"
+            href="/projects"
             class="nav-pill__link"
             aria-label="Projects"
             data-nav="projects"
@@ -88,7 +102,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/photos.html"
+            href="/photos"
             class="nav-pill__link"
             aria-label="Photos"
             data-nav="photos"
@@ -99,7 +113,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/music.html"
+            href="/music"
             class="nav-pill__link"
             aria-label="Music"
             data-nav="music"
@@ -110,7 +124,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/more.html"
+            href="/more"
             class="nav-pill__link"
             aria-label="More"
             data-nav="more"
@@ -129,9 +143,9 @@
             <time datetime="{{date}}" class="dt-published"
               >{{formatDate date}}</time
             >
-            {{#if tags.length}}
-            <span class="tag">{{tags.[0]}}</span>
-            {{/if}}
+            {{#each tags}}
+            <span class="tag">{{this}}</span>
+            {{/each}}
             <div id="post-reactions" class="post-reactions" hidden></div>
           </div>
           <h1 class="p-name">
@@ -141,7 +155,7 @@
             <span class="p-author h-card">
               <span class="p-name">Cyan Thayn</span>
               <a class="u-url u-uid" href="{{siteUrl}}/" tabindex="-1"></a>
-              <data class="u-photo" value="/media/profile.svg"></data>
+              <data class="u-photo" value="/media/profile.webp"></data>
             </span>
           </p>
         </header>

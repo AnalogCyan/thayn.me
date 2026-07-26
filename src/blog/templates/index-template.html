@@ -25,16 +25,32 @@
       property="og:description"
       content="Notes, updates, and experiments."
     />
-    <meta property="og:image" content="https://thayn.me/media/profile.svg" />
-    <meta property="og:url" content="https://thayn.me/blog/" />
+    <meta property="og:image" content="https://thayn.me/media/og-image.png" />
+    <meta property="og:url" content="https://thayn.me/blog" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cyan Thayn" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@AnalogCyan" />
     <meta name="twitter:creator" content="@AnalogCyan" />
 
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/svg+xml" href="/media/logo.svg" />
-    <link rel="apple-touch-icon" href="/media/logo.svg" />
-    <link rel="canonical" href="{{siteUrl}}/blog/" />
+    <link rel="apple-touch-icon" href="/media/apple-touch-icon.png" />
+    <link rel="canonical" href="{{siteUrl}}/blog" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": "Cyan's Blog",
+        "url": "{{siteUrl}}/blog",
+        "author": {
+          "@type": "Person",
+          "name": "Cyan Thayn",
+          "url": "{{siteUrl}}/about"
+        }
+      }
+    </script>
 
     <!-- EXTERNAL_RESOURCES -->
 
@@ -59,7 +75,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/about.html"
+            href="/about"
             class="nav-pill__link"
             aria-label="About"
             data-nav="about"
@@ -81,7 +97,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/projects.html"
+            href="/projects"
             class="nav-pill__link"
             aria-label="Projects"
             data-nav="projects"
@@ -92,7 +108,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/photos.html"
+            href="/photos"
             class="nav-pill__link"
             aria-label="Photos"
             data-nav="photos"
@@ -103,7 +119,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/music.html"
+            href="/music"
             class="nav-pill__link"
             aria-label="Music"
             data-nav="music"
@@ -114,7 +130,7 @@
         </li>
         <li class="nav-pill__item">
           <a
-            href="/more.html"
+            href="/more"
             class="nav-pill__link"
             aria-label="More"
             data-nav="more"
@@ -129,7 +145,7 @@
     <main>
       <section class="glass section-card blog-hero">
         <div class="section-title">
-          <h2>Blog</h2>
+          <h1 class="page-title">Blog</h1>
         </div>
         <p>Notes, updates, and experiments.</p>
         <div class="blog-filter-row">
@@ -169,9 +185,9 @@
                 <time datetime="{{date}}" class="dt-published"
                   >{{formatDate date}}</time
                 >
-                {{#if tags.length}}
-                <span class="tag">{{tags.[0]}}</span>
-                {{/if}}
+                {{#each tags}}
+                <span class="tag">{{this}}</span>
+                {{/each}}
               </div>
               <h3 class="p-name">{{title}}</h3>
               <p class="p-summary">{{excerpt}}</p>
