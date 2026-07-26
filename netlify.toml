@@ -58,12 +58,7 @@ package = "@netlify/plugin-lighthouse"
   path = "blog/how-i-build-for-the-web"
 
 [[plugins]]
-package = "netlify-plugin-webmentions"
-
-  [plugins.inputs]
-  baseUrl = "https://thayn.me"
-  feedPath = "blog/atom.xml"
-  limit = 20
+package = "./netlify/plugins/send-webmentions"
 
 [[edge_functions]]
 path = "/*"
