@@ -90,9 +90,53 @@ to = "/blog/:splat/"
 status = 301
 force = true
 
+# Netlify splats only match whole path segments, so each page needs an
+# explicit rule
 [[redirects]]
-from = "/*.html"
-to = "/:splat"
+from = "/about.html"
+to = "/about"
+status = 301
+force = true
+
+[[redirects]]
+from = "/projects.html"
+to = "/projects"
+status = 301
+force = true
+
+[[redirects]]
+from = "/photos.html"
+to = "/photos"
+status = 301
+force = true
+
+[[redirects]]
+from = "/music.html"
+to = "/music"
+status = 301
+force = true
+
+[[redirects]]
+from = "/more.html"
+to = "/more"
+status = 301
+force = true
+
+[[redirects]]
+from = "/now.html"
+to = "/now"
+status = 301
+force = true
+
+[[redirects]]
+from = "/uses.html"
+to = "/uses"
+status = 301
+force = true
+
+[[redirects]]
+from = "/404.html"
+to = "/404"
 status = 301
 force = true
 
