@@ -1,10 +1,18 @@
 /* thayn.me – heading-links.js – Auto-generates heading anchor links in blog posts */
 
 (function () {
+  function stripTags(str) {
+    var out = str;
+    var prev;
+    do {
+      prev = out;
+      out = out.replace(/<[^>]*>/g, "");
+    } while (out !== prev);
+    return out;
+  }
+
   function slugify(text) {
-    return text
-      .toLowerCase()
-      .replace(/<[^>]*>/g, "")
+    return stripTags(text.toLowerCase())
       .replace(/[^\p{L}\p{N}\s-]/gu, "")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-")

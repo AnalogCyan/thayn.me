@@ -133,13 +133,21 @@ async function getGitLastCommitIso(filePath) {
   }
 }
 
+function stripTags(str) {
+  let out = str;
+  let prev;
+  do {
+    prev = out;
+    out = out.replace(/<[^>]*>/g, "");
+  } while (out !== prev);
+  return out;
+}
+
 const markedRenderer = new marked.Renderer();
 markedRenderer.heading = function (tok) {
   const text = tok.text || "";
   const level = tok.depth || 1;
-  const id = text
-    .toLowerCase()
-    .replace(/<[^>]*>/g, "")
+  const id = stripTags(text.toLowerCase())
     .replace(/[^\p{L}\p{N}\s-]/gu, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
@@ -898,10 +906,11 @@ function buildFilterOptions(values) {
 }
 
 function stripMarkdown(markdown = "") {
-  return String(markdown)
-    .replace(/```[\s\S]*?```/g, "")
-    .replace(/`[^`]*`/g, "")
-    .replace(/<[^>]+>/g, "")
+  return stripTags(
+    String(markdown)
+      .replace(/```[\s\S]*?```/g, "")
+      .replace(/`[^`]*`/g, "")
+  )
     .replace(/!\[[^\]]*\]\([^\)]+\)/g, "")
     .replace(/\[[^\]]+\]\([^\)]+\)/g, "")
     .replace(/[#>*_~\-]+/g, " ")

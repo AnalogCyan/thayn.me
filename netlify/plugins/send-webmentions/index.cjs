@@ -5,6 +5,7 @@
 
 const FEED_URL = "https://thayn.me/blog/atom.xml";
 const SITE_ORIGIN = "https://thayn.me";
+const SITE_HOSTNAME = new URL(SITE_ORIGIN).hostname;
 const ENTRY_LIMIT = 20;
 const TIMEOUT_MS = 10000;
 const MAX_BYTES = 2 * 1024 * 1024;
@@ -37,6 +38,14 @@ async function fetchWithCap(url, { htmlOnly = false } = {}) {
     };
   } finally {
     clearTimeout(timer);
+  }
+}
+
+function isSameSite(url) {
+  try {
+    return new URL(url).hostname === SITE_HOSTNAME;
+  } catch {
+    return false;
   }
 }
 
@@ -124,7 +133,7 @@ module.exports = {
       ENTRY_LIMIT
     )) {
       for (const target of links) {
-        if (seen.has(target) || target.startsWith(SITE_ORIGIN)) continue;
+        if (seen.has(target) || isSameSite(target)) continue;
         seen.add(target);
         try {
           const endpoint = await discoverEndpoint(target);
