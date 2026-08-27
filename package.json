@@ -10,15 +10,15 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@netlify/blobs": "^10.7.11",
+    "@netlify/blobs": "^11.0.1",
     "front-matter": "^4.0.2",
     "handlebars": "^4.7.9",
-    "marked": "^18.0.7"
+    "marked": "^18.0.10"
   },
   "devDependencies": {
     "@netlify/plugin-lighthouse": "6.0.4",
     "@netlify/plugin-sitemap": "0.8.1",
-    "eslint": "^10.8.0",
+    "eslint": "^10.9.0",
     "netlify-plugin-minify-html": "0.3.1",
     "prettier": "^3.9.6",
     "serve": "14.2.6"
