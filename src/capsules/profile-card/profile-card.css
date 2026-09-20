@@ -1,0 +1,82 @@
+/* Profile card with name, bio, and photo */
+
+.profile-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "details pic";
+  gap: var(--spacing-2xl);
+  align-items: center;
+}
+
+.profile-card__details {
+  grid-area: details;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.profile-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  margin-left: 0.35rem;
+
+  & i {
+    font-size: 1rem;
+  }
+}
+
+.name {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 0.32em;
+}
+
+.subhead {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+.profile-pic {
+  grid-area: pic;
+  width: 200px;
+  height: 200px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  transition:
+    translate var(--transition-fast),
+    rotate var(--transition-fast);
+
+  &:hover {
+    translate: 0 -4px;
+    rotate: 1deg;
+  }
+}
+
+@media (width <= 900px) {
+  .profile-card {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "pic"
+      "details";
+    gap: var(--spacing-lg);
+    text-align: left;
+  }
+
+  .profile-pic {
+    justify-self: start;
+    width: 140px;
+    height: 140px;
+  }
+
+  .name {
+    font-size: 2rem;
+  }
+}
