@@ -29,7 +29,7 @@
   }
 }
 
-.name {
+.profile-card__name {
   font-size: 3rem;
   font-weight: 800;
   color: var(--text);
@@ -37,12 +37,12 @@
   margin-bottom: 0.32em;
 }
 
-.subhead {
+.profile-card__subhead {
   font-size: 1.1rem;
   color: var(--text-muted);
 }
 
-.profile-pic {
+.profile-card__photo {
   grid-area: pic;
   width: 200px;
   height: 200px;
@@ -70,13 +70,13 @@
     text-align: left;
   }
 
-  .profile-pic {
+  .profile-card__photo {
     justify-self: start;
     width: 140px;
     height: 140px;
   }
 
-  .name {
+  .profile-card__name {
     font-size: 2rem;
   }
 }
