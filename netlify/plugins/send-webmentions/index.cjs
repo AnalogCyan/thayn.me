@@ -49,6 +49,16 @@ function isSameSite(url) {
   }
 }
 
+function decodeEntities(value) {
+  return value
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&");
+}
+
 function extractEntries(xml) {
   const entries = [];
   for (const match of xml.matchAll(/<entry>([\s\S]*?)<\/entry>/g)) {
@@ -58,12 +68,11 @@ function extractEntries(xml) {
       /<content type="html">([\s\S]*?)<\/content>/
     )?.[1];
     if (!permalink || !content) continue;
+    // content is post HTML escaped into XML, so hrefs are entity-encoded twice
+    const html = decodeEntities(content);
     const links = new Set();
-    for (const m of content.matchAll(/href=&quot;(https?:\/\/[^&]+)&quot;/g)) {
-      links.add(m[1]);
-    }
-    for (const m of content.matchAll(/href="(https?:\/\/[^"]+)"/g)) {
-      links.add(m[1]);
+    for (const m of html.matchAll(/href="(https?:\/\/[^"]+)"/g)) {
+      links.add(decodeEntities(m[1]));
     }
     entries.push({ permalink, links: [...links] });
   }
