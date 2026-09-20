@@ -7,7 +7,7 @@ Flowing gradient background with grain overlay.
 Add this capsule at the top of your page template:
 
 ```html
-<drop capsule="gradient-background"></drop>
+<drop capsule="gradient-background" data-animated="true"></drop>
 ```
 
 ## Features
@@ -29,7 +29,7 @@ You can modify the intensity of the grain by adjusting the opacity in the CSS.
 
 ```html
 <body>
-  <drop capsule="gradient-background"></drop>
+  <drop capsule="gradient-background" data-animated="true"></drop>
   <drop capsule="header"></drop>
   <!-- Rest of your content -->
 </body>
