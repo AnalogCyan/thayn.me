@@ -25,7 +25,7 @@
   var baseStylesheets = new Set(
     Array.from(document.querySelectorAll('link[rel="stylesheet"]')).map(
       function (l) {
-        return l.getAttribute("href");
+        return l.href;
       }
     )
   );
@@ -90,6 +90,8 @@
     var shell = doc.querySelector(".page-shell");
     var title = doc.querySelector("title");
     var desc = doc.querySelector('meta[name="description"]');
+    var canonical = doc.querySelector('link[rel="canonical"]');
+    var ogUrl = doc.querySelector('meta[property="og:url"]');
 
     var scripts = [];
     doc.querySelectorAll("body script[src]").forEach(function (s) {
@@ -111,15 +113,34 @@
       navPage: shell ? shell.getAttribute("data-nav-page") : "",
       title: title ? title.textContent : document.title,
       description: desc ? desc.getAttribute("content") : "",
+      canonical: canonical ? canonical.getAttribute("href") : "",
+      ogUrl: ogUrl ? ogUrl.getAttribute("content") : "",
       scripts: scripts,
       stylesheets: stylesheets,
     };
   }
 
-  function syncStylesheets(sheets) {
+  function syncStylesheets(sheets, pageUrl) {
+    var wanted = new Set();
     sheets.forEach(function (href) {
+      try {
+        wanted.add(new URL(href, pageUrl).href);
+      } catch {
+        // skip unparseable href
+      }
+    });
+
+    var existing = Array.from(document.querySelectorAll("link[data-spa]"));
+    existing.forEach(function (link) {
+      if (!wanted.has(link.href)) link.remove();
+    });
+
+    wanted.forEach(function (href) {
       if (baseStylesheets.has(href)) return;
-      if (document.querySelector('link[data-spa][href="' + href + '"]')) return;
+      var alreadyAdded = existing.some(function (link) {
+        return link.isConnected && link.href === href;
+      });
+      if (alreadyAdded) return;
       var link = document.createElement("link");
       link.rel = "stylesheet";
       link.href = href;
@@ -231,11 +252,20 @@
           shell.setAttribute("data-nav-page", data.navPage);
         }
 
+        var canonicalEl = document.querySelector('link[rel="canonical"]');
+        if (canonicalEl && data.canonical) {
+          canonicalEl.setAttribute("href", data.canonical);
+        }
+        var ogUrlEl = document.querySelector('meta[property="og:url"]');
+        if (ogUrlEl && data.ogUrl) {
+          ogUrlEl.setAttribute("content", data.ogUrl);
+        }
+
         document.title = data.title;
         var descEl = document.querySelector('meta[name="description"]');
         if (descEl) descEl.setAttribute("content", data.description);
 
-        syncStylesheets(data.stylesheets);
+        syncStylesheets(data.stylesheets, url);
         syncScripts(data.scripts);
 
         main.classList.add("spa-in");
