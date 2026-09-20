@@ -501,15 +501,17 @@
   }
 
   function init() {
-    const root = document.querySelector('[data-capsule="header"]');
-    if (!root) return;
-    if (root.dataset.headerReady === "true") return;
-    root.dataset.headerReady = "true";
+    const roots = document.querySelectorAll('[data-capsule="header"]');
 
-    initNav(root);
-    initThemeToggle(root);
-    initPillIndicators(root);
-    initLayout(root);
+    roots.forEach((root) => {
+      if (root.dataset.headerReady === "true") return;
+      root.dataset.headerReady = "true";
+
+      initNav(root);
+      initThemeToggle(root);
+      initPillIndicators(root);
+      initLayout(root);
+    });
   }
 
   if (document.readyState === "loading") {
