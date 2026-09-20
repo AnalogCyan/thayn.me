@@ -418,7 +418,7 @@
 
     function cycleTheme() {
       const currentMode = getCurrentMode();
-      let newMode = THEMES.AUTO;
+      let newMode;
 
       switch (currentMode) {
         case THEMES.AUTO:

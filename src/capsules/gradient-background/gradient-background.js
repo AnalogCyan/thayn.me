@@ -159,7 +159,7 @@
       }
 
       initialized = true;
-    } catch (e) {
+    } catch {
       // fail silently
     }
   }
