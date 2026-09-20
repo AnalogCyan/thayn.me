@@ -1,8 +1,9 @@
 // Randomizes gradient node positions and animations
+// Caches per theme and viewport in sessionStorage so navigation does not reshuffle
 
 (function () {
   var initialized = false;
-  var STORAGE_KEY = "th_gradient_cfg";
+  var STORAGE_KEY = "gradient_cfg";
 
   function getTheme() {
     var root = document.documentElement;
@@ -33,6 +34,8 @@
 
   function init() {
     if (initialized) return;
+    var root = document.querySelector('[data-capsule="gradient-background"]');
+    if (!root || root.dataset.animated !== "true") return;
     try {
       var nodes = document.querySelectorAll(".gradient-node");
       if (!nodes.length) return;
