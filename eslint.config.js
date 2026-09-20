@@ -20,6 +20,14 @@ export default [
     },
   },
   {
+    // The syndication state machine writes a dirty flag from ~30 branches and
+    // reads it once. Later unconditional writes make some earlier ones
+    // redundant, but they are correct and self-documenting, and proving each
+    // removal safe is not worth touching a live publishing path.
+    files: ["netlify/post-deploy/**/*.js"],
+    rules: { "no-useless-assignment": "off" },
+  },
+  {
     files: ["**/*.cjs"],
     languageOptions: {
       sourceType: "commonjs",
