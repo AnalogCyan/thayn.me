@@ -25,7 +25,7 @@ import {
   shouldMarkRequested,
 } from "../../lib/syndication-policy.js";
 import { sanitizeExternalUrl } from "../../lib/sanitize-url.js";
-import { canonicalizeUrl, toAbsoluteUrl } from "../../lib/url.js";
+import { canonicalizeUrl } from "../../lib/url.js";
 import { getCanonicalBlogPath, getSiteUrl } from "../../lib/site-url.js";
 
 const POSTS_DIR = "src/blog/posts";
@@ -152,13 +152,14 @@ async function scanLocalPostsForWork() {
 
   for (const file of files) {
     const filePath = path.join(POSTS_DIR, file);
-    let attributes = {};
+    let attributes;
     try {
       const raw = await fs.readFile(filePath, "utf-8");
       attributes = fm(raw).attributes || {};
     } catch (err) {
       throw new Error(
-        `Failed to scan local post ${filePath}: ${err?.message || String(err)}`
+        `Failed to scan local post ${filePath}: ${err?.message || String(err)}`,
+        { cause: err }
       );
     }
 
@@ -590,7 +591,8 @@ export async function runSyndicationPostDeploy() {
     files = await listPostFiles(branch);
   } catch (err) {
     throw new Error(
-      `Failed to list posts for syndication: ${err?.message || String(err)}`
+      `Failed to list posts for syndication: ${err?.message || String(err)}`,
+      { cause: err }
     );
   }
 
