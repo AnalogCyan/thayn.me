@@ -1,3 +1,5 @@
+// Serves webmention.io data for a target page on this site
+
 const ALLOWED_TARGET_HOST_SUFFIXES = [".thayn.me", ".thayn.netlify.app"];
 const MAX_TARGET_LENGTH = 2048;
 const FULL_CACHE_CONTROL = "public, max-age=30";

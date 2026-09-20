@@ -1,3 +1,5 @@
+// Runs the syndication script after a successful deploy
+
 const { spawn } = require("node:child_process");
 const path = require("node:path");
 

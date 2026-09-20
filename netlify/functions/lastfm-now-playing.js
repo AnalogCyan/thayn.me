@@ -1,3 +1,5 @@
+// Proxies the Last.fm now-playing lookup so the API key stays server side
+
 import { sanitizeExternalUrl } from "../../lib/sanitize-url.js";
 
 const LASTFM_API_BASE = "https://ws.audioscrobbler.com/2.0/";

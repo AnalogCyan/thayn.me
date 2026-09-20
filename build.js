@@ -1,3 +1,5 @@
+// Assembles the static site and blog from modular capsules into public/
+
 import fs from "fs/promises";
 import path from "path";
 import { execFile } from "child_process";
