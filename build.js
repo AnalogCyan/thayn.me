@@ -857,7 +857,7 @@ function xmlEscape(s = "") {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&apos;");
 }
 
@@ -911,9 +911,9 @@ function stripMarkdown(markdown = "") {
       .replace(/```[\s\S]*?```/g, "")
       .replace(/`[^`]*`/g, "")
   )
-    .replace(/!\[[^\]]*\]\([^\)]+\)/g, "")
-    .replace(/\[[^\]]+\]\([^\)]+\)/g, "")
-    .replace(/[#>*_~\-]+/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
+    .replace(/\[[^\]]+\]\([^)]+\)/g, "")
+    .replace(/[#>*_~-]+/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
