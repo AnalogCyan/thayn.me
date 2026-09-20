@@ -11,6 +11,7 @@
   const LIGHT_SURFACE = { r: 255, g: 255, b: 255, a: 0.58 };
   const DARK_SURFACE = { r: 8, g: 12, b: 20, a: 0.68 };
   let recentListIdCounter = 0;
+  const activeRoots = new Set();
 
   let _sharedCanvas = null;
   let _sharedCtx = null;
@@ -134,7 +135,9 @@
         root.__lastfmSampledColor
       );
       applyThemeAdjustedVisualizerColor(root);
-    } catch {}
+    } catch {
+      // tainted or undecodable art, keep the current color
+    }
   }
 
   function compositeOver(fg, bg) {
@@ -358,14 +361,17 @@
     }
 
     if (art) {
+      if (art.dataset.lastfmArtBound !== "true") {
+        art.dataset.lastfmArtBound = "true";
+        art.addEventListener("error", () => {
+          art.src = "/media/logo.svg";
+        });
+        art.addEventListener("load", () => {
+          applyVisualizerColorFromImage(root, art);
+        });
+      }
       art.src = track?.image || "/media/logo.svg";
       art.alt = `${safeName} album art`;
-      art.addEventListener("error", () => {
-        art.src = "/media/logo.svg";
-      });
-      art.addEventListener("load", () => {
-        applyVisualizerColorFromImage(root, art);
-      });
       if (art.complete && art.naturalWidth > 0) {
         applyVisualizerColorFromImage(root, art);
       }
@@ -533,9 +539,31 @@
     if (context) context.textContent = "";
   }
 
+  function teardownCapsule(root) {
+    root.__lastfmStopped = true;
+    if (root.__lastfmRefreshTimer) {
+      window.clearTimeout(root.__lastfmRefreshTimer);
+      root.__lastfmRefreshTimer = null;
+    }
+    if (root.__lastfmThemeObserver) {
+      root.__lastfmThemeObserver.disconnect();
+      root.__lastfmThemeObserver = null;
+    }
+    activeRoots.delete(root);
+  }
+
+  // the router swaps out <main>, so detached capsules must stop polling
+  function teardownDetachedCapsules() {
+    Array.from(activeRoots).forEach((root) => {
+      if (!root.isConnected) teardownCapsule(root);
+    });
+  }
+
   async function loadForCapsule(root) {
     if (!root || root.dataset.lastfmInit === "true") return;
     root.dataset.lastfmInit = "true";
+    root.__lastfmStopped = false;
+    activeRoots.add(root);
 
     const profileUrl = PROFILE_URL;
     assignRecentControlsId(root);
@@ -614,12 +642,20 @@
     }
 
     const scheduleNextRefresh = () => {
+      if (root.__lastfmStopped || !root.isConnected) {
+        teardownCapsule(root);
+        return;
+      }
       if (root.__lastfmRefreshTimer) {
         window.clearTimeout(root.__lastfmRefreshTimer);
       }
       const delay =
         Number(root.__lastfmRefreshMs) || DEFAULT_REFRESH_INTERVAL_MS;
       root.__lastfmRefreshTimer = window.setTimeout(async () => {
+        if (root.__lastfmStopped || !root.isConnected) {
+          teardownCapsule(root);
+          return;
+        }
         try {
           await refresh();
         } catch {
@@ -641,6 +677,7 @@
   init();
 
   document.addEventListener("th-nav-changed", () => {
+    teardownDetachedCapsules();
     document
       .querySelectorAll('[data-capsule="lastfm-capsule"]')
       .forEach((root) => loadForCapsule(root));
