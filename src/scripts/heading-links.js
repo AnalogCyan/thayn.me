@@ -1,4 +1,4 @@
-/* thayn.me – heading-links.js – Auto-generates heading anchor links in blog posts */
+// Auto-generates heading anchor links in blog posts
 
 (function () {
   function stripTags(str) {

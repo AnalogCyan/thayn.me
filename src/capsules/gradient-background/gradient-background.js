@@ -1,4 +1,4 @@
-/* thayn.me – gradient-background.js – Randomizes gradient node positions and animations */
+// Randomizes gradient node positions and animations
 
 (function () {
   var initialized = false;

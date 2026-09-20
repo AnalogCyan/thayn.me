@@ -1,4 +1,4 @@
-/* thayn.me – router.js – SPA navigation with sliding animations */
+// SPA navigation with sliding animations
 
 (function () {
   if (!window.history || !window.history.pushState) return;

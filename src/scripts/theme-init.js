@@ -1,4 +1,4 @@
-/* thayn.me – theme-init.js – Instant theme class injection to prevent flash */
+// Instant theme class injection to prevent flash
 
 (() => {
   try {

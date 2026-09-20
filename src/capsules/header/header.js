@@ -1,4 +1,4 @@
-/* thayn.me – header.js – Nav-pill mobile toggle and sliding indicator */
+// Nav-pill mobile toggle, sliding indicator, and theme cycle
 
 (() => {
   function initNav(root) {

@@ -1,4 +1,4 @@
-/* thayn.me – webmentions.js – Fetches and displays webmention counts */
+// Fetches and displays webmention counts
 
 (() => {
   const footer = document.querySelector('[data-capsule="footer"]');

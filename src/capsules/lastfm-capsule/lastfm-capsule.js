@@ -1,4 +1,4 @@
-/* thayn.me – lastfm-capsule.js – Fetches and renders Last.fm now-playing data */
+// Fetches and renders Last.fm now-playing data
 
 (() => {
   const LASTFM_USER = "AnalogCyan";

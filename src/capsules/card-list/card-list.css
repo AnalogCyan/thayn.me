@@ -1,4 +1,4 @@
-/* thayn.me – card-list.css – Glass card list */
+/* Vertical stack of glass cards with hover padding expansion */
 
 .card-list {
   display: flex;
@@ -146,6 +146,7 @@
   margin-bottom: 0;
 }
 
+/* Dense variant (e.g. blog cards) */
 .card-list--dense .card-list__item {
   padding: var(--spacing-xl);
   gap: var(--spacing-md);
