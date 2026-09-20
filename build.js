@@ -60,7 +60,7 @@ const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DEFAULT_EMPTY_FEED_UPDATED_ISO = "1970-01-01T00:00:00Z";
 
 function parsePostDate(value, source = "blog post") {
-  let raw = "";
+  let raw;
   if (value instanceof Date) {
     if (Number.isNaN(value.getTime())) {
       throw new Error(
@@ -375,7 +375,7 @@ function generateResourcesHTML(config, siteUrl) {
   }
 
   if (siteUrl) {
-    let siteHost = "";
+    let siteHost;
     try {
       siteHost = new URL(siteUrl).hostname;
     } catch {
@@ -485,10 +485,6 @@ function ensureSiteBundleScript(html) {
     /<\/body>/i,
     `    <script src="/scripts.js" defer></script>\n  </body>`
   );
-}
-
-function escapeRegExp(value) {
-  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 async function injectCapsules(content, capsules, pageName) {
@@ -1101,7 +1097,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         );
         attributes.date = normalizedDate;
 
-        let updatedIso = null;
+        let updatedIso;
         if (attributes.updated) {
           const { raw: rawUpdated, parsed: parsedUpdated } = parsePostDate(
             attributes.updated,

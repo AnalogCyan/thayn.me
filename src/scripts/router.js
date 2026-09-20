@@ -171,16 +171,6 @@
     return chain;
   }
 
-  function updateNavActive(navPage) {
-    document.querySelectorAll(".nav-pill__link").forEach(function (link) {
-      if (link.getAttribute("data-nav") === navPage) {
-        link.classList.add("is-active");
-      } else {
-        link.classList.remove("is-active");
-      }
-    });
-  }
-
   function swapMain(main, newHTML) {
     while (main.firstChild) main.removeChild(main.firstChild);
     var temp = document.createElement("div");

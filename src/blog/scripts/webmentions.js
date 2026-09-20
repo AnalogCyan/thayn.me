@@ -31,7 +31,6 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
   let timer = null;
   let paused = false;
   let hasFetchedBuckets = false;
-  let latestBuckets = createBuckets();
   let lastKnownCount = null;
   let consecutiveFailures = 0;
 
@@ -310,7 +309,6 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
   async function refreshFull() {
     const payload = await fetchJson({ countOnly: false });
     const buckets = groupMentions(payload);
-    latestBuckets = buckets;
     hasFetchedBuckets = true;
     lastKnownCount = bucketCount(buckets);
     render(buckets);
