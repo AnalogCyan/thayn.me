@@ -22,11 +22,17 @@ function runSyndicationScript(scriptPath) {
 }
 
 module.exports = {
+  // The deploy already succeeded by this point; a syndication failure must not
+  // fail the build. It retries on the next deploy.
   onSuccess: async () => {
     const scriptPath = path.resolve(
       process.cwd(),
       "netlify/post-deploy/run-syndication.js"
     );
-    await runSyndicationScript(scriptPath);
+    try {
+      await runSyndicationScript(scriptPath);
+    } catch (error) {
+      console.log(`post-deploy-syndication: failed, skipping: ${error}`);
+    }
   },
 };
