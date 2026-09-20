@@ -310,7 +310,13 @@
           containerClass: "nav-pill--has-indicator",
         });
         if (pill) {
-          document.addEventListener("th-nav-changed", pill.returnToDefault);
+          var shell = document.querySelector(".page-shell");
+          if (shell) {
+            new MutationObserver(pill.returnToDefault).observe(shell, {
+              attributes: true,
+              attributeFilter: ["data-nav-page"],
+            });
+          }
         }
       }
     }
@@ -454,16 +460,26 @@
     const container = navWrap.closest(".container");
     if (!container) return;
 
+    let lastAppliedWidth = null;
+
+    // Writing the variable can resize the nav we observe, so identical writes
+    // are skipped to keep the observer from feeding itself.
+    function applyContainerMaxWidth(value) {
+      if (value === lastAppliedWidth) return;
+      lastAppliedWidth = value;
+      document.documentElement.style.setProperty(
+        "--container-max-width",
+        value
+      );
+    }
+
     function updateContainerMaxWidth() {
       const viewportWidth =
         window.innerWidth || document.documentElement.clientWidth || 0;
       const mobileBreakpoint = 720;
 
       if (viewportWidth <= mobileBreakpoint) {
-        document.documentElement.style.setProperty(
-          "--container-max-width",
-          `${viewportWidth}px`
-        );
+        applyContainerMaxWidth(`${viewportWidth}px`);
         return;
       }
 
@@ -473,10 +489,7 @@
       const padRight = parseFloat(styles.paddingRight) || 0;
       const width = Math.ceil(navRect.width + padLeft + padRight);
 
-      document.documentElement.style.setProperty(
-        "--container-max-width",
-        `${width}px`
-      );
+      applyContainerMaxWidth(`${width}px`);
     }
 
     updateContainerMaxWidth();
