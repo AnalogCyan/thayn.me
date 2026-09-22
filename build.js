@@ -375,37 +375,29 @@ function generateResourcesHTML(config, siteUrl) {
   }
 
   if (siteUrl) {
-    let siteHost;
-    try {
-      siteHost = new URL(siteUrl).hostname;
-    } catch {
-      siteHost = "";
+    const indieweb = config.indieweb || {};
+
+    for (const feed of indieweb.feeds || []) {
+      html += `\n    <link rel="alternate" type="${feed.type}" title="${feed.title}" href="${toAbsoluteUrl(
+        siteUrl,
+        feed.href
+      )}" />`;
+    }
+    if (indieweb.feed) {
+      html += `\n    <link rel="feed" href="${toAbsoluteUrl(
+        siteUrl,
+        indieweb.feed
+      )}" />`;
+    }
+    if (indieweb.webmention) {
+      html += `\n    <link rel="webmention" href="${indieweb.webmention}" />`;
+    }
+    if (indieweb.pingback) {
+      html += `\n    <link rel="pingback" href="${indieweb.pingback}" />`;
     }
 
-    html += `\n    <link rel="alternate" type="application/rss+xml" title="RSS" href="${toAbsoluteUrl(
-      siteUrl,
-      "/blog/rss.xml"
-    )}" />`;
-    html += `\n    <link rel="alternate" type="application/atom+xml" title="Atom" href="${toAbsoluteUrl(
-      siteUrl,
-      "/blog/atom.xml"
-    )}" />`;
-    html += `\n    <link rel="alternate" type="application/mf2+html" title="Microformats" href="${toAbsoluteUrl(
-      siteUrl,
-      "/blog/"
-    )}" />`;
-    html += `\n    <link rel="feed" href="${toAbsoluteUrl(
-      siteUrl,
-      "/blog/"
-    )}" />`;
-
-    if (siteHost) {
-      html += `\n    <link rel="webmention" href="https://webmention.io/${siteHost}/webmention" />`;
-      html += `\n    <link rel="pingback" href="https://webmention.io/${siteHost}/xmlrpc" />`;
-    }
-
-    const relMeLinks = Array.isArray(config?.meta?.relMe)
-      ? config.meta.relMe.filter((entry) => typeof entry === "string")
+    const relMeLinks = Array.isArray(indieweb.relMe)
+      ? indieweb.relMe.filter((entry) => typeof entry === "string")
       : [];
     for (const href of relMeLinks) {
       const trimmed = href.trim();

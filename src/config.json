@@ -11,8 +11,7 @@
       "url": "https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css"
     }
   },
-  "meta": {
-    "title": "Cyan Thayn",
+  "indieweb": {
     "relMe": [
       "https://tech.lgbt/@AnalogCyan",
       "https://bsky.app/profile/thayn.me",
@@ -22,6 +21,29 @@
       "https://www.last.fm/user/AnalogCyan",
       "https://www.discogs.com/user/AnalogCyan",
       "https://github.com/AnalogCyan"
+    ],
+    "webmention": "https://webmention.io/thayn.me/webmention",
+    "pingback": "https://webmention.io/thayn.me/xmlrpc",
+    "feed": "/blog/",
+    "feeds": [
+      {
+        "type": "application/rss+xml",
+        "title": "RSS",
+        "href": "/blog/rss.xml"
+      },
+      {
+        "type": "application/atom+xml",
+        "title": "Atom",
+        "href": "/blog/atom.xml"
+      },
+      {
+        "type": "application/mf2+html",
+        "title": "Microformats",
+        "href": "/blog/"
+      }
     ]
+  },
+  "meta": {
+    "title": "Cyan Thayn"
   }
 }
