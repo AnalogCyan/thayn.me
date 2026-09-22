@@ -21,11 +21,8 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const SRC_DIR = path.join(__dirname, "src");
-const STYLES_DIR = path.join(SRC_DIR, "styles");
-const SCRIPTS_DIR = path.join(SRC_DIR, "scripts");
 const PUBLIC_DIR = path.join(__dirname, "public");
 const CONFIG_PATH = path.join(SRC_DIR, "config.json");
-const STANDALONE_SCRIPTS = new Set(["theme-init.js"]);
 
 const engine = createEngine({ root: __dirname });
 
@@ -437,72 +434,6 @@ function ensureSiteBundleScript(html) {
     /<\/body>/i,
     `    <script src="/scripts.js" defer></script>\n  </body>`
   );
-}
-
-async function bundleStyles(capsules) {
-  const files = (await fs.readdir(STYLES_DIR)).sort();
-  const ordered = ["variables.css", "reset.css", "base.css", "home.css"];
-  const remaining = files.filter(
-    (f) => f.endsWith(".css") && !ordered.includes(f)
-  );
-  const cssFiles = [...ordered.filter((f) => files.includes(f)), ...remaining];
-
-  let output = "";
-  for (const file of cssFiles) {
-    const css = await fs.readFile(path.join(STYLES_DIR, file), "utf-8");
-    output += `\n/* === ${file} === */\n${css}`;
-  }
-
-  for (const name of Object.keys(capsules).sort()) {
-    const cap = capsules[name];
-    if (!cap.cssPath) continue;
-    const css = await fs.readFile(cap.cssPath, "utf-8");
-    output += `\n/* === Capsule: ${name} === */\n${css}`;
-  }
-
-  await fs.writeFile(path.join(PUBLIC_DIR, "styles.css"), output);
-}
-
-async function bundleScripts(usedCapsules, capsules) {
-  let output = "";
-
-  if (await pathExists(SCRIPTS_DIR)) {
-    const files = (await fs.readdir(SCRIPTS_DIR)).sort();
-    const standalone = [];
-    for (const file of files) {
-      if (!file.endsWith(".js")) continue;
-      if (STANDALONE_SCRIPTS.has(file)) {
-        standalone.push(file);
-        continue;
-      }
-      const js = await fs.readFile(path.join(SCRIPTS_DIR, file), "utf-8");
-      output += `\n// === ${file} ===\n${js}`;
-    }
-
-    if (standalone.length > 0) {
-      const standaloneDir = path.join(PUBLIC_DIR, "scripts");
-      await fs.mkdir(standaloneDir, { recursive: true });
-      await Promise.all(
-        standalone.map((file) =>
-          fs.copyFile(
-            path.join(SCRIPTS_DIR, file),
-            path.join(standaloneDir, file)
-          )
-        )
-      );
-    }
-  }
-
-  const orderedCapsules = Array.from(usedCapsules).sort();
-  for (const capName of orderedCapsules) {
-    const cap = capsules[capName];
-    if (cap && cap.jsPath) {
-      const js = await fs.readFile(cap.jsPath, "utf-8");
-      output += `\n// === Capsule: ${capName} ===\n${js}`;
-    }
-  }
-
-  await fs.writeFile(path.join(PUBLIC_DIR, "scripts.js"), output);
 }
 
 async function copyStatic() {
@@ -1064,8 +995,12 @@ async function build() {
   config.buildHash = await engine.generateHash();
   await engine.buildPages(capsules, config, usedCapsules);
   await buildBlog(capsules, config, usedCapsules, siteUrl);
-  await bundleStyles(capsules);
-  await bundleScripts(usedCapsules, capsules);
+  await engine.bundleStyles(
+    capsules,
+    usedCapsules,
+    await engine.renderVariablesCSS(config)
+  );
+  await engine.bundleScripts(usedCapsules, capsules);
   await copyStatic();
 
   console.log("Build complete -> public/");
