@@ -21,7 +21,6 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const SRC_DIR = path.join(__dirname, "src");
-const PAGES_DIR = path.join(SRC_DIR, "pages");
 const STYLES_DIR = path.join(SRC_DIR, "styles");
 const SCRIPTS_DIR = path.join(SRC_DIR, "scripts");
 const PUBLIC_DIR = path.join(__dirname, "public");
@@ -430,15 +429,6 @@ function injectResources(content, resourcesHTML, config) {
   return output;
 }
 
-function ensureCanonicalLink(html, canonicalUrl) {
-  if (!canonicalUrl) return html;
-  if (/<link\s+[^>]*rel=["']canonical["']/i.test(html)) return html;
-  return html.replace(
-    /<\/head>/i,
-    `    <link rel="canonical" href="${canonicalUrl}" />\n  </head>`
-  );
-}
-
 function ensureSiteBundleScript(html) {
   if (/<script\s+[^>]*src=["'][^"']*scripts\.js["']/i.test(html)) {
     return html;
@@ -446,69 +436,6 @@ function ensureSiteBundleScript(html) {
   return html.replace(
     /<\/body>/i,
     `    <script src="/scripts.js" defer></script>\n  </body>`
-  );
-}
-
-async function buildPages(capsules, config, globalUsed, siteUrl) {
-  async function collectEntries(dir, base = dir) {
-    const entries = await fs.readdir(dir, { withFileTypes: true });
-    const files = [];
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.name === ".DS_Store") continue;
-      if (entry.isDirectory()) {
-        files.push(...(await collectEntries(fullPath, base)));
-        continue;
-      }
-      files.push({
-        relPath: path.relative(base, fullPath),
-        fullPath,
-      });
-    }
-    return files;
-  }
-
-  const files = await collectEntries(PAGES_DIR);
-  const resourcesHTML = generateResourcesHTML(config, siteUrl);
-
-  await Promise.all(
-    files.map(async ({ relPath, fullPath }) => {
-      const normalizedRelPath = relPath.replace(/\\/g, "/");
-      const destPath = path.join(PUBLIC_DIR, relPath);
-
-      if (!normalizedRelPath.toLowerCase().endsWith(".html")) {
-        await fs.mkdir(path.dirname(destPath), { recursive: true });
-        await fs.copyFile(fullPath, destPath);
-        return;
-      }
-
-      let content = await fs.readFile(fullPath, "utf-8");
-
-      content = injectResources(content, resourcesHTML, config);
-      if (normalizedRelPath !== "404.html") {
-        const canonicalPath =
-          normalizedRelPath === "index.html"
-            ? "/"
-            : normalizedRelPath.endsWith("/index.html")
-              ? `/${normalizedRelPath.slice(0, -"index.html".length)}`
-              : `/${normalizedRelPath.slice(0, -".html".length)}`;
-        content = ensureCanonicalLink(
-          content,
-          canonicalizeUrl(siteUrl, canonicalPath)
-        );
-      }
-      const withCapsules = await engine.expandAllDrops(
-        content,
-        capsules,
-        normalizedRelPath,
-        globalUsed
-      );
-      const withSiteBundle = ensureSiteBundleScript(withCapsules);
-      const contentFinal = withSiteBundle;
-
-      await fs.mkdir(path.dirname(destPath), { recursive: true });
-      await fs.writeFile(destPath, contentFinal);
-    })
   );
 }
 
@@ -1134,7 +1061,8 @@ async function build() {
   const siteUrl = getSiteUrl();
 
   await cleanPublic();
-  await buildPages(capsules, config, usedCapsules, siteUrl);
+  config.buildHash = await engine.generateHash();
+  await engine.buildPages(capsules, config, usedCapsules);
   await buildBlog(capsules, config, usedCapsules, siteUrl);
   await bundleStyles(capsules);
   await bundleScripts(usedCapsules, capsules);

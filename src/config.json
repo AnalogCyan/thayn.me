@@ -44,6 +44,8 @@
     ]
   },
   "meta": {
-    "title": "Cyan Thayn"
+    "title": "Cyan Thayn",
+    "siteUrl": "https://thayn.me",
+    "cleanUrls": true
   }
 }
