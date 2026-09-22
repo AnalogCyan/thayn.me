@@ -542,13 +542,7 @@ async function injectCapsules(content, capsules, pageName) {
   return { html: result, used };
 }
 
-async function expandAllDrops(
-  inputHtml,
-  capsules,
-  pageName,
-  globalUsed,
-  localUsed = null
-) {
+async function expandAllDrops(inputHtml, capsules, pageName, globalUsed) {
   const MAX_PASSES = 20;
   let html = inputHtml;
 
@@ -559,10 +553,7 @@ async function expandAllDrops(
       capsules,
       `${pageName}#${pass}`
     );
-    used.forEach((u) => {
-      globalUsed.add(u);
-      if (localUsed) localUsed.add(u);
-    });
+    used.forEach((u) => globalUsed.add(u));
     if (nextHtml === html) break;
     html = nextHtml;
   }
@@ -622,13 +613,11 @@ async function buildPages(capsules, config, globalUsed, siteUrl) {
           canonicalizeUrl(siteUrl, canonicalPath)
         );
       }
-      const pageUsedCapsules = new Set();
       const withCapsules = await expandAllDrops(
         content,
         capsules,
         normalizedRelPath,
-        globalUsed,
-        pageUsedCapsules
+        globalUsed
       );
       const withSiteBundle = ensureSiteBundleScript(withCapsules);
       const contentFinal = withSiteBundle;
@@ -1048,21 +1037,17 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
     config
   );
 
-  const indexUsedCapsules = new Set();
-  const postUsedCapsules = new Set();
   const indexTemplateSourceRaw = await expandAllDrops(
     indexWithResources,
     capsules,
     "blog-index",
-    globalUsed,
-    indexUsedCapsules
+    globalUsed
   );
   const postTemplateSourceRaw = await expandAllDrops(
     postWithResources,
     capsules,
     "blog-post",
-    globalUsed,
-    postUsedCapsules
+    globalUsed
   );
   const indexTemplateSource = ensureSiteBundleScript(indexTemplateSourceRaw);
   const postTemplateSource = ensureSiteBundleScript(postTemplateSourceRaw);
