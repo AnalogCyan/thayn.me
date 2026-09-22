@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import fm from "front-matter";
 import { marked } from "marked";
 import Handlebars from "handlebars";
+import { createEngine } from "gachakit";
 import { getSiteUrl, getCanonicalBlogPath } from "./lib/site-url.js";
 import { canonicalizeUrl, toAbsoluteUrl } from "./lib/url.js";
 import { sanitizeExternalUrl } from "./lib/sanitize-url.js";
@@ -21,12 +22,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const SRC_DIR = path.join(__dirname, "src");
 const PAGES_DIR = path.join(SRC_DIR, "pages");
-const CAPSULES_DIR = path.join(SRC_DIR, "capsules");
 const STYLES_DIR = path.join(SRC_DIR, "styles");
 const SCRIPTS_DIR = path.join(SRC_DIR, "scripts");
 const PUBLIC_DIR = path.join(__dirname, "public");
 const CONFIG_PATH = path.join(SRC_DIR, "config.json");
 const STANDALONE_SCRIPTS = new Set(["theme-init.js"]);
+
+const engine = createEngine({ root: __dirname });
 
 const BLOG_DIR = path.join(SRC_DIR, "blog");
 const BLOG_POSTS_DIR = path.join(BLOG_DIR, "posts");
@@ -409,38 +411,6 @@ function generateResourcesHTML(config, siteUrl) {
   return html;
 }
 
-async function loadCapsules() {
-  if (!(await pathExists(CAPSULES_DIR))) return {};
-  const entries = await fs.readdir(CAPSULES_DIR, { withFileTypes: true });
-  const capsules = {};
-
-  for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-    const name = entry.name;
-    const base = path.join(CAPSULES_DIR, name);
-    const capsule = { name };
-
-    const htmlPath = path.join(base, `${name}.html`);
-    if (await pathExists(htmlPath)) {
-      capsule.html = await fs.readFile(htmlPath, "utf-8");
-    }
-
-    const cssPath = path.join(base, `${name}.css`);
-    if (await pathExists(cssPath)) {
-      capsule.cssPath = cssPath;
-    }
-
-    const jsPath = path.join(base, `${name}.js`);
-    if (await pathExists(jsPath)) {
-      capsule.jsPath = jsPath;
-    }
-
-    capsules[name] = capsule;
-  }
-
-  return capsules;
-}
-
 function injectResources(content, resourcesHTML, config) {
   const placeholder = "<!-- EXTERNAL_RESOURCES -->";
   let output = content.includes(placeholder)
@@ -477,84 +447,6 @@ function ensureSiteBundleScript(html) {
     /<\/body>/i,
     `    <script src="/scripts.js" defer></script>\n  </body>`
   );
-}
-
-async function injectCapsules(content, capsules, pageName) {
-  const used = new Set();
-  const dropRegex =
-    /<drop\s+capsule=['"]([^'" ]+)['"]([^>]*)>([\s\S]*?)<\/drop>/g;
-
-  let result = "";
-  let lastIndex = 0;
-  let match;
-
-  while ((match = dropRegex.exec(content)) !== null) {
-    result += content.slice(lastIndex, match.index);
-    const capsuleName = match[1];
-    const attributes = match[2];
-    const slotContent = match[3];
-    const capsule = capsules[capsuleName];
-
-    if (!capsule || !capsule.html) {
-      console.warn(`Missing capsule "${capsuleName}" on page ${pageName}`);
-      result += match[0];
-      lastIndex = match.index + match[0].length;
-      continue;
-    }
-
-    used.add(capsuleName);
-    let capsuleHtml = capsule.html;
-    const dataAttrs = {};
-
-    if (attributes.trim()) {
-      const attrRegex = /data-([a-zA-Z0-9-]+)=['"]([^'"]+)['"]/g;
-      let attrMatch;
-      while ((attrMatch = attrRegex.exec(attributes)) !== null) {
-        const [, name, value] = attrMatch;
-        dataAttrs[name] = value;
-      }
-    }
-
-    if (capsuleHtml.includes("{{slot}}") && slotContent.trim()) {
-      capsuleHtml = capsuleHtml.replace("{{slot}}", slotContent);
-    }
-
-    capsuleHtml = capsuleHtml.replace(
-      /{{\s*(?!slot\b)([a-zA-Z0-9_-]+)\s*}}/g,
-      (_, key) => {
-        return key in dataAttrs ? String(dataAttrs[key]) : "";
-      }
-    );
-
-    result += capsuleHtml;
-    lastIndex = match.index + match[0].length;
-  }
-
-  result += content.slice(lastIndex);
-  return { html: result, used };
-}
-
-async function expandAllDrops(inputHtml, capsules, pageName, globalUsed) {
-  const MAX_PASSES = 20;
-  let html = inputHtml;
-
-  for (let pass = 0; pass < MAX_PASSES; pass += 1) {
-    if (!html.includes("<drop ")) break;
-    const { html: nextHtml, used } = await injectCapsules(
-      html,
-      capsules,
-      `${pageName}#${pass}`
-    );
-    used.forEach((u) => globalUsed.add(u));
-    if (nextHtml === html) break;
-    html = nextHtml;
-  }
-
-  if (html.includes("<drop ")) {
-    console.warn(`expandAllDrops reached MAX_PASSES for ${pageName}`);
-  }
-
-  return html;
 }
 
 async function buildPages(capsules, config, globalUsed, siteUrl) {
@@ -605,7 +497,7 @@ async function buildPages(capsules, config, globalUsed, siteUrl) {
           canonicalizeUrl(siteUrl, canonicalPath)
         );
       }
-      const withCapsules = await expandAllDrops(
+      const withCapsules = await engine.expandAllDrops(
         content,
         capsules,
         normalizedRelPath,
@@ -1029,13 +921,13 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
     config
   );
 
-  const indexTemplateSourceRaw = await expandAllDrops(
+  const indexTemplateSourceRaw = await engine.expandAllDrops(
     indexWithResources,
     capsules,
     "blog-index",
     globalUsed
   );
-  const postTemplateSourceRaw = await expandAllDrops(
+  const postTemplateSourceRaw = await engine.expandAllDrops(
     postWithResources,
     capsules,
     "blog-post",
@@ -1237,7 +1129,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
 
 async function build() {
   const config = await loadConfig();
-  const capsules = await loadCapsules();
+  const capsules = await engine.loadCapsules();
   const usedCapsules = new Set();
   const siteUrl = getSiteUrl();
 
