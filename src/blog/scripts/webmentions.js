@@ -44,6 +44,14 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
     };
   }
 
+  // The footer counter would otherwise poll the same endpoint on its own
+  function updateFooterCount(count) {
+    const counter = document.querySelector("[data-webmention-count]");
+    if (!counter) return;
+    counter.textContent = String(count);
+    counter.setAttribute("data-url", target);
+  }
+
   function bucketCount(buckets) {
     return Object.values(buckets).reduce(
       (total, items) => total + (Array.isArray(items) ? items.length : 0),
@@ -311,6 +319,7 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
     const buckets = groupMentions(payload);
     hasFetchedBuckets = true;
     lastKnownCount = bucketCount(buckets);
+    updateFooterCount(lastKnownCount);
     render(buckets);
   }
 
