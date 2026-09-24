@@ -29,7 +29,7 @@ If you're curious about just how far CSS has come, I'd recommend [You no longer 
 
 My build system is called **GachaKit**. It's a work in progress, and this site is a live prototype of it. I know I'm not the first person to build a static site generator. There are dozens of them. But every one I've tried has been either bloated, opinionated in ways I disagree with, or built on abstractions that drift away from vanilla web standards. I'd rather build something small that works exactly how I think than fight someone else's framework.
 
-The core idea is **capsules**: self-contained, reusable components that bundle their own HTML, CSS, and JS. Drop a `<drop capsule="site-header">` tag into any page and the build system expands it, bundles the styles, and wires up the scripts. Capsules can nest other capsules. They accept data attributes for configuration. The whole thing runs on Node.js with exactly three dependencies: `front-matter` for YAML parsing, `handlebars` for templates, and `marked` for Markdown. That's it.
+The core idea is **capsules**: self-contained, reusable components that bundle their own HTML, CSS, and JS. Drop a `<drop capsule="site-header">` tag into any page and the build system expands it, bundles the styles, and wires up the scripts. Capsules can nest other capsules. They accept data attributes for configuration. The whole thing runs on Node.js, and the engine itself has no runtime dependencies at all. This site's build adds three on top of it: `front-matter` for YAML parsing, `handlebars` for templates, and `marked` for Markdown. That's it.
 
 <abbr title="Don't Repeat Yourself">DRY</abbr> is the philosophy. Every component lives in one place. Change the header capsule, and every page that uses it updates on the next build. No copy-paste, no sync issues, no "I forgot to update that other template."
 
@@ -78,7 +78,7 @@ Some things that don't get their own section but matter to me:
 
 **Anti-AI training.** The site sends `AI-Training: none` and `X-Robots-Tag: noai, noimageai` headers, and Netlify's AI User Agent Blocker is enabled to block known AI crawlers at the edge. I don't consent to having my content used to train models. You can read it, link to it, quote it. But don't feed it to a machine.
 
-**toki pona.** I'm currently learning toki pona, and the site has a language switcher with a work-in-progress toki pona translation. It's incomplete, but it's there, and I'm adding to it as I learn.
+**toki pona.** I'm currently learning toki pona, and the site used to have a language switcher with a work-in-progress translation. I pulled it when I moved everything onto the capsule system: keeping a half-finished second language in sync across every page was more upkeep than it was giving back. I'd like it back once the build system can carry it properly.
 
 ## Build Something
 
