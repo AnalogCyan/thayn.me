@@ -17,7 +17,7 @@
 /* AI & ROBOTS */
   Policy: AI training not permitted. Search/retrieval crawlers allowed.
   Directives: X-Robots-Tag noai, noimageai; AI-Training none
-  Enforcement: Netlify edge function bots.ts blocks training crawlers listed in netlify/edge-functions/agents.json
+  Enforcement: Netlify edge function bots.ts blocks training crawlers listed in netlify/edge-functions/agents.ts
   Robots: See /.well-known/robots.txt for the full policy
 
 /* THANKS */
