@@ -22,6 +22,15 @@
   align-items: center;
 }
 
+.blog-feeds {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+  margin-top: var(--spacing-sm);
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
 .blog-filter-input,
 .blog-filter-select {
   font: inherit;

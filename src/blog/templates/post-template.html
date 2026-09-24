@@ -58,8 +58,9 @@
     <title>{{title}} — Cyan Thayn</title>
   </head>
   <body class="page-shell" data-hero="false" data-nav-page="blog">
+    <a class="skip-link" href="#main">Skip to content</a>
     <drop capsule="gradient-background" data-animated="true"></drop>
-    <div class="container nav-center">
+    <header class="container nav-center">
       <drop capsule="header" data-theme-key="thayn_theme">
         <li class="nav-pill__item">
           <a href="/" class="nav-pill__link" aria-label="Home" data-nav="home">
@@ -134,9 +135,9 @@
           </a>
         </li>
       </drop>
-    </div>
+    </header>
 
-    <main>
+    <main id="main">
       <article class="glass section-card blog-post h-entry">
         <header class="blog-post-header">
           <div class="blog-post-meta">
@@ -189,7 +190,7 @@
             </a>
             <a
               href="{{blueskyDiscussionUrl}}"
-              class="button secondary button-group__item button-group__item--middle"
+              class="button secondary button-group__item button-group__item--middle{{#if blueskySyndicationUrl}} u-syndication{{/if}}"
               target="_blank"
               rel="noreferrer noopener"
             >
@@ -198,7 +199,7 @@
             </a>
             <a
               href="{{mastodonDiscussionUrl}}"
-              class="button secondary button-group__item button-group__item--last"
+              class="button secondary button-group__item button-group__item--last{{#if mastodonSyndicationUrl}} u-syndication{{/if}}"
               target="_blank"
               rel="noreferrer noopener"
             >

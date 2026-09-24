@@ -18,16 +18,20 @@
             year: "numeric",
             month: "long",
             day: "numeric",
+            timeZone: "UTC",
           });
           return;
         }
 
+        // UTC, so the rendered day matches the one the build wrote and the
+        // post page shows, whatever timezone the reader is in
         el.textContent = date.toLocaleString("en-US", {
           year: "numeric",
           month: "short",
           day: "numeric",
           hour: "2-digit",
           minute: "2-digit",
+          timeZone: "UTC",
         });
       });
     }
@@ -57,9 +61,9 @@
     }
 
     function getVisibleText(container, selector) {
-      const target = container.querySelector(selector);
-      if (!target) return "";
-      return normalizeValue(target.textContent);
+      const targets = Array.from(container.querySelectorAll(selector));
+      if (targets.length === 0) return "";
+      return normalizeValue(targets.map((el) => el.textContent).join(" "));
     }
 
     function updateCardRadius() {
@@ -91,7 +95,7 @@
         const postTitle = getVisibleText(post, "h3");
         const postExcerpt = getVisibleText(post, ".p-summary");
         const postTagText = getVisibleText(post, ".tag");
-        const postTagKey = normalizeValue(post.dataset.tagKey);
+        const postTagKeys = normalizeValue(post.dataset.tagKey).split("|");
 
         const matchesSearch =
           !searchQuery ||
@@ -99,7 +103,7 @@
           postTagText.includes(searchQuery) ||
           postExcerpt.includes(searchQuery);
 
-        const matchesTag = !selectedTag || postTagKey === selectedTag;
+        const matchesTag = !selectedTag || postTagKeys.includes(selectedTag);
 
         if (matchesSearch && matchesTag) {
           post.classList.remove("hidden");
@@ -107,6 +111,14 @@
           post.classList.add("hidden");
         }
       });
+
+      const noResults = document.getElementById("blog-no-results");
+      if (noResults) {
+        const anyVisible = Array.from(posts).some(
+          (post) => !post.classList.contains("hidden")
+        );
+        noResults.hidden = anyVisible;
+      }
 
       updateCardRadius();
     }
