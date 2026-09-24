@@ -1,5 +1,6 @@
 // Assembles the static site and blog from modular capsules into public/
 
+import crypto from "crypto";
 import fs from "fs/promises";
 import path from "path";
 import { execFile } from "child_process";
@@ -11,7 +12,6 @@ import Handlebars from "handlebars";
 import { createEngine } from "gachakit";
 import { getSiteUrl, getCanonicalBlogPath } from "./lib/site-url.js";
 import { canonicalizeUrl, toAbsoluteUrl } from "./lib/url.js";
-import { sanitizeExternalUrl } from "./lib/sanitize-url.js";
 import {
   BRIDGY_PUBLISH_TARGETS,
   normalizeSyndicateTargets,
@@ -22,7 +22,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const SRC_DIR = path.join(__dirname, "src");
 const PUBLIC_DIR = path.join(__dirname, "public");
-const CONFIG_PATH = path.join(SRC_DIR, "config.json");
 
 const engine = createEngine({ root: __dirname });
 
@@ -32,27 +31,11 @@ const BLOG_TEMPLATES_DIR = path.join(BLOG_DIR, "templates");
 const BLOG_OUTPUT_DIR = path.join(PUBLIC_DIR, "blog");
 const BLOG_STYLES_FILE = path.join(BLOG_DIR, "styles.css");
 const BLOG_SCRIPTS_DIR = path.join(BLOG_DIR, "scripts");
-const DEFAULT_WEBMENTION_FETCH_TIMEOUT_MS = 8000;
-const DEFAULT_WEBMENTION_FETCH_CONCURRENCY = 4;
-const WEBMENTION_FETCH_TIMEOUT_MS = (() => {
-  const raw = Number.parseInt(
-    process.env.WEBMENTION_FETCH_TIMEOUT_MS || "",
-    10
-  );
-  return Number.isFinite(raw) && raw > 0
-    ? raw
-    : DEFAULT_WEBMENTION_FETCH_TIMEOUT_MS;
+const DEFAULT_POST_READ_CONCURRENCY = 4;
+const POST_READ_CONCURRENCY = (() => {
+  const raw = Number.parseInt(process.env.POST_READ_CONCURRENCY || "", 10);
+  return Number.isFinite(raw) && raw > 0 ? raw : DEFAULT_POST_READ_CONCURRENCY;
 })();
-const WEBMENTION_FETCH_CONCURRENCY = (() => {
-  const raw = Number.parseInt(
-    process.env.WEBMENTION_FETCH_CONCURRENCY || "",
-    10
-  );
-  return Number.isFinite(raw) && raw > 0
-    ? raw
-    : DEFAULT_WEBMENTION_FETCH_CONCURRENCY;
-})();
-const WEBMENTIONS_BUILD_FETCH_ENABLED = false;
 
 const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/;
 const DEFAULT_EMPTY_FEED_UPDATED_ISO = "1970-01-01T00:00:00Z";
@@ -124,7 +107,15 @@ async function getGitLastCommitIso(filePath) {
   try {
     const { stdout } = await execFileAsync(
       "git",
-      ["log", "-1", "--format=%cI", "--", filePath],
+      [
+        "log",
+        "-1",
+        "--format=%cI",
+        "--invert-grep",
+        "--grep=^Syndication:",
+        "--",
+        filePath,
+      ],
       { cwd: __dirname }
     );
     return stdout.trim() || null;
@@ -144,22 +135,32 @@ function stripTags(str) {
 }
 
 const markedRenderer = new marked.Renderer();
+// Reset per post, so ids stay stable and unique within a page
+let headingSlugs = new Map();
+
 markedRenderer.heading = function (tok) {
   const text = tok.text || "";
   const level = tok.depth || 1;
-  const id = stripTags(text.toLowerCase())
+  const base = stripTags(text.toLowerCase())
     .replace(/[^\p{L}\p{N}\s-]/gu, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "");
+  const seen = headingSlugs.get(base) || 0;
+  headingSlugs.set(base, seen + 1);
+  const id = seen === 0 ? base : `${base}-${seen + 1}`;
   const inner = this.parser ? this.parser.parseInline(tok.tokens) : text;
   return `<h${level} id="${id}">${inner}</h${level}>`;
 };
 
+function renderMarkdown(body) {
+  headingSlugs = new Map();
+  return marked(body);
+}
+
 marked.setOptions({
   gfm: true,
   breaks: false,
-  mangle: false,
   renderer: markedRenderer,
 });
 
@@ -187,85 +188,6 @@ Handlebars.registerHelper("formatDateTime", function (date) {
     timeZone: "UTC",
   });
 });
-
-const SYNDICATION_SITES = {
-  bluesky: { label: "Bluesky" },
-  mastodon: { label: "Mastodon" },
-  fediverse: { label: "Mastodon" },
-  instagram: { label: "Instagram" },
-  github: { label: "GitHub" },
-  musicbrainz: { label: "MusicBrainz" },
-  lastfm: { label: "Last.fm" },
-  discogs: { label: "Discogs" },
-  pronouns: { label: "Pronouns" },
-};
-
-function normalizeSyndication(raw) {
-  const links = [];
-  if (!raw) return links;
-
-  function addLink(site, url, labelOverride) {
-    if (!url || typeof url !== "string") return;
-    const trimmed = url.trim();
-    if (!trimmed) return;
-    const safeUrl = sanitizeExternalUrl(trimmed);
-    if (!safeUrl) return;
-    const meta = site ? SYNDICATION_SITES[site] : null;
-    const label = labelOverride || (meta && meta.label);
-    if (!label) return;
-    links.push({ site, label, url: safeUrl });
-  }
-
-  if (Array.isArray(raw)) {
-    for (const item of raw) {
-      if (!item) continue;
-      if (typeof item === "object") {
-        const site = item.site || item.network || item.service;
-        const url = item.url || item.href;
-        addLink(site, url, item.label);
-      }
-    }
-    return links;
-  }
-
-  if (typeof raw === "object") {
-    for (const [site, value] of Object.entries(raw)) {
-      if (Array.isArray(value)) {
-        value.forEach((url) => addLink(site, url));
-      } else if (typeof value === "string") {
-        addLink(site, value);
-      } else if (value && typeof value === "object") {
-        addLink(site, value.url || value.href, value.label);
-      }
-    }
-  }
-
-  return links;
-}
-
-function resolveWebmentionTarget(attributes, canonicalUrl) {
-  if (!attributes || typeof attributes !== "object") return canonicalUrl;
-
-  const directCandidates = [
-    attributes.webmentionTarget,
-    attributes.socialUrl,
-    attributes.socialURL,
-    attributes.social,
-    attributes.linkedSocialUrl,
-    attributes.linkedSocialURL,
-    attributes.linkedSocial,
-    attributes.socialPost,
-    attributes.syndicationUrl,
-    attributes.syndicationURL,
-  ];
-
-  for (const candidate of directCandidates) {
-    const safe = sanitizeExternalUrl(candidate);
-    if (safe) return safe;
-  }
-
-  return canonicalUrl;
-}
 
 async function pathExists(p) {
   try {
@@ -319,94 +241,6 @@ async function copyDir(src, dest) {
   }
 }
 
-async function loadConfig() {
-  try {
-    const raw = await fs.readFile(CONFIG_PATH, "utf-8");
-    return JSON.parse(raw);
-  } catch {
-    return { fonts: {}, externalResources: {}, meta: {} };
-  }
-}
-
-function generateResourcesHTML(config, siteUrl) {
-  let html = "";
-  const preconnects = new Set();
-
-  if (config.fonts) {
-    for (const font of Object.values(config.fonts)) {
-      if (!font.url) continue;
-      preconnects.add("https://fonts.googleapis.com");
-      preconnects.add("https://fonts.gstatic.com");
-      html += `\n    <link href="${font.url}" rel="stylesheet" />`;
-    }
-  }
-
-  if (config.externalResources) {
-    for (const resource of Object.values(config.externalResources)) {
-      if (resource.url) {
-        try {
-          const host = new URL(resource.url).hostname;
-          if (host === "cdn.jsdelivr.net") {
-            preconnects.add("https://cdn.jsdelivr.net");
-          }
-        } catch {
-          // ignore invalid URLs
-        }
-      }
-      if (resource.type === "stylesheet") {
-        html += `\n    <link href="${resource.url}" rel="stylesheet" />`;
-      } else if (resource.type === "script") {
-        html += `\n    <script src="${resource.url}"${resource.defer ? " defer" : ""}></script>`;
-      }
-    }
-  }
-
-  if (preconnects.size > 0) {
-    const ordered = Array.from(preconnects).sort();
-    const tags = ordered.map((href) => {
-      const crossorigin = href.includes("fonts.gstatic.com")
-        ? " crossorigin"
-        : "";
-      return `\n    <link rel="preconnect" href="${href}"${crossorigin} />`;
-    });
-    html = `${tags.join("")}${html}`;
-  }
-
-  if (siteUrl) {
-    const indieweb = config.indieweb || {};
-
-    for (const feed of indieweb.feeds || []) {
-      html += `\n    <link rel="alternate" type="${feed.type}" title="${feed.title}" href="${toAbsoluteUrl(
-        siteUrl,
-        feed.href
-      )}" />`;
-    }
-    if (indieweb.feed) {
-      html += `\n    <link rel="feed" href="${toAbsoluteUrl(
-        siteUrl,
-        indieweb.feed
-      )}" />`;
-    }
-    if (indieweb.webmention) {
-      html += `\n    <link rel="webmention" href="${indieweb.webmention}" />`;
-    }
-    if (indieweb.pingback) {
-      html += `\n    <link rel="pingback" href="${indieweb.pingback}" />`;
-    }
-
-    const relMeLinks = Array.isArray(indieweb.relMe)
-      ? indieweb.relMe.filter((entry) => typeof entry === "string")
-      : [];
-    for (const href of relMeLinks) {
-      const trimmed = href.trim();
-      if (!trimmed) continue;
-      html += `\n    <link rel="me" href="${trimmed}" />`;
-    }
-  }
-
-  return html;
-}
-
 function injectResources(content, resourcesHTML, config) {
   const placeholder = "<!-- EXTERNAL_RESOURCES -->";
   let output = content.includes(placeholder)
@@ -437,147 +271,13 @@ function ensureSiteBundleScript(html) {
 }
 
 async function copyStatic() {
-  await copyDir(path.join(SRC_DIR, "media"), path.join(PUBLIC_DIR, "media"));
-  await copyDir(
-    path.join(SRC_DIR, ".well-known"),
-    path.join(PUBLIC_DIR, ".well-known")
-  );
-  const manifestSrc = path.join(SRC_DIR, "manifest.json");
-  if (await pathExists(manifestSrc)) {
-    await fs.copyFile(manifestSrc, path.join(PUBLIC_DIR, "manifest.json"));
-  }
-  const llmsSrc = path.join(SRC_DIR, "llms.txt");
-  if (await pathExists(llmsSrc)) {
-    await fs.copyFile(llmsSrc, path.join(PUBLIC_DIR, "llms.txt"));
-  }
+  await engine.copyStaticFiles();
 
   const sanitizeUrlSrc = path.join(__dirname, "lib", "sanitize-url.js");
   if (await pathExists(sanitizeUrlSrc)) {
     const libOutDir = path.join(PUBLIC_DIR, "lib");
     await fs.mkdir(libOutDir, { recursive: true });
     await fs.copyFile(sanitizeUrlSrc, path.join(libOutDir, "sanitize-url.js"));
-  }
-}
-
-function initWebmentionBuckets() {
-  return {
-    replies: [],
-    likes: [],
-    reposts: [],
-    mentions: [],
-    bookmarks: [],
-  };
-}
-
-function extractWebmentionText(item) {
-  if (!item || !item.content) return "";
-  if (typeof item.content === "string") return item.content.trim();
-  if (typeof item.content === "object") {
-    return String(item.content.text || item.content.value || "").trim();
-  }
-  return "";
-}
-
-function normalizeWebmentionAuthor(item) {
-  const author = (item && item.author) || {};
-  const authorName =
-    String(author.name || author.url || item.url || "Someone").trim() ||
-    "Someone";
-  const authorUrl = sanitizeExternalUrl(author.url || item.url);
-  const authorPhoto = sanitizeExternalUrl(author.photo);
-  return { authorName, authorUrl, authorPhoto };
-}
-
-function normalizeWebmentionReply(item) {
-  const author = normalizeWebmentionAuthor(item);
-  const published = item.published || item["wm-received"] || "";
-  const received = item["wm-received"] || item.published || "";
-  const text = extractWebmentionText(item);
-  const url = sanitizeExternalUrl(item.url);
-  const authorLink = author.authorUrl || url || null;
-
-  return {
-    ...author,
-    authorLink,
-    published,
-    received,
-    text,
-    url,
-  };
-}
-
-function normalizeWebmentionPerson(item) {
-  const author = normalizeWebmentionAuthor(item);
-  const url = sanitizeExternalUrl(item.url) || author.authorUrl || null;
-  const authorLink = author.authorUrl || url || null;
-
-  return {
-    ...author,
-    authorLink,
-    url,
-  };
-}
-
-function toTime(value) {
-  if (!value) return 0;
-  const parsed = Date.parse(value);
-  return Number.isNaN(parsed) ? 0 : parsed;
-}
-
-function buildWebmentionBuckets(payload) {
-  const buckets = initWebmentionBuckets();
-  const items = Array.isArray(payload?.children) ? payload.children : [];
-
-  for (const item of items) {
-    if (!item) continue;
-    const isPrivate =
-      item["wm-private"] === true ||
-      item["wm-private"] === "true" ||
-      item["wm-private"] === 1;
-    if (isPrivate) continue;
-
-    const prop = item["wm-property"];
-    if (prop === "in-reply-to") {
-      buckets.replies.push(normalizeWebmentionReply(item));
-    } else if (prop === "like-of") {
-      buckets.likes.push(normalizeWebmentionPerson(item));
-    } else if (prop === "repost-of") {
-      buckets.reposts.push(normalizeWebmentionPerson(item));
-    } else if (prop === "mention-of") {
-      buckets.mentions.push(normalizeWebmentionPerson(item));
-    } else if (prop === "bookmark-of") {
-      buckets.bookmarks.push(normalizeWebmentionPerson(item));
-    }
-  }
-
-  buckets.replies.sort((a, b) => toTime(a.received) - toTime(b.received));
-
-  return buckets;
-}
-
-async function fetchWebmentions(targetUrl, functionsBaseUrl) {
-  if (!WEBMENTIONS_BUILD_FETCH_ENABLED) return null;
-  if (!functionsBaseUrl) return null;
-  const endpoint = `${functionsBaseUrl}/.netlify/functions/webmentions?target=${encodeURIComponent(
-    targetUrl
-  )}`;
-  const controller = new AbortController();
-  const timeout = setTimeout(
-    () => controller.abort(),
-    WEBMENTION_FETCH_TIMEOUT_MS
-  );
-
-  try {
-    const res = await fetch(endpoint, {
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-    });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timeout);
   }
 }
 
@@ -642,24 +342,49 @@ function stripMarkdown(markdown = "") {
   )
     .replace(/!\[[^\]]*\]\([^)]+\)/g, "")
     .replace(/\[[^\]]+\]\([^)]+\)/g, "")
-    .replace(/[#>*_~-]+/g, " ")
+    .replace(/^[#>\s]*[-*+]?\s+/gm, " ")
+    .replace(/(\*\*|__|~~|\*)/g, "")
+    .replace(/(^|\s)_([^_]+)_(?=[\s.,;:!?)]|$)/g, "$1$2")
     .replace(/\s+/g, " ")
     .trim();
 }
 
+// Cuts at the last space before the limit, so an excerpt never ends mid-word
+function truncateOnWord(text, limit) {
+  if (text.length <= limit) return text;
+  const cut = text.slice(0, limit);
+  const lastSpace = cut.lastIndexOf(" ");
+  return (lastSpace > limit * 0.6 ? cut.slice(0, lastSpace) : cut).trim();
+}
+
 function toExcerpt(rawExcerpt, markdownBody) {
   const plainBody = stripMarkdown(markdownBody);
-  const candidate = String(rawExcerpt || "").trim() || plainBody.slice(0, 180);
+  const candidate =
+    String(rawExcerpt || "").trim() || truncateOnWord(plainBody, 180);
   if (!candidate) return "";
   return /[.!?…]$/.test(candidate) ? candidate : `${candidate}…`;
+}
+
+// Serializes JSON-LD for a <script> block. "<" is escaped so a title
+// containing </script> cannot close it early.
+function toJsonLdScript(data) {
+  return JSON.stringify(data, null, 2).replace(/</g, "\\u003c");
+}
+
+// Feed readers resolve links against their own origin, so root-relative
+// hrefs and image sources have to be absolute before they leave the site
+function absolutizeHtml(html, siteUrl) {
+  return String(html).replace(
+    /\b(href|src)=("|')(\/[^"']*)\2/g,
+    (match, attr, quote, value) =>
+      `${attr}=${quote}${toAbsoluteUrl(siteUrl, value)}${quote}`
+  );
 }
 
 function buildRSS(posts, meta, siteUrl) {
   const channelUrl = toAbsoluteUrl(siteUrl, "/blog/");
   const selfUrl = toAbsoluteUrl(siteUrl, "/blog/rss.xml");
-  const lastBuild = posts[0]?.date
-    ? rfc2822(posts[0].date, "latest post date")
-    : EMPTY_FEED_UPDATED_DATE.toUTCString();
+  const lastBuild = new Date().toUTCString();
   const items = posts
     .map((p) => {
       const link = p.canonicalUrl || toAbsoluteUrl(siteUrl, p.url);
@@ -742,6 +467,35 @@ ${entries}
 `;
 }
 
+// The blog's own stylesheet and scripts live outside the engine's bundles,
+// so they need the same query string to avoid being served stale
+function bustBlogAssets(html, hash) {
+  if (!hash) return html;
+  return html.replace(
+    /(href|src)=("|')(\/blog\/(?:styles\.css|scripts\/[\w.-]+\.js))\2/gi,
+    (match, attr, quote, value) => `${attr}=${quote}${value}?v=${hash}${quote}`
+  );
+}
+
+// Everything under src/blog feeds the blog output, so it belongs in the hash
+async function hashBlogSources() {
+  const hash = crypto.createHash("sha1");
+  const entries = (await pathExists(BLOG_DIR))
+    ? await fs.readdir(BLOG_DIR, { withFileTypes: true, recursive: true })
+    : [];
+
+  const files = entries
+    .filter((entry) => entry.isFile() && /\.(css|js|html|md)$/.test(entry.name))
+    .map((entry) => path.join(entry.parentPath, entry.name))
+    .sort();
+
+  for (const file of files) {
+    hash.update(path.relative(SRC_DIR, file));
+    hash.update(await fs.readFile(file));
+  }
+  return hash.digest("hex").slice(0, 8);
+}
+
 async function buildBlog(capsules, config, globalUsed, siteUrl) {
   if (!(await pathExists(BLOG_TEMPLATES_DIR))) return;
 
@@ -767,16 +521,16 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
   const indexTemplateRaw = await fs.readFile(indexTemplatePath, "utf-8");
   const postTemplateRaw = await fs.readFile(postTemplatePath, "utf-8");
 
-  const resourcesHTML = generateResourcesHTML(config, siteUrl);
-  const indexWithResources = injectResources(
-    indexTemplateRaw,
-    resourcesHTML,
-    config
+  const resourcesHTML = engine.generateResourcesHTML(config);
+  const indexWithResources = engine.injectIndieWebTags(
+    injectResources(indexTemplateRaw, resourcesHTML, config),
+    config,
+    "blog/index.html"
   );
-  const postWithResources = injectResources(
-    postTemplateRaw,
-    resourcesHTML,
-    config
+  const postWithResources = engine.injectIndieWebTags(
+    injectResources(postTemplateRaw, resourcesHTML, config),
+    config,
+    "blog/post.html"
   );
 
   const indexTemplateSourceRaw = await engine.expandAllDrops(
@@ -791,8 +545,22 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
     "blog-post",
     globalUsed
   );
-  const indexTemplateSource = ensureSiteBundleScript(indexTemplateSourceRaw);
-  const postTemplateSource = ensureSiteBundleScript(postTemplateSourceRaw);
+  const indexTemplateSource = bustBlogAssets(
+    engine.bustAssetPaths(
+      ensureSiteBundleScript(indexTemplateSourceRaw),
+      config.buildHash,
+      config.scripts?.standalone
+    ),
+    config.buildHash
+  );
+  const postTemplateSource = bustBlogAssets(
+    engine.bustAssetPaths(
+      ensureSiteBundleScript(postTemplateSourceRaw),
+      config.buildHash,
+      config.scripts?.standalone
+    ),
+    config.buildHash
+  );
 
   const indexTemplate = Handlebars.compile(indexTemplateSource);
   const postTemplate = Handlebars.compile(postTemplateSource);
@@ -805,7 +573,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
 
     const postEntries = await mapWithConcurrency(
       files,
-      WEBMENTION_FETCH_CONCURRENCY,
+      POST_READ_CONCURRENCY,
       async (file) => {
         const filePath = path.join(BLOG_POSTS_DIR, file);
         const markdown = await fs.readFile(filePath, "utf-8");
@@ -836,9 +604,10 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         }
 
         const postTags = normalizeTags(
-          attributes.categories || attributes.tags
+          attributes.categories?.length
+            ? attributes.categories
+            : attributes.tags
         );
-        const primaryTag = postTags[0] || "";
 
         const slug = path.basename(file, ".md");
         const defaultPath = getCanonicalBlogPath(slug);
@@ -851,19 +620,6 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
 
         const url = defaultPath;
         const syndicationMap = normalizeSyndicationMap(attributes.syndication);
-        const webmentionTarget = resolveWebmentionTarget(
-          attributes,
-          canonicalUrl
-        );
-
-        const webmentionPayload = await fetchWebmentions(
-          webmentionTarget,
-          siteUrl
-        );
-        const webmentions = buildWebmentionBuckets(webmentionPayload);
-        const hasWebmentions = Object.values(webmentions).some(
-          (items) => items.length > 0
-        );
         const syndicateTargets = normalizeSyndicateTargets(
           attributes.syndicate
         );
@@ -884,47 +640,43 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             dateMs: parsedDate.getTime(),
             updatedIso,
             tags: postTags,
-            tagFilterKey: normalizeFilterValue(primaryTag),
-            content: marked(body),
+            tagFilterKey: postTags.map(normalizeFilterValue).join("|"),
+            content: absolutizeHtml(renderMarkdown(body), siteUrl),
             excerpt: toExcerpt(attributes.excerpt, body),
             url,
             siteUrl,
             canonicalUrl,
-            webmentionTarget,
             ogImage: attributes.image
               ? toAbsoluteUrl(siteUrl, attributes.image)
               : `${siteUrl}/media/og-image.png`,
-            syndicationLinks: normalizeSyndication(attributes.syndication),
             blueskyDiscussionUrl:
               syndicationMap["bluesky"] || "https://bsky.app/profile/thayn.me",
             mastodonDiscussionUrl:
               syndicationMap["mastodon"] || "https://tech.lgbt/@AnalogCyan",
-            webmentions,
-            hasWebmentions,
+            // Set only when the post really was syndicated there, since
+            // u-syndication must point at a copy of this post
+            blueskySyndicationUrl: syndicationMap["bluesky"] || "",
+            mastodonSyndicationUrl: syndicationMap["mastodon"] || "",
             bridgyPublishTargets,
-            jsonLd: JSON.stringify(
-              {
-                "@context": "https://schema.org",
-                "@type": "BlogPosting",
-                headline: attributes.title,
-                description: toExcerpt(attributes.excerpt, body),
-                author: {
-                  "@type": "Person",
-                  name: attributes.author || "Cyan Thayn",
-                  url: `${siteUrl}/about`,
-                },
-                datePublished: toPublishedIso(normalizedDate, parsedDate),
-                ...(updatedIso ? { dateModified: updatedIso } : {}),
-                image: attributes.image
-                  ? toAbsoluteUrl(siteUrl, attributes.image)
-                  : `${siteUrl}/media/og-image.png`,
-                ...(postTags.length ? { keywords: postTags.join(", ") } : {}),
-                url: canonicalUrl,
-                mainEntityOfPage: canonicalUrl,
+            jsonLd: toJsonLdScript({
+              "@context": "https://schema.org",
+              "@type": "BlogPosting",
+              headline: attributes.title,
+              description: toExcerpt(attributes.excerpt, body),
+              author: {
+                "@type": "Person",
+                name: attributes.author || "Cyan Thayn",
+                url: `${siteUrl}/about`,
               },
-              null,
-              2
-            ),
+              datePublished: toPublishedIso(normalizedDate, parsedDate),
+              ...(updatedIso ? { dateModified: updatedIso } : {}),
+              image: attributes.image
+                ? toAbsoluteUrl(siteUrl, attributes.image)
+                : `${siteUrl}/media/og-image.png`,
+              ...(postTags.length ? { keywords: postTags.join(", ") } : {}),
+              url: canonicalUrl,
+              mainEntityOfPage: canonicalUrl,
+            }),
           },
         };
       }
@@ -946,29 +698,13 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
 
   const indexData = {
     posts: blogIndex,
-    tagOptions: buildFilterOptions(blogIndex.map((post) => post.tags[0] || "")),
+    tagOptions: buildFilterOptions(blogIndex.flatMap((post) => post.tags)),
     siteUrl,
   };
   const filledIndexTemplate = indexTemplate(indexData);
   await fs.writeFile(
     path.join(BLOG_OUTPUT_DIR, "index.html"),
     filledIndexTemplate
-  );
-
-  const recentCount = Math.max(
-    0,
-    Number.parseInt(process.env.BLOG_RECENT_COUNT || "3", 10) || 3
-  );
-  const recentPosts = blogIndex.slice(0, recentCount).map((post) => ({
-    title: post.title,
-    date: post.date,
-    tag: post.tags[0] || "",
-    excerpt: post.excerpt,
-    url: post.url,
-  }));
-  await fs.writeFile(
-    path.join(BLOG_OUTPUT_DIR, "recent-posts.json"),
-    JSON.stringify(recentPosts, null, 2)
   );
 
   const meta = {
@@ -986,21 +722,30 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
 }
 
 async function build() {
-  const config = await loadConfig();
+  const config = await engine.loadConfig();
   const capsules = await engine.loadCapsules();
   const usedCapsules = new Set();
   const siteUrl = getSiteUrl();
+  (config.meta ??= {}).siteUrl = siteUrl;
 
+  // The engine's steps are composed here rather than calling engine.build(),
+  // which would also write a sitemap. @netlify/plugin-sitemap owns that, since
+  // it sees the generated blog posts too.
   await cleanPublic();
-  config.buildHash = await engine.generateHash();
+  config.buildHash = crypto
+    .createHash("sha1")
+    .update((await engine.generateHash()) + (await hashBlogSources()))
+    .digest("hex")
+    .slice(0, 8);
   await engine.buildPages(capsules, config, usedCapsules);
   await buildBlog(capsules, config, usedCapsules, siteUrl);
   await engine.bundleStyles(
     capsules,
     usedCapsules,
-    await engine.renderVariablesCSS(config)
+    await engine.renderVariablesCSS(config),
+    config
   );
-  await engine.bundleScripts(usedCapsules, capsules);
+  await engine.bundleScripts(usedCapsules, capsules, config);
   await copyStatic();
 
   console.log("Build complete -> public/");

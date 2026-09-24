@@ -20,10 +20,12 @@ Personal website and portfolio for Cyan.
 ## About
 
 Source for [thayn.me](https://thayn.me), built without frameworks or bundlers.
-The entire build is a single Node.js script (`build.js`) that compiles
-Handlebars templates and Markdown into static HTML/CSS/JS, deployed on Netlify.
+The build is a Node.js script (`build.js`) that compiles Handlebars templates
+and Markdown into static HTML/CSS/JS, deployed on Netlify. Pages, capsules and
+the asset bundles come from the [GachaKit](https://github.com/AnalogCyan/GachaKit)
+engine; the blog, feeds, webmentions and syndication are this repo's own.
 
-Three production dependencies: `front-matter`, `handlebars`, `marked`.
+Production dependencies: `gachakit`, `front-matter`, `handlebars`, `marked`.
 
 ### How it’s put together
 
@@ -31,7 +33,6 @@ Three production dependencies: `front-matter`, `handlebars`, `marked`.
   pages. See `src/capsules/` for the header, footer, ambient background, etc.
 - **Blog** posts are Markdown with YAML frontmatter, syndicated to Mastodon and
   Bluesky via Bridgy on deploy.
-- **i18n** supports English and Toki Pona with client-side language switching.
 - **Edge functions** block AI crawlers. Serverless functions proxy Last.fm data
   and fetch webmentions.
 
