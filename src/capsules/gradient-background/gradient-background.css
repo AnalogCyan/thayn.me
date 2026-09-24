@@ -97,14 +97,11 @@
   pointer-events: none;
 }
 
+/* Stop the drift, keep the blur: without it the layer is just hard-edged
+   circles, and reduced motion is a request about movement, not about blur. */
 @media (prefers-reduced-motion: reduce) {
   .gradient-node {
     animation: none !important;
     transition: none !important;
-  }
-
-  .gradient-blur-layer {
-    filter: none;
-    -webkit-filter: none;
   }
 }

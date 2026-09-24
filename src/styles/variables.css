@@ -13,8 +13,8 @@
   --gray-900: #111827;
 
   /* Brand accents */
-  --accent: #46b3ff;
-  --accent-secondary: #ff7cc8;
+  --accent: light-dark(#0e6aaa, #46b3ff);
+  --accent-secondary: light-dark(#b61673, #ff7cc8);
   --accent-hue: 205;
 
   /* Theme-aware colors */
@@ -94,6 +94,7 @@
   --spacing-3xl: 3.5rem;
 
   /* Layout */
+  --container-min-width: 40rem;
   --container-max-width: 960px;
   --container-padding: 1.5rem;
   --container-padding-sm: 1rem;

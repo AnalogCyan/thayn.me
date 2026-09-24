@@ -8,8 +8,7 @@
 }
 
 .card-list:hover .card-list__item:not(:hover) {
-  padding-top: calc(var(--spacing-lg) - 0.1rem);
-  padding-bottom: calc(var(--spacing-lg) - 0.1rem);
+  scale: 0.99;
 }
 
 .card-list__item {
@@ -31,8 +30,6 @@
   position: relative;
   overflow: hidden;
   transition:
-    padding-top var(--transition-fast),
-    padding-bottom var(--transition-fast),
     box-shadow var(--transition-fast),
     translate var(--transition-fast),
     scale var(--transition-fast);
@@ -48,10 +45,8 @@
   }
 
   &:hover {
-    padding-top: calc(var(--spacing-lg) + 0.6rem);
-    padding-bottom: calc(var(--spacing-lg) + 0.6rem);
     translate: 0 -2px;
-    scale: 1.02;
+    scale: 1.03;
     box-shadow:
       var(--shadow-md),
       inset 0 1px 0 rgba(255, 255, 255, 0.35);
@@ -153,11 +148,5 @@
 }
 
 .card-list--dense:hover .card-list__item:not(:hover) {
-  padding-top: calc(var(--spacing-xl) - 0.1rem);
-  padding-bottom: calc(var(--spacing-xl) - 0.1rem);
-}
-
-.card-list--dense .card-list__item:hover {
-  padding-top: calc(var(--spacing-xl) + 0.6rem);
-  padding-bottom: calc(var(--spacing-xl) + 0.6rem);
+  scale: 0.99;
 }

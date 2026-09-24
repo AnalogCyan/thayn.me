@@ -11,5 +11,7 @@ footer[data-capsule="footer"] {
   gap: var(--spacing-sm);
   flex-wrap: wrap;
   text-align: center;
-  opacity: 0.75;
+  /* Muting lives in the colour token. A blanket opacity dilutes the text
+     against whatever the gradient is doing behind it. */
+  color: var(--text-muted);
 }
