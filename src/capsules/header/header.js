@@ -70,7 +70,11 @@
     const navPage = root.closest("[data-nav-page]")?.dataset.navPage;
     if (navPage) {
       const activeLink = list.querySelector(`[data-nav="${navPage}"]`);
-      if (activeLink) activeLink.classList.add("is-active");
+      if (activeLink) {
+        activeLink.classList.add("is-active");
+        // is-active is colour only; aria-current is what a screen reader reads
+        activeLink.setAttribute("aria-current", "page");
+      }
     }
   }
 
@@ -213,8 +217,13 @@
         const navPage = document.querySelector(".page-shell")?.dataset.navPage;
         if (navPage) {
           items.forEach((item) => {
-            if (item.dataset.nav === navPage) item.classList.add("is-active");
-            else item.classList.remove("is-active");
+            if (item.dataset.nav === navPage) {
+              item.classList.add("is-active");
+              item.setAttribute("aria-current", "page");
+            } else {
+              item.classList.remove("is-active");
+              item.removeAttribute("aria-current");
+            }
           });
         }
 
@@ -460,6 +469,21 @@
     const container = navWrap.closest(".container");
     if (!container) return;
 
+    // Bounds from the stylesheet, read before the first write shadows them.
+    // A nav with three items would otherwise squash the whole column to it.
+    const rootStyles = window.getComputedStyle(document.documentElement);
+    const toPx = (value) => {
+      const num = parseFloat(value);
+      if (!Number.isFinite(num)) return null;
+      return /rem\s*$/.test(value)
+        ? num * parseFloat(rootStyles.fontSize)
+        : num;
+    };
+    const minWidth =
+      toPx(rootStyles.getPropertyValue("--container-min-width")) ?? 0;
+    const maxWidth =
+      toPx(rootStyles.getPropertyValue("--container-max-width")) ?? Infinity;
+
     let lastAppliedWidth = null;
 
     // Writing the variable can resize the nav we observe, so identical writes
@@ -487,7 +511,12 @@
       const styles = window.getComputedStyle(container);
       const padLeft = parseFloat(styles.paddingLeft) || 0;
       const padRight = parseFloat(styles.paddingRight) || 0;
-      const width = Math.ceil(navRect.width + padLeft + padRight);
+      const navWidth = Math.ceil(navRect.width + padLeft + padRight);
+      const width = Math.min(
+        Math.max(navWidth, minWidth),
+        maxWidth,
+        viewportWidth
+      );
 
       applyContainerMaxWidth(`${width}px`);
     }

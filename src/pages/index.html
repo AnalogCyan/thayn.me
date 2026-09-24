@@ -68,14 +68,15 @@
 
     <script src="/scripts/theme-init.js"></script>
 
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
     <script src="/scripts.js" defer></script>
 
     <title>Cyan Thayn</title>
   </head>
   <body class="page-shell" data-hero="true" data-nav-page="home">
+    <a class="skip-link" href="#main">Skip to content</a>
     <drop capsule="gradient-background" data-animated="true"></drop>
-    <div class="container nav-center">
+    <header class="container nav-center">
       <drop capsule="header" data-theme-key="thayn_theme">
         <li class="nav-pill__item">
           <a href="/" class="nav-pill__link" aria-label="Home" data-nav="home">
@@ -150,9 +151,9 @@
           </a>
         </li>
       </drop>
-    </div>
+    </header>
 
-    <main>
+    <main id="main">
       <div class="h-card">
         <drop capsule="profile-card"></drop>
       </div>

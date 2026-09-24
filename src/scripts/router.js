@@ -92,6 +92,8 @@
     var desc = doc.querySelector('meta[name="description"]');
     var canonical = doc.querySelector('link[rel="canonical"]');
     var ogUrl = doc.querySelector('meta[property="og:url"]');
+    var ogTitle = doc.querySelector('meta[property="og:title"]');
+    var ogDesc = doc.querySelector('meta[property="og:description"]');
 
     var scripts = [];
     doc.querySelectorAll("body script[src]").forEach(function (s) {
@@ -115,6 +117,8 @@
       description: desc ? desc.getAttribute("content") : "",
       canonical: canonical ? canonical.getAttribute("href") : "",
       ogUrl: ogUrl ? ogUrl.getAttribute("content") : "",
+      ogTitle: ogTitle ? ogTitle.getAttribute("content") : "",
+      ogDescription: ogDesc ? ogDesc.getAttribute("content") : "",
       scripts: scripts,
       stylesheets: stylesheets,
     };
@@ -246,10 +250,16 @@
         if (canonicalEl && data.canonical) {
           canonicalEl.setAttribute("href", data.canonical);
         }
-        var ogUrlEl = document.querySelector('meta[property="og:url"]');
-        if (ogUrlEl && data.ogUrl) {
-          ogUrlEl.setAttribute("content", data.ogUrl);
-        }
+        // the whole og: set moves together, or a share widget reads a
+        // title from one page and a URL from another
+        [
+          ["og:url", data.ogUrl],
+          ["og:title", data.ogTitle],
+          ["og:description", data.ogDescription],
+        ].forEach(function (pair) {
+          var el = document.querySelector('meta[property="' + pair[0] + '"]');
+          if (el && pair[1]) el.setAttribute("content", pair[1]);
+        });
 
         document.title = data.title;
         var descEl = document.querySelector('meta[name="description"]');
@@ -267,6 +277,11 @@
 
         window.scrollTo(0, 0);
         window.dispatchEvent(new Event("resize"));
+
+        // A swapped <main> is a new page; move focus so it is announced
+        var heading = main.querySelector("h1") || main;
+        heading.setAttribute("tabindex", "-1");
+        heading.focus({ preventScroll: true });
 
         document.dispatchEvent(
           new CustomEvent("th-nav-changed", {
