@@ -97,7 +97,9 @@
     if (url.hash && url.pathname === location.pathname) return false;
     if (url.pathname === location.pathname) return false;
 
-    return isSpaPath(url.pathname);
+    // Leaving a post as a full page keeps its history entry a real one, so
+    // Back restores the reading position
+    return isSpaPath(url.pathname) && isSpaPath(location.pathname);
   }
 
   function extractPageData(doc) {
@@ -226,6 +228,12 @@
     if (!dir) dir = "slide-left";
     var dirClass = "dir-" + dir;
 
+    // Pushed now, not after the swap, so Back pressed during the transition
+    // has an entry to go back from; the replay below then follows it
+    if (push !== false) {
+      history.pushState(null, "", url);
+    }
+
     var footerEl = document.querySelector('[data-capsule="footer"]');
     var footerFirst = footerEl ? footerEl.getBoundingClientRect().top : null;
 
@@ -303,10 +311,6 @@
 
         main.classList.add("spa-in");
         if (dirClass) main.classList.add(dirClass);
-
-        if (push !== false) {
-          history.pushState(null, "", url);
-        }
 
         window.scrollTo(0, 0);
         window.dispatchEvent(new Event("resize"));
