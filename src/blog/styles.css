@@ -130,6 +130,11 @@
 .blog-empty {
   text-align: center;
 
+  /* .section-card's display: flex would override the attribute */
+  &[hidden] {
+    display: none;
+  }
+
   & h2 {
     font-size: 1.3rem;
     margin-bottom: var(--spacing-sm);
@@ -267,6 +272,10 @@
   flex-wrap: wrap;
   gap: var(--spacing-xs);
   align-items: center;
+
+  &[hidden] {
+    display: none;
+  }
 }
 
 .post-reaction {
