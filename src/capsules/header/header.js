@@ -220,7 +220,7 @@
 
     function returnToDefault() {
       requestAnimationFrame(function () {
-        const navPage = document.querySelector(".page-shell")?.dataset.navPage;
+        const navPage = container.closest("[data-nav-page]")?.dataset.navPage;
         if (navPage) {
           items.forEach((item) => {
             if (item.dataset.nav === navPage) {
@@ -325,7 +325,7 @@
           containerClass: "nav-pill--has-indicator",
         });
         if (pill) {
-          var shell = document.querySelector(".page-shell");
+          var shell = list.closest("[data-nav-page]");
           if (shell) {
             new MutationObserver(pill.returnToDefault).observe(shell, {
               attributes: true,
