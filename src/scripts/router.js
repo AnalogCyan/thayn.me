@@ -343,12 +343,10 @@
           "dir-slide-right"
         );
         navigating = false;
-        // Back or Forward during the failed fetch wins over the old target
-        if (location.pathname !== new URL(url, location.href).pathname) {
-          location.reload();
-        } else {
-          location.href = url;
-        }
+        // The URL was pushed before the fetch, so it already names the page
+        // to load, or wherever Back or Forward has moved it since.
+        // Assigning it again would only change the fragment of a #hash link.
+        location.reload();
       });
   }
 
