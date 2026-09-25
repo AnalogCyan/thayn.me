@@ -425,10 +425,14 @@ ${items}
 function buildAtom(posts, meta, siteUrl) {
   const channelUrl = toAbsoluteUrl(siteUrl, "/blog/");
   const selfUrl = toAbsoluteUrl(siteUrl, "/blog/atom.xml");
-  const updated = posts[0]?.updatedIso
-    ? posts[0].updatedIso
-    : posts[0]?.date
-      ? iso8601(posts[0].date, "latest post date")
+  const entryUpdated = (p) =>
+    p.updatedIso || iso8601(p.date, `post "${p.title || p.url || "unknown"}"`);
+  // The feed changed when any entry last did, not only the newest post
+  const updated =
+    posts.length > 0
+      ? posts
+          .map(entryUpdated)
+          .reduce((a, b) => (Date.parse(b) > Date.parse(a) ? b : a))
       : EMPTY_FEED_UPDATED_DATE.toISOString();
   const entries = posts
     .map((p) => {
@@ -441,7 +445,7 @@ function buildAtom(posts, meta, siteUrl) {
         `    <title>${xmlEscape(p.title)}</title>`,
         `    <id>${xmlEscape(link)}</id>`,
         `    <link href="${xmlEscape(link)}"/>`,
-        `    <updated>${p.updatedIso || iso8601(p.date, `post "${p.title || p.url || "unknown"}"`)}</updated>`,
+        `    <updated>${entryUpdated(p)}</updated>`,
         `    <published>${iso8601(p.date, `post "${p.title || p.url || "unknown"}"`)}</published>`,
         `    <author><name>${xmlEscape(p.author || meta.author)}</name></author>`,
         cats,
@@ -721,6 +725,26 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
   await fs.writeFile(path.join(BLOG_OUTPUT_DIR, "atom.xml"), atomXml);
 }
 
+// Built pages a search engine should list: noindex stubs stay out, and the
+// engine leaves out 404.html itself
+async function indexablePages() {
+  const pages = [];
+  async function walk(dir) {
+    for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) await walk(full);
+      else if (entry.name.endsWith(".html")) {
+        const html = await fs.readFile(full, "utf8");
+        if (!/<meta\s+name="robots"\s+content="[^"]*noindex/i.test(html)) {
+          pages.push(path.relative(PUBLIC_DIR, full));
+        }
+      }
+    }
+  }
+  await walk(PUBLIC_DIR);
+  return pages;
+}
+
 async function build() {
   const config = await engine.loadConfig();
   const capsules = await engine.loadCapsules();
@@ -729,8 +753,7 @@ async function build() {
   (config.meta ??= {}).siteUrl = siteUrl;
 
   // The engine's steps are composed here rather than calling engine.build(),
-  // which would also write a sitemap. @netlify/plugin-sitemap owns that, since
-  // it sees the generated blog posts too.
+  // so the sitemap is written after the blog, which engine.build() never sees
   await cleanPublic();
   config.buildHash = crypto
     .createHash("sha1")
@@ -747,6 +770,7 @@ async function build() {
   );
   await engine.bundleScripts(usedCapsules, capsules, config);
   await copyStatic();
+  await engine.writeSitemap(config, await indexablePages());
 
   console.log("Build complete -> public/");
 }
