@@ -221,7 +221,8 @@
     function returnToDefault() {
       requestAnimationFrame(function () {
         const navPage = container.closest("[data-nav-page]")?.dataset.navPage;
-        if (navPage) {
+        // An empty value, as on the 404 page, means no link is current
+        if (navPage !== undefined) {
           items.forEach((item) => {
             if (item.dataset.nav === navPage) {
               item.classList.add("is-active");
