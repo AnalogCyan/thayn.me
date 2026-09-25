@@ -20,6 +20,10 @@
   padding: var(--spacing-md);
   display: flex;
   flex-direction: column;
+  width: 100%;
+  border: 0;
+  font: inherit;
+  color: inherit;
   transition: transform var(--transition-normal);
   cursor: pointer;
   /* Prevent breaking between columns */
@@ -31,6 +35,7 @@
   transform: scale(1.02) rotate(var(--hover-rotation));
 }
 .photo-container {
+  display: block;
   border-radius: var(--radius-md);
   overflow: hidden;
 }
@@ -41,39 +46,32 @@
   border-radius: var(--radius-sm);
 }
 .caption {
+  display: block;
   margin-top: var(--spacing-lg);
   text-align: center;
+  overflow-wrap: anywhere;
 }
-.caption h3 {
-  margin: 0;
+.caption-title {
+  display: block;
   font-size: var(--font-size);
   font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
-.caption p {
-  margin: var(--spacing-xs) 0 0;
+.caption-date {
+  display: block;
+  margin-top: var(--spacing-xs);
   font-size: calc(var(--font-size) * 0.75);
   color: var(--text-muted);
 }
 
 /* Dark Mode Card Styles */
 .dark-theme .polaroid {
-  background: var(--bg-main);
-  backdrop-filter: var(--bg-blur) var(--bg-saturation);
-  -webkit-backdrop-filter: var(--bg-blur) var(--bg-saturation);
-  box-shadow: var(--shadow-soft);
   border: 1px solid var(--glass-border);
 }
 
 .dark-theme .polaroid:hover {
   box-shadow: var(--shadow-xl);
-}
-
-.dark-theme .caption h3 {
-  color: var(--text);
-}
-
-.dark-theme .caption p {
-  color: var(--text-muted);
 }
 
 /* Modal Styles */
@@ -137,6 +135,7 @@
   overflow-y: auto;
   /* Ensure it's above other elements */
   z-index: 1002;
+  overflow-wrap: anywhere;
 }
 
 /* Ensure body doesn't scroll when modal is open */
@@ -194,6 +193,7 @@ body.modal-open {
   font-weight: 700;
   margin: 0;
   color: var(--text);
+  overflow-wrap: anywhere;
 }
 
 .modal-button {
@@ -400,8 +400,6 @@ body.modal-open {
   justify-content: flex-start;
   align-items: flex-start;
   box-sizing: border-box; /* Add box-sizing to include padding in width */
-  overflow-wrap: break-word; /* Ensure long text wraps */
-  word-wrap: break-word;
 }
 
 /* Make description height match left column */
@@ -458,6 +456,9 @@ body.modal-open {
   z-index: 2000;
   opacity: 0;
   transition: opacity var(--transition-normal);
+  /* Always dark, whatever the page theme, so accents resolve to their dark
+     variants */
+  color-scheme: dark;
 }
 
 .fullscreen-overlay--active {
@@ -507,9 +508,10 @@ body.modal-open {
   opacity: 1;
 }
 
+/* Dark disc and white icon, readable over any part of the photo */
 .fullscreen-button {
-  background: rgba(255, 255, 255, 0.3);
-  color: #555;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 50%;
   width: 40px;
@@ -524,7 +526,7 @@ body.modal-open {
 }
 
 .fullscreen-button:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.8);
   transform: scale(1.05);
 }
 
@@ -553,72 +555,21 @@ body.modal-open {
   background-color: rgba(0, 0, 0, 0.75);
 }
 
-.dark-theme .modal-container {
-  background: var(--bg-main);
-  backdrop-filter: var(--bg-blur) var(--bg-saturation);
-  -webkit-backdrop-filter: var(--bg-blur) var(--bg-saturation);
-  box-shadow: var(--shadow-xl);
-  border: 1px solid var(--glass-border);
-}
-
-.dark-theme .modal-title {
-  color: var(--text);
-}
-
-.dark-theme .modal-button {
-  background: var(--bg-secondary);
-  border: 1px solid var(--glass-border);
-  color: var(--text-muted);
-}
-
-.dark-theme .modal-button:hover {
-  background: var(--bg-main);
-  color: var(--text);
-}
-
 .dark-theme .modal-button:active {
   box-shadow: inset 0px 1px 3px rgba(0, 0, 0, 0.2);
-  border-color: var(--glass-border);
 }
 
-.dark-theme .modal-content {
-  color: var(--text);
-}
+/* Translucent surfaces keep their alpha when colors are forced */
+@media (forced-colors: active) {
+  .polaroid,
+  .modal-container,
+  .metadata-item {
+    border: 1px solid CanvasText;
+  }
 
-.dark-theme .modal-description {
-  color: var(--text-muted);
-  background: var(--bg-secondary);
-  border: 1px solid var(--glass-border);
-}
-
-.dark-theme .metadata-item {
-  background: var(--bg-secondary);
-  color: var(--text-muted);
-  box-shadow: var(--shadow-md);
-}
-
-.dark-theme .metadata-item:hover {
-  background: var(--bg-main);
-}
-
-.dark-theme .modal-expand {
-  background: var(--bg-secondary);
-  border: 1px solid var(--glass-border);
-}
-
-.dark-theme .modal-image {
-  box-shadow: var(--shadow-xl);
-}
-
-/* Dark mode for fullscreen overlay */
-.dark-theme .fullscreen-overlay button {
-  background: var(--bg-secondary);
-  border: 1px solid var(--glass-border);
-  color: var(--text-muted);
-}
-
-.dark-theme .fullscreen-overlay button:hover {
-  background: var(--bg-main);
+  .modal-container {
+    background: Canvas;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

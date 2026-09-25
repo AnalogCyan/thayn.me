@@ -29,13 +29,19 @@ async function initPhotoCards() {
 
       try {
         const data = await fetchPhotoData(config.dataPath);
-        const limited = data.slice(0, config.count);
-        renderSection(section, limited, config, registry);
+        if (!Array.isArray(data)) {
+          throw new TypeError(`${config.dataPath} is not a JSON array`);
+        }
+        const usable = data.filter((entry) => entry?.imageSrc);
+        if (usable.length < data.length) {
+          console.warn(
+            `Skipped ${data.length - usable.length} photo(s) without imageSrc in ${config.dataPath}`
+          );
+        }
+        renderSection(section, usable.slice(0, config.count), config, registry);
       } catch (error) {
         console.error("Failed to load photo data:", error);
-        section.innerHTML = `<p>Could not load photos. Error: ${escapeHTML(
-          error.message || "Unknown error"
-        )}</p>`;
+        section.innerHTML = `<p>Could not load photos.</p>`;
       }
     })
   );
@@ -97,32 +103,37 @@ function renderSection(section, cards, config, registry) {
     const cardId = String(rawId);
     const uniqueKey = `${config.dataPath}::${cardId}`;
     const imagePath = config.imagesPath + card.imageSrc;
+    const title = card.title || "Untitled";
+    // Intrinsic size reserves the card's height before the lazy image loads
+    const size =
+      Number.isFinite(card.width) && Number.isFinite(card.height)
+        ? ` width="${card.width}" height="${card.height}"`
+        : "";
 
-    const polaroid = document.createElement("article");
+    const polaroid = document.createElement("button");
+    polaroid.type = "button";
     polaroid.className = "polaroid";
     polaroid.setAttribute("data-id", cardId);
     polaroid.setAttribute("data-card-key", uniqueKey);
-    polaroid.setAttribute("role", "button");
-    polaroid.setAttribute("tabindex", "0");
-    polaroid.setAttribute("aria-label", `${card.title} details`);
 
     const randomAngle = (Math.random() * 6 - 3).toFixed(2);
     polaroid.style.setProperty("--hover-rotation", `${randomAngle}deg`);
+    // The caption names the button, so the image is decorative here
     polaroid.innerHTML = `
-      <div class="photo-container">
-        <img src="${escapeHTML(imagePath)}" alt="${escapeHTML(card.title)}" />
-      </div>
-      <div class="caption">
-        <h3>${escapeHTML(card.title)}</h3>
-        <p><i class="ri-calendar-line" aria-hidden="true"></i> ${escapeHTML(
+      <span class="photo-container">
+        <img src="${escapeHTML(imagePath)}" alt=""${size} loading="lazy" decoding="async" />
+      </span>
+      <span class="caption">
+        <span class="caption-title">${escapeHTML(title)}</span>
+        <span class="caption-date"><i class="ri-calendar-line" aria-hidden="true"></i> ${escapeHTML(
           card.date || ""
-        )}</p>
-      </div>
+        )}</span>
+      </span>
     `;
 
     section.appendChild(polaroid);
     registry.set(uniqueKey, {
-      data: card,
+      data: { ...card, title },
       imagePath,
       imagesPath: config.imagesPath,
       trigger: polaroid,
@@ -137,6 +148,34 @@ function escapeHTML(str) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function downloadImage(src, title) {
+  fetch(src)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.blob();
+    })
+    .then((blob) => {
+      const extension =
+        new URL(src, location.href).pathname.match(/\.(\w+)$/)?.[1] ||
+        blob.type.match(/^image\/(\w+)/)?.[1] ||
+        "jpg";
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = `${(title || "photo").replace(/\s+/g, "-").toLowerCase()}.${extension}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    })
+    .catch((error) => {
+      console.error("Error downloading image:", error);
+      alert("Unable to download the image. Please try again.");
+    });
 }
 
 function createModalStructure() {
@@ -208,11 +247,14 @@ function initializePhotoModal(cardRegistry, getReduceMotion) {
   const MODAL_IN_AT_MS = 240;
   let flightBox = null;
   let flightTimer = null;
+  let flightResize = null;
 
   // The photo in flight lives on <body>, outside the overlay, so it neither
   // inherits the overlay's fade nor vanishes when the overlay is hidden. A
-  // fresh element each time means no inline state carries over.
-  function startFlight(src, rect) {
+  // fresh element each time means no inline state carries over. A resize
+  // moves the target, so onResize finishes the flight instead of landing on
+  // a stale rect.
+  function startFlight(src, rect, onResize) {
     clearFlight();
     const box = document.createElement("div");
     box.className = "modal-flight";
@@ -223,6 +265,8 @@ function initializePhotoModal(cardRegistry, getReduceMotion) {
     placeFlight(box, rect);
     document.body.appendChild(box);
     flightBox = box;
+    flightResize = onResize;
+    window.addEventListener("resize", onResize);
     return box;
   }
 
@@ -237,6 +281,10 @@ function initializePhotoModal(cardRegistry, getReduceMotion) {
     if (flightTimer !== null) {
       clearTimeout(flightTimer);
       flightTimer = null;
+    }
+    if (flightResize) {
+      window.removeEventListener("resize", flightResize);
+      flightResize = null;
     }
     if (flightBox) {
       flightBox.remove();
@@ -353,6 +401,7 @@ function initializePhotoModal(cardRegistry, getReduceMotion) {
     animationHidOriginal = false;
 
     modalTitle.textContent = card.title || "Photo";
+    modalExpand.style.display = "";
     modalImage.src = entry.imagePath;
     modalImage.alt = card.title || "Selected photo";
 
@@ -372,12 +421,17 @@ function initializePhotoModal(cardRegistry, getReduceMotion) {
         createMetadataItemWithWidth("ri-map-pin-line", card.location)
       );
     }
-    if (Array.isArray(card.tags) && card.tags.length) {
-      card.tags.forEach((tag) => {
-        metadataItems.push(
-          createMetadataItemWithWidth("ri-price-tag-3-line", tag)
-        );
-      });
+    if (Array.isArray(card.tags)) {
+      card.tags
+        .filter(
+          (tag) =>
+            ["string", "number", "boolean"].includes(typeof tag) && tag !== ""
+        )
+        .forEach((tag) => {
+          metadataItems.push(
+            createMetadataItemWithWidth("ri-price-tag-3-line", String(tag))
+          );
+        });
     }
 
     metadataItems.sort((a, b) => a.width - b.width);
@@ -415,10 +469,19 @@ function initializePhotoModal(cardRegistry, getReduceMotion) {
       return;
     }
 
+    const land = () => {
+      clearFlight();
+      modalContainer.style.opacity = "1";
+      setFocusTrap();
+      if (!modalContainer.contains(document.activeElement)) {
+        (modalClose || modalContainer).focus();
+      }
+    };
     const sourceImage = cardImage(clickedElement);
     const box = startFlight(
       entry.imagePath,
-      sourceImage.getBoundingClientRect()
+      sourceImage.getBoundingClientRect(),
+      land
     );
     sourceImage.style.visibility = "hidden";
     animationHidOriginal = true;
@@ -486,7 +549,8 @@ function initializePhotoModal(cardRegistry, getReduceMotion) {
       const targetImage = cardImage(trigger);
       const box = startFlight(
         activeEntry.imagePath,
-        modalImage.getBoundingClientRect()
+        modalImage.getBoundingClientRect(),
+        finalizeClose
       );
 
       modalContainer.style.opacity = "0";
@@ -514,21 +578,12 @@ function initializePhotoModal(cardRegistry, getReduceMotion) {
     card.addEventListener("click", () => {
       openModal(getCardKey(), card);
     });
-
-    card.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        openModal(getCardKey(), card);
-      }
-    });
   });
 
   if (modalClose) {
     modalClose.addEventListener("click", (event) => {
       event.stopPropagation();
-      setTimeout(() => {
-        closeModal();
-      }, 150);
+      closeModal();
     });
   }
 
@@ -537,215 +592,193 @@ function initializePhotoModal(cardRegistry, getReduceMotion) {
     modalDownload.addEventListener("click", (event) => {
       event.stopPropagation();
 
-      setTimeout(() => {
-        const imageSrc = modalImage.getAttribute("src");
-        if (!imageSrc) return;
-
-        const title = modalTitle.textContent.trim();
-        const fileName =
-          (title || "photo").replace(/\s+/g, "-").toLowerCase() + ".jpg";
-
-        fetch(imageSrc)
-          .then((response) => response.blob())
-          .then((blob) => {
-            const blobUrl = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = blobUrl;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(blobUrl);
-          })
-          .catch((error) => {
-            console.error("Error downloading image:", error);
-            alert("Unable to download the image. Please try again.");
-          });
-      }, 150);
+      const imageSrc = modalImage.getAttribute("src");
+      if (!imageSrc) return;
+      downloadImage(imageSrc, modalTitle.textContent.trim());
     });
   }
+
+  // An image that failed to load has no size to expand to
+  modalImage.addEventListener("error", () => {
+    modalExpand.style.display = "none";
+  });
 
   if (modalExpand) {
     modalExpand.addEventListener("click", (event) => {
       event.stopPropagation();
+      if (
+        !modalOverlay.classList.contains("active") ||
+        !modalImage.naturalWidth
+      ) {
+        return;
+      }
 
-      // Wait for button animation to complete before expanding
-      setTimeout(() => {
-        const fullscreenOverlay = document.createElement("div");
-        fullscreenOverlay.className = "fullscreen-overlay";
-        fullscreenOverlay.setAttribute("role", "dialog");
-        fullscreenOverlay.setAttribute("aria-modal", "true");
-        fullscreenOverlay.setAttribute(
-          "aria-label",
-          `${modalTitle.textContent.trim() || "Photo"}, fullscreen`
-        );
+      const fullscreenOverlay = document.createElement("div");
+      fullscreenOverlay.className = "fullscreen-overlay";
+      fullscreenOverlay.setAttribute("role", "dialog");
+      fullscreenOverlay.setAttribute("aria-modal", "true");
+      fullscreenOverlay.setAttribute(
+        "aria-label",
+        `${modalTitle.textContent.trim() || "Photo"}, fullscreen`
+      );
 
-        const sourceImage = modalImage;
-        const sourceRect = sourceImage.getBoundingClientRect();
+      const sourceImage = modalImage;
+      const sourceRect = sourceImage.getBoundingClientRect();
 
-        const imageContainer = document.createElement("div");
-        imageContainer.className = "fullscreen-image-container";
+      const imageContainer = document.createElement("div");
+      imageContainer.className = "fullscreen-image-container";
 
-        const fullscreenImage = document.createElement("img");
-        fullscreenImage.src = sourceImage.src;
-        fullscreenImage.className = "fullscreen-image";
+      const fullscreenImage = document.createElement("img");
+      fullscreenImage.src = sourceImage.src;
+      fullscreenImage.alt = sourceImage.alt;
+      fullscreenImage.className = "fullscreen-image";
 
+      fullscreenImage.style.width = sourceRect.width + "px";
+      fullscreenImage.style.height = sourceRect.height + "px";
+
+      imageContainer.appendChild(fullscreenImage);
+
+      imageContainer.style.top = sourceRect.top + "px";
+      imageContainer.style.left = sourceRect.left + "px";
+      imageContainer.style.width = sourceRect.width + "px";
+      imageContainer.style.height = sourceRect.height + "px";
+
+      fullscreenOverlay.appendChild(imageContainer);
+
+      const buttonContainer = document.createElement("div");
+      buttonContainer.className = "fullscreen-button-bar";
+      imageContainer.appendChild(buttonContainer);
+
+      const downloadButton = document.createElement("button");
+      downloadButton.type = "button";
+      downloadButton.setAttribute("aria-label", "Download photo");
+      downloadButton.innerHTML =
+        '<i class="ri-download-2-line" aria-hidden="true"></i>';
+      downloadButton.className =
+        "fullscreen-button fullscreen-button--download";
+      buttonContainer.appendChild(downloadButton);
+
+      const closeButton = document.createElement("button");
+      closeButton.type = "button";
+      closeButton.setAttribute("aria-label", "Close fullscreen view");
+      closeButton.innerHTML =
+        '<i class="ri-close-line" aria-hidden="true"></i>';
+      closeButton.className = "fullscreen-button fullscreen-button--close";
+      buttonContainer.appendChild(closeButton);
+
+      document.body.appendChild(fullscreenOverlay);
+      // Keyboard and pointer stay in the fullscreen layer until it closes
+      modalOverlay.inert = true;
+      closeButton.focus();
+
+      // Force layout calculation
+      void fullscreenOverlay.offsetWidth;
+
+      // Calculate the optimal size for the expanded image (85% of viewport)
+      const viewportWidth = window.innerWidth;
+      const viewportHeight = window.innerHeight;
+      const optimalWidth = viewportWidth * 0.85;
+      const optimalHeight = viewportHeight * 0.85;
+
+      const imgNatWidth = sourceImage.naturalWidth;
+      const imgNatHeight = sourceImage.naturalHeight;
+
+      // Calculate dimensions that maintain aspect ratio
+      let targetWidth, targetHeight;
+      const aspectRatio = imgNatWidth / imgNatHeight;
+
+      if (imgNatWidth / optimalWidth > imgNatHeight / optimalHeight) {
+        // Width is the limiting factor
+        targetWidth = optimalWidth;
+        targetHeight = targetWidth / aspectRatio;
+      } else {
+        // Height is the limiting factor
+        targetHeight = optimalHeight;
+        targetWidth = targetHeight * aspectRatio;
+      }
+
+      requestAnimationFrame(() => {
+        fullscreenOverlay.classList.add("fullscreen-overlay--active");
+
+        imageContainer.style.top = "50%";
+        imageContainer.style.left = "50%";
+        imageContainer.style.width = targetWidth + "px";
+        imageContainer.style.height = targetHeight + "px";
+        imageContainer.style.transform = "translate(-50%, -50%)";
+
+        // Expand image to fill container. The inline size set for the
+        // start position outranks the class, so it has to move too.
+        fullscreenImage.style.width = targetWidth + "px";
+        fullscreenImage.style.height = targetHeight + "px";
+        fullscreenImage.classList.add("fullscreen-image--expanded");
+
+        // Show buttons after image animation
+        setTimeout(() => {
+          buttonContainer.classList.add("fullscreen-button-bar--visible");
+        }, 300);
+      });
+
+      downloadButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        downloadImage(fullscreenImage.src, modalTitle.textContent.trim());
+      });
+
+      let closed = false;
+      const closeFullscreen = () => {
+        if (closed) return;
+        closed = true;
+        document.removeEventListener("keydown", keyHandler, true);
+
+        buttonContainer.classList.remove("fullscreen-button-bar--visible");
+
+        fullscreenImage.classList.remove("fullscreen-image--expanded");
         fullscreenImage.style.width = sourceRect.width + "px";
         fullscreenImage.style.height = sourceRect.height + "px";
-
-        imageContainer.appendChild(fullscreenImage);
 
         imageContainer.style.top = sourceRect.top + "px";
         imageContainer.style.left = sourceRect.left + "px";
         imageContainer.style.width = sourceRect.width + "px";
         imageContainer.style.height = sourceRect.height + "px";
+        imageContainer.style.transform = "none";
 
-        fullscreenOverlay.appendChild(imageContainer);
+        fullscreenOverlay.classList.remove("fullscreen-overlay--active");
 
-        const buttonContainer = document.createElement("div");
-        buttonContainer.className = "fullscreen-button-bar";
-        imageContainer.appendChild(buttonContainer);
+        // Remove from DOM after animation completes, focus back on the
+        // button that opened it
+        setTimeout(() => {
+          document.body.removeChild(fullscreenOverlay);
+          modalOverlay.inert = false;
+          modalExpand.focus();
+        }, 300);
+      };
 
-        const downloadButton = document.createElement("button");
-        downloadButton.type = "button";
-        downloadButton.setAttribute("aria-label", "Download photo");
-        downloadButton.innerHTML =
-          '<i class="ri-download-2-line" aria-hidden="true"></i>';
-        downloadButton.className =
-          "fullscreen-button fullscreen-button--download";
-        buttonContainer.appendChild(downloadButton);
+      fullscreenOverlay.addEventListener("click", closeFullscreen);
+      closeButton.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeFullscreen();
+      });
 
-        const closeButton = document.createElement("button");
-        closeButton.type = "button";
-        closeButton.setAttribute("aria-label", "Close fullscreen view");
-        closeButton.innerHTML =
-          '<i class="ri-close-line" aria-hidden="true"></i>';
-        closeButton.className = "fullscreen-button fullscreen-button--close";
-        buttonContainer.appendChild(closeButton);
+      // Prevent clicks on image from closing fullscreen
+      fullscreenImage.addEventListener("click", (e) => {
+        e.stopPropagation();
+      });
 
-        document.body.appendChild(fullscreenOverlay);
-
-        // Force layout calculation
-        void fullscreenOverlay.offsetWidth;
-
-        // Calculate the optimal size for the expanded image (85% of viewport)
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        const optimalWidth = viewportWidth * 0.85;
-        const optimalHeight = viewportHeight * 0.85;
-
-        const imgNatWidth = sourceImage.naturalWidth;
-        const imgNatHeight = sourceImage.naturalHeight;
-
-        // Calculate dimensions that maintain aspect ratio
-        let targetWidth, targetHeight;
-        const aspectRatio = imgNatWidth / imgNatHeight;
-
-        if (imgNatWidth / optimalWidth > imgNatHeight / optimalHeight) {
-          // Width is the limiting factor
-          targetWidth = optimalWidth;
-          targetHeight = targetWidth / aspectRatio;
-        } else {
-          // Height is the limiting factor
-          targetHeight = optimalHeight;
-          targetWidth = targetHeight * aspectRatio;
-        }
-
-        requestAnimationFrame(() => {
-          fullscreenOverlay.classList.add("fullscreen-overlay--active");
-
-          imageContainer.style.top = "50%";
-          imageContainer.style.left = "50%";
-          imageContainer.style.width = targetWidth + "px";
-          imageContainer.style.height = targetHeight + "px";
-          imageContainer.style.transform = "translate(-50%, -50%)";
-
-          // Expand image to fill container. The inline size set for the
-          // start position outranks the class, so it has to move too.
-          fullscreenImage.style.width = targetWidth + "px";
-          fullscreenImage.style.height = targetHeight + "px";
-          fullscreenImage.classList.add("fullscreen-image--expanded");
-
-          // Show buttons after image animation, and move focus in so the
-          // keyboard is not left on the modal underneath
-          setTimeout(() => {
-            buttonContainer.classList.add("fullscreen-button-bar--visible");
-            closeButton.focus();
-          }, 300);
-        });
-
-        downloadButton.addEventListener("click", (e) => {
-          e.stopPropagation();
-
-          const title = modalTitle.textContent.trim();
-          const fileName = title.replace(/\s+/g, "-").toLowerCase() + ".jpg";
-
-          fetch(fullscreenImage.src)
-            .then((response) => response.blob())
-            .then((blob) => {
-              const blobUrl = URL.createObjectURL(blob);
-              const a = document.createElement("a");
-              a.href = blobUrl;
-              a.download = fileName;
-
-              document.body.appendChild(a);
-              a.click();
-              document.body.removeChild(a);
-              URL.revokeObjectURL(blobUrl);
-            })
-            .catch((error) => {
-              console.error("Error downloading image:", error);
-              alert("Unable to download the image. Please try again.");
-            });
-        });
-
-        let closed = false;
-        const closeFullscreen = () => {
-          if (closed) return;
-          closed = true;
-          document.removeEventListener("keydown", escapeHandler, true);
-
-          buttonContainer.classList.remove("fullscreen-button-bar--visible");
-
-          fullscreenImage.classList.remove("fullscreen-image--expanded");
-          fullscreenImage.style.width = sourceRect.width + "px";
-          fullscreenImage.style.height = sourceRect.height + "px";
-
-          imageContainer.style.top = sourceRect.top + "px";
-          imageContainer.style.left = sourceRect.left + "px";
-          imageContainer.style.width = sourceRect.width + "px";
-          imageContainer.style.height = sourceRect.height + "px";
-          imageContainer.style.transform = "none";
-
-          fullscreenOverlay.classList.remove("fullscreen-overlay--active");
-
-          // Remove from DOM after animation completes, focus back on the
-          // button that opened it
-          setTimeout(() => {
-            document.body.removeChild(fullscreenOverlay);
-            modalExpand.focus();
-          }, 300);
-        };
-
-        fullscreenOverlay.addEventListener("click", closeFullscreen);
-        closeButton.addEventListener("click", (e) => {
+      // Escape closes fullscreen only, not the modal underneath. Tab cycles
+      // between the two buttons.
+      function keyHandler(e) {
+        if (closed) return;
+        if (e.key === "Escape") {
           e.stopPropagation();
           closeFullscreen();
-        });
-
-        // Prevent clicks on image from closing fullscreen
-        fullscreenImage.addEventListener("click", (e) => {
-          e.stopPropagation();
-        });
-
-        // Escape closes fullscreen only, not the modal underneath
-        function escapeHandler(e) {
-          if (e.key !== "Escape" || closed) return;
-          e.stopPropagation();
-          closeFullscreen();
+        } else if (e.key === "Tab") {
+          e.preventDefault();
+          const buttons = [downloadButton, closeButton];
+          const next =
+            buttons.indexOf(document.activeElement) + (e.shiftKey ? -1 : 1);
+          buttons.at(next % buttons.length).focus();
         }
-        document.addEventListener("keydown", escapeHandler, true);
-      }, 150); // Reduced from 200ms to 150ms for better responsiveness
+      }
+      document.addEventListener("keydown", keyHandler, true);
     });
   }
 

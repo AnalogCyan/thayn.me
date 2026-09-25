@@ -24,6 +24,6 @@ Responsive navigation pill with embedded theme toggle and mobile hamburger menu.
 
 ## Technical Notes
 
-- Active link detection for `/`, `/index.html`, and directory routes
+- The active link is the one whose `data-nav` matches `data-nav-page` on an enclosing element, usually `<body>` or `page-header`. It gets `is-active` and `aria-current="page"`
 - Sliding pill follows `data-nav` attribute
 - Theme toggle uses `data-theme-key` for localStorage key (defaults to `thayn_theme`)

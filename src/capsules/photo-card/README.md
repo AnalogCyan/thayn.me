@@ -72,11 +72,15 @@ The component expects a JSON file with the following structure:
     "location": "Location Name",
     "camera": "Camera Model",
     "imageSrc": "filename.jpg",
+    "width": 1400,
+    "height": 1400,
     "description": "Detailed description of the photo",
     "tags": ["optional", "tags", "array"]
   }
 ]
 ```
+
+`imageSrc` is required; entries without it are skipped. A missing `title` shows as "Untitled". `width` and `height` are optional pixel dimensions of the image: with them the card reserves its space before the lazily loaded image arrives, so the grid does not jump.
 
 ## Required Dependencies
 

@@ -63,6 +63,12 @@
       if (event.target.closest("a")) setOpen(false);
     });
 
+    nav.addEventListener("focusout", (event) => {
+      if (event.relatedTarget && !nav.contains(event.relatedTarget)) {
+        setOpen(false);
+      }
+    });
+
     mediaQuery.addEventListener("change", () => setOpen(false));
 
     setOpen(false);
@@ -353,6 +359,7 @@
       root.querySelectorAll("[data-theme-button='true']")
     );
     if (toggles.length === 0) return;
+    const status = root.querySelector("[data-theme-status]");
 
     const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)");
     const ICON_MAP = {
@@ -361,7 +368,7 @@
       [THEMES.DARK]: { icon: "ri-moon-line", label: "Dark" },
     };
 
-    function getCurrentMode() {
+    function readStoredMode() {
       try {
         return localStorage.getItem(STORAGE_KEY) || THEMES.AUTO;
       } catch {
@@ -369,7 +376,11 @@
       }
     }
 
+    // Held in memory so cycling still works when storage is unavailable
+    let currentMode = readStoredMode();
+
     function savePreference(mode) {
+      currentMode = mode;
       try {
         localStorage.setItem(STORAGE_KEY, mode);
       } catch {
@@ -426,7 +437,6 @@
     }
 
     function cycleTheme() {
-      const currentMode = getCurrentMode();
       let newMode;
 
       switch (currentMode) {
@@ -444,6 +454,9 @@
 
       savePreference(newMode);
       applyTheme(newMode);
+      if (status) {
+        status.textContent = `Theme: ${ICON_MAP[newMode].label}`;
+      }
     }
 
     toggles.forEach((toggle) => {
@@ -453,12 +466,12 @@
     });
 
     systemPrefersDark.addEventListener("change", () => {
-      if (getCurrentMode() === THEMES.AUTO) {
+      if (currentMode === THEMES.AUTO) {
         applyTheme(THEMES.AUTO);
       }
     });
 
-    applyTheme(getCurrentMode());
+    applyTheme(currentMode);
   }
 
   function initLayout(root) {
