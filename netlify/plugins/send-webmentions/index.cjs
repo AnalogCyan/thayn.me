@@ -282,6 +282,11 @@ module.exports = {
     if (skipped > 0) {
       console.log(`send-webmentions: ${skipped} already sent, skipped`);
     }
-    await ledger.save();
+    // Losing the ledger only means some mentions are sent again next time
+    try {
+      await ledger.save();
+    } catch (error) {
+      console.log(`send-webmentions: ledger save failed (${error})`);
+    }
   },
 };
