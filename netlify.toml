@@ -17,7 +17,7 @@ package = "@netlify/plugin-sitemap"
   [plugins.inputs]
   # keep error page and under-construction stubs out of the sitemap
   # (excludes are globs matched against built file paths, not URLs)
-  exclude = ["**/404.html", "**/now.html", "**/uses.html", "**/more.html"]
+  exclude = ["**/404.html", "**/photos.html", "**/now.html", "**/uses.html", "**/more.html"]
 
 [[plugins]]
 package = "netlify-plugin-minify-html"
