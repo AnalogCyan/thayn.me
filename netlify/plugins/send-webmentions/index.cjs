@@ -175,6 +175,10 @@ async function sendMention(endpoint, source, target) {
       signal: AbortSignal.timeout(TIMEOUT_MS),
       redirect: "manual",
     });
+    // 303 means accepted, with the result elsewhere
+    if (res.status === 303) {
+      return { label: "HTTP 303", delivered: true };
+    }
     const location = res.headers.get("location");
     if (res.status < 300 || res.status >= 400 || !location) {
       return { label: `HTTP ${res.status}`, delivered: res.ok };
