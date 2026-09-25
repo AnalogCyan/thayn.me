@@ -15,10 +15,24 @@
 
   var TRANSITION_MS = 300;
   var navigating = false;
+  // Path of the page <main> holds, which lags location during a navigation
+  var renderedPath = location.pathname;
 
-  var baseScripts = new Set(
+  // Scripts are keyed by path, so a ?v= suffix on one page and not another
+  // is still the same script
+  function scriptKey(src) {
+    try {
+      return new URL(src, location.href).pathname;
+    } catch {
+      return src;
+    }
+  }
+
+  // Scripts the current page lists. One the next page also lists keeps
+  // running; any other runs again when its page comes back.
+  var activeScripts = new Set(
     Array.from(document.querySelectorAll("script[src]")).map(function (s) {
-      return s.getAttribute("src");
+      return scriptKey(s.getAttribute("src"));
     })
   );
 
@@ -58,6 +72,16 @@
     return toIdx > fromIdx ? "slide-left" : "slide-right";
   }
 
+  // Blog posts load as full pages; their comments script is a module, and a
+  // module does not run twice from the same URL
+  function isSpaPath(path) {
+    return !(
+      path.startsWith("/blog/") &&
+      path !== "/blog/" &&
+      path !== "/blog/index.html"
+    );
+  }
+
   function shouldIntercept(anchor) {
     if (anchor.target === "_blank") return false;
     if (anchor.hasAttribute("download")) return false;
@@ -73,16 +97,7 @@
     if (url.hash && url.pathname === location.pathname) return false;
     if (url.pathname === location.pathname) return false;
 
-    var path = url.pathname;
-
-    if (
-      path.startsWith("/blog/") &&
-      path !== "/blog/" &&
-      path !== "/blog/index.html"
-    )
-      return false;
-
-    return true;
+    return isSpaPath(url.pathname);
   }
 
   function extractPageData(doc) {
@@ -134,6 +149,16 @@
       }
     });
 
+    // Sheets from the first page load stay in place, switched off while the
+    // current page does not list them
+    document
+      .querySelectorAll('link[rel="stylesheet"]:not([data-spa])')
+      .forEach(function (link) {
+        if (baseStylesheets.has(link.href)) {
+          link.disabled = !wanted.has(link.href);
+        }
+      });
+
     var existing = Array.from(document.querySelectorAll("link[data-spa]"));
     existing.forEach(function (link) {
       if (!wanted.has(link.href)) link.remove();
@@ -158,9 +183,12 @@
       s.remove();
     });
 
+    var previous = activeScripts;
+    activeScripts = new Set(scripts.map(scriptKey));
+
     var chain = Promise.resolve();
     scripts.forEach(function (src) {
-      if (baseScripts.has(src)) return;
+      if (previous.has(scriptKey(src))) return;
       chain = chain.then(function () {
         return new Promise(function (resolve) {
           var el = document.createElement("script");
@@ -223,8 +251,13 @@
         main.classList.remove("spa-out", "dir-slide-left", "dir-slide-right");
 
         swapMain(main, data.mainHTML);
+        renderedPath = new URL(url, location.href).pathname;
 
-        if (footerEl && footerFirst !== null) {
+        if (
+          footerEl &&
+          footerFirst !== null &&
+          !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ) {
           var footerLast = footerEl.getBoundingClientRect().top;
           var delta = Math.round(footerLast - footerFirst);
           if (Math.abs(delta) >= 3) {
@@ -292,6 +325,10 @@
         setTimeout(function () {
           main.classList.remove("spa-in", dirClass);
           navigating = false;
+          // Back or Forward pressed mid-navigation lands here
+          if (location.pathname !== renderedPath) {
+            onHistoryChange();
+          }
         }, TRANSITION_MS);
       })
       .catch(function () {
@@ -318,7 +355,16 @@
     navigate(anchor.href);
   });
 
-  window.addEventListener("popstate", function () {
+  function onHistoryChange() {
+    // A hash-only change is the browser's to scroll, and one made while a
+    // navigation runs is picked up when it finishes
+    if (navigating || location.pathname === renderedPath) return;
+    if (!isSpaPath(location.pathname)) {
+      location.reload();
+      return;
+    }
     navigate(location.href, false);
-  });
+  }
+
+  window.addEventListener("popstate", onHistoryChange);
 })();
