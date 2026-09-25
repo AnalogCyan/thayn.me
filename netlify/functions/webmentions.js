@@ -98,6 +98,8 @@ export const handler = async (event) => {
 
   const apiUrl = new URL("https://webmention.io/api/mentions.jf2");
   apiUrl.searchParams.set("target", target);
+  // The API pages at 20 by default, which would cap every count at 20
+  apiUrl.searchParams.set("per-page", "1000");
   const token = process.env.WEBMENTION_IO_TOKEN;
   if (token) {
     apiUrl.searchParams.set("token", token);

@@ -125,7 +125,11 @@ function isPublicEndpoint(endpoint) {
     return false;
   }
   if (url.protocol !== "https:" && url.protocol !== "http:") return false;
-  const host = url.hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  // "localhost." is localhost too
+  const host = url.hostname
+    .replace(/^\[|\]$/g, "")
+    .replace(/\.$/, "")
+    .toLowerCase();
   if (
     host === "localhost" ||
     host.endsWith(".localhost") ||
@@ -159,15 +163,28 @@ function isPublicEndpoint(endpoint) {
   return true;
 }
 
+// Redirects are followed by hand, so each hop gets the same public check
 async function sendMention(endpoint, source, target) {
   if (DRY_RUN) return { label: "dry-run", delivered: false };
-  const res = await fetch(endpoint, {
-    method: "POST",
-    headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ source, target }).toString(),
-    signal: AbortSignal.timeout(TIMEOUT_MS),
-  });
-  return { label: `HTTP ${res.status}`, delivered: res.ok };
+  let url = endpoint;
+  for (let hop = 0; hop < 4; hop += 1) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ source, target }).toString(),
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+      redirect: "manual",
+    });
+    const location = res.headers.get("location");
+    if (res.status < 300 || res.status >= 400 || !location) {
+      return { label: `HTTP ${res.status}`, delivered: res.ok };
+    }
+    url = new URL(location, url).toString();
+    if (!isPublicEndpoint(url)) {
+      return { label: "redirect-to-non-public", delivered: false };
+    }
+  }
+  return { label: "too-many-redirects", delivered: false };
 }
 
 // Remembers what has already been delivered, so a deploy that changes nothing
