@@ -25,6 +25,12 @@
   flex-wrap: wrap;
 }
 
+/* Project titles are h2s under the page's h1, sized like card-list h3s */
+.card-list__header h2 {
+  font-size: 1.3rem;
+  margin-bottom: var(--spacing-sm);
+}
+
 .tag.wip {
   background: rgba(255, 171, 64, 0.2);
   color: #ff8a00;
