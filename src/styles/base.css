@@ -23,12 +23,18 @@ html {
   color: var(--text);
   background-color: var(--page-bg);
   min-height: 100%;
-  scrollbar-width: none;
-  scroll-behavior: smooth;
+  scrollbar-width: thin;
 
-  &::-webkit-scrollbar {
-    display: none;
+  @media (prefers-reduced-motion: no-preference) {
+    scroll-behavior: smooth;
   }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  /* Page colour in the offset gap keeps the ring visible over a blob of the accent's own hue */
+  box-shadow: 0 0 0 2px var(--page-bg);
 }
 
 * {
@@ -60,6 +66,7 @@ main {
   max-width: var(--container-max-width);
   align-items: stretch;
   width: 100%;
+  text-shadow: var(--text-halo);
 
   &:empty {
     display: none;
@@ -150,6 +157,7 @@ a {
   border: 1px solid var(--glass-border);
   position: relative;
   overflow: hidden;
+  text-shadow: none;
 
   &::before {
     content: "";
@@ -212,14 +220,20 @@ a {
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1.2rem;
+  /* Light glass would wash out the white label, so light mode gets a faint sheen */
   background:
-    linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
+    linear-gradient(
+      135deg,
+      light-dark(rgba(255, 255, 255, 0.1), rgba(10, 14, 24, 0.72)),
+      light-dark(rgba(255, 255, 255, 0), rgba(10, 14, 24, 0.35))
+    ),
     var(--gradient-accent);
   color: var(--white);
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: var(--radius-full);
   font-weight: 600;
   text-decoration: none;
+  text-shadow: none;
   cursor: pointer;
   transition:
     translate var(--transition-fast),
@@ -255,6 +269,7 @@ a {
     var(--bg-secondary);
   color: var(--text);
   border: 1px solid var(--glass-border);
+  text-shadow: none;
 }
 
 .section-card {
@@ -271,6 +286,7 @@ a {
   gap: var(--spacing-sm);
 
   & span {
+    text-shadow: none;
     background: var(--gradient-accent);
     -webkit-background-clip: text;
     background-clip: text;
@@ -314,5 +330,62 @@ a {
   *::after {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+@media print {
+  :root,
+  .dark-theme {
+    color-scheme: light;
+  }
+
+  html {
+    background: #fff;
+  }
+
+  *,
+  *::before,
+  *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  .skip-link,
+  [data-capsule="header"] {
+    display: none !important;
+  }
+
+  main {
+    text-shadow: none;
+  }
+
+  .glass,
+  .button,
+  .tag {
+    background: none;
+    border-color: #ccc;
+    box-shadow: none;
+  }
+
+  .button {
+    color: var(--text);
+  }
+
+  .glass::before,
+  .glass::after {
+    display: none;
+  }
+
+  .section-title span {
+    background: none;
+    color: inherit;
+  }
+}
+
+/* Firefox keeps the transparent fill but drops the gradient behind it */
+@media (forced-colors: active) {
+  .section-title span {
+    background: none;
+    color: CanvasText;
   }
 }

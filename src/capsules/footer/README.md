@@ -19,5 +19,5 @@ Minimal slot-based site footer for thayn.me. Content is provided via the `<drop>
 
 ## Features
 
-- Centered, low-opacity footer pinned to bottom of page
+- Centered, muted footer pinned to bottom of page
 - Slot-based content injection

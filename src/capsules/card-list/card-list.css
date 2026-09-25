@@ -29,6 +29,7 @@
   -webkit-backdrop-filter: var(--bg-blur) var(--bg-saturation);
   position: relative;
   overflow: hidden;
+  text-shadow: none;
   transition:
     box-shadow var(--transition-fast),
     translate var(--transition-fast),
@@ -149,4 +150,17 @@
 
 .card-list--dense:hover .card-list__item:not(:hover) {
   scale: 0.99;
+}
+
+@media print {
+  .card-list__item {
+    background: none;
+    border-color: #ccc;
+    box-shadow: none;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
 }

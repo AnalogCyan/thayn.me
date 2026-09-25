@@ -40,11 +40,6 @@
   }
 }
 
-.buttons-capsule a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
 .buttons-capsule :is(a, div) img {
   display: block;
   width: 88px;

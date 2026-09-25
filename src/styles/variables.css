@@ -1,16 +1,12 @@
 /* Design tokens for color, spacing, and effects */
 
 :root {
+  /* The Last.fm capsule animates its details panel to height: auto */
   interpolate-size: allow-keywords;
   color-scheme: light dark;
 
   /* Base colors */
   --white: #ffffff;
-  --black: #000000;
-  --gray-100: #f5f7fb;
-  --gray-200: #e6e9f2;
-  --gray-600: #6b7280;
-  --gray-900: #111827;
 
   /* Brand accents */
   --accent: light-dark(#0e6aaa, #46b3ff);
@@ -46,6 +42,10 @@
     rgba(255, 255, 255, 0.2),
     rgba(10, 14, 24, 0.35)
   );
+  /* Page-coloured glow that keeps text readable wherever the blobs drift */
+  --text-halo:
+    0 0 1px var(--page-bg), 0 0 2px var(--page-bg), 0 0 6px var(--page-bg),
+    0 0 16px var(--page-bg);
   --nav-highlight: light-dark(
     rgba(17, 24, 39, 0.12),
     rgba(255, 255, 255, 0.12)
@@ -56,11 +56,6 @@
   );
 
   /* Gradients */
-  --gradient-subtle: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.5),
-    rgba(255, 255, 255, 0.1)
-  );
   --gradient-accent: linear-gradient(
     90deg,
     var(--accent),
@@ -106,7 +101,6 @@
   /* Motion */
   --transition-fast: 0.2s ease;
   --transition-normal: 0.3s ease;
-  --transition-smooth: 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
 @media (height <= 820px) {

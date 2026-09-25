@@ -105,3 +105,9 @@
     transition: none !important;
   }
 }
+
+@media print {
+  .gradient-background {
+    display: none;
+  }
+}
