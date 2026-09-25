@@ -506,10 +506,11 @@ async function fetchWithTimeout(url, options = {}) {
   }
 }
 
-async function isUrlReady(url, { requiredText = "" } = {}) {
+async function isUrlReady(url, { requiredText = [] } = {}) {
+  const needed = [].concat(requiredText).filter(Boolean);
   try {
     const head = await fetchWithTimeout(url, { method: "HEAD" });
-    if (head.ok && !requiredText) return true;
+    if (head.ok && needed.length === 0) return true;
   } catch {
     // Some CDNs reject HEAD before GET is ready.
   }
@@ -517,9 +518,9 @@ async function isUrlReady(url, { requiredText = "" } = {}) {
   try {
     const res = await fetchWithTimeout(url, { method: "GET" });
     if (!res.ok) return false;
-    if (!requiredText) return true;
+    if (needed.length === 0) return true;
     const text = await res.text();
-    return text.includes(requiredText);
+    return needed.every((item) => text.includes(item));
   } catch {
     return false;
   }
@@ -540,14 +541,13 @@ async function waitForUrlReady(url, options = {}) {
   return { ok: false, attempts };
 }
 
+// Bridgy reads the page for a link to each target it publishes to, so every
+// target about to be published needs its link live
 async function waitForPublishAssets({ canonicalUrl, publishTargets = [] }) {
-  const bridgyTarget = publishTargets.find(
-    (target) => BRIDGY_PUBLISH_TARGETS[target]
-  );
-  const pageText = bridgyTarget ? BRIDGY_PUBLISH_TARGETS[bridgyTarget] : "";
-
   const pageReady = await waitForUrlReady(canonicalUrl, {
-    requiredText: pageText,
+    requiredText: publishTargets.map(
+      (target) => BRIDGY_PUBLISH_TARGETS[target]
+    ),
   });
   if (!pageReady.ok) {
     return { ok: false, reason: "page-not-ready", url: canonicalUrl };
@@ -863,9 +863,10 @@ export async function runSyndicationPostDeploy() {
             continue;
           }
 
-          const next = pickForwardStatus(statusMap[target], "failed");
-          if (next !== statusMap[target]) {
-            statusMap[target] = next;
+          // A refusal is final for this request. pickForwardStatus would keep
+          // "requested", and with the fresh timestamp it would never go stale.
+          if (statusMap[target] !== "failed") {
+            statusMap[target] = "failed";
             dirty = true;
             touch(target);
           }
@@ -891,7 +892,7 @@ export async function runSyndicationPostDeploy() {
     if (allPublishTargets.length > 0) {
       const ready = await waitForPublishAssets({
         canonicalUrl,
-        publishTargets: allPublishTargets,
+        publishTargets: pendingTargets,
       });
       if (!ready.ok) {
         report.skipped.push({
@@ -988,9 +989,10 @@ export async function runSyndicationPostDeploy() {
           dirty = true;
           touch(targetKey);
         } else {
-          const next = pickForwardStatus(statusMap[targetKey], "failed");
-          if (next !== statusMap[targetKey]) {
-            statusMap[targetKey] = next;
+          // The lease already set "requested", which pickForwardStatus would
+          // keep; a refusal is a failure
+          if (statusMap[targetKey] !== "failed") {
+            statusMap[targetKey] = "failed";
             dirty = true;
             touch(targetKey);
           }

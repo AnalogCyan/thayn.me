@@ -109,3 +109,34 @@ test("only http and https URLs survive sanitizing", () => {
     assert.equal(sanitizeExternalUrl(hostile), null);
   }
 });
+
+test("Bridgy's already-published refusal counts as the earlier post's URL", async () => {
+  const { sendBridgyWebmention } = await import("../lib/bridgy-syndication.js");
+  const reply = (status, body) => async () =>
+    new Response(JSON.stringify(body), { status });
+
+  const already = await sendBridgyWebmention({
+    source: "https://thayn.me/blog/x/",
+    target: "https://brid.gy/publish/bluesky",
+    fetchImpl: reply(400, {
+      error: "Sorry, you've already published that page",
+      original: { url: "https://bsky.app/profile/thayn.me/post/abc" },
+    }),
+  });
+  assert.equal(already.ok, true);
+  assert.equal(
+    already.syndicatedUrl,
+    "https://bsky.app/profile/thayn.me/post/abc"
+  );
+
+  const refused = await sendBridgyWebmention({
+    source: "https://thayn.me/blog/x/",
+    target: "https://brid.gy/publish/bluesky",
+    fetchImpl: reply(400, {
+      error: "no link",
+      original: { url: "javascript:x" },
+    }),
+  });
+  assert.equal(refused.ok, false);
+  assert.equal(shouldMarkRequested(refused), false);
+});
