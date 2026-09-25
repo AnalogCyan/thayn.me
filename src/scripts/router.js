@@ -343,7 +343,12 @@
           "dir-slide-right"
         );
         navigating = false;
-        location.href = url;
+        // Back or Forward during the failed fetch wins over the old target
+        if (location.pathname !== new URL(url, location.href).pathname) {
+          location.reload();
+        } else {
+          location.href = url;
+        }
       });
   }
 
