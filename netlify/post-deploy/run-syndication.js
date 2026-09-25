@@ -234,9 +234,8 @@ async function listPostFiles(branch) {
   const res = await githubRequest(
     `/contents/${POSTS_DIR}?ref=${encodeURIComponent(branch)}`
   );
-  if (res.status === 404) {
-    return [];
-  }
+  // A 404 is a wrong branch or a token without access, not an empty blog;
+  // saying so beats reporting nothing to do
   if (!res.ok) {
     throw new Error(`Failed to list posts (status ${res.status})`);
   }
