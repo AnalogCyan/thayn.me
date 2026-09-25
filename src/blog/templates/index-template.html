@@ -70,7 +70,7 @@
       <drop capsule="header" data-theme-key="thayn_theme">
         <li class="nav-pill__item">
           <a href="/" class="nav-pill__link" aria-label="Home" data-nav="home">
-            <i class="ri-home-5-line"></i>
+            <i class="ri-home-5-line" aria-hidden="true"></i>
             <span class="nav-pill__text">Home</span>
           </a>
         </li>
@@ -81,7 +81,7 @@
             aria-label="About"
             data-nav="about"
           >
-            <i class="ri-user-heart-line"></i>
+            <i class="ri-user-heart-line" aria-hidden="true"></i>
             <span class="nav-pill__text">About</span>
           </a>
         </li>
@@ -92,7 +92,7 @@
             aria-label="Blog"
             data-nav="blog"
           >
-            <i class="ri-article-line"></i>
+            <i class="ri-article-line" aria-hidden="true"></i>
             <span class="nav-pill__text">Blog</span>
           </a>
         </li>
@@ -103,7 +103,7 @@
             aria-label="Projects"
             data-nav="projects"
           >
-            <i class="ri-folder-3-line"></i>
+            <i class="ri-folder-3-line" aria-hidden="true"></i>
             <span class="nav-pill__text">Projects</span>
           </a>
         </li>
@@ -114,7 +114,7 @@
             aria-label="Photos"
             data-nav="photos"
           >
-            <i class="ri-camera-3-line"></i>
+            <i class="ri-camera-3-line" aria-hidden="true"></i>
             <span class="nav-pill__text">Photos</span>
           </a>
         </li>
@@ -125,7 +125,7 @@
             aria-label="Music"
             data-nav="music"
           >
-            <i class="ri-music-2-line"></i>
+            <i class="ri-music-2-line" aria-hidden="true"></i>
             <span class="nav-pill__text">Music</span>
           </a>
         </li>
@@ -195,7 +195,7 @@
                 <span class="tag">{{this}}</span>
                 {{/each}}
               </div>
-              <h3 class="p-name">{{title}}</h3>
+              <h2 class="p-name">{{title}}</h2>
               <p class="p-summary">{{excerpt}}</p>
               <div class="blog-footer">
                 <span hidden aria-hidden="true" class="p-author"
@@ -210,18 +210,18 @@
           </article>
           {{/each}}
         </div>
-        <article
+        <div
           class="glass section-card blog-empty"
           id="blog-no-results"
           role="status"
           hidden
         >
-          <h3>No matching posts</h3>
+          <h2>No matching posts</h2>
           <p>Try a different search or tag.</p>
-        </article>
+        </div>
         {{else}}
         <article class="glass section-card blog-empty">
-          <h3>No posts yet</h3>
+          <h2>No posts yet</h2>
           <p>Check back soon for updates.</p>
         </article>
         {{/if}}

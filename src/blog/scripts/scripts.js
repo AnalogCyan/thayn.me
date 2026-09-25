@@ -92,7 +92,7 @@
       const selectedTag = normalizeValue(tagFilter?.value || "");
 
       posts.forEach((post) => {
-        const postTitle = getVisibleText(post, "h3");
+        const postTitle = getVisibleText(post, ".p-name");
         const postExcerpt = getVisibleText(post, ".p-summary");
         const postTagText = getVisibleText(post, ".tag");
         const postTagKeys = normalizeValue(post.dataset.tagKey).split("|");

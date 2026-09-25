@@ -96,7 +96,8 @@
     border-bottom-right-radius: 1.375rem;
   }
 
-  & h3 {
+  & h2 {
+    font-size: 1.3rem;
     margin-bottom: var(--spacing-sm);
   }
 
@@ -128,6 +129,11 @@
 
 .blog-empty {
   text-align: center;
+
+  & h2 {
+    font-size: 1.3rem;
+    margin-bottom: var(--spacing-sm);
+  }
 }
 
 .blog-post {
