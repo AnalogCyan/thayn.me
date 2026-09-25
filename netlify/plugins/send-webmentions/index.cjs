@@ -36,6 +36,7 @@ async function fetchWithCap(url, { htmlOnly = false } = {}) {
     controller.abort();
     return {
       ok: res.ok,
+      url: res.url || url,
       headers: res.headers,
       text: Buffer.concat(chunks).toString("utf-8"),
     };
@@ -104,11 +105,12 @@ function endpointFromHtml(html, baseUrl) {
 async function discoverEndpoint(target) {
   const res = await fetchWithCap(target, { htmlOnly: true });
   if (!res.ok) return null;
+  // Relative endpoints resolve against the page after redirects
   const fromHeader = endpointFromLinkHeader(res.headers.get("link"));
-  if (fromHeader) return new URL(fromHeader, target).toString();
+  if (fromHeader) return new URL(fromHeader, res.url).toString();
   const type = res.headers.get("content-type") || "";
   if (!type.startsWith("text/html")) return null;
-  return endpointFromHtml(res.text, target);
+  return endpointFromHtml(res.text, res.url);
 }
 
 async function sendMention(endpoint, source, target) {

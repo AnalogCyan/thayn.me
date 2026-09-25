@@ -1,10 +1,6 @@
 // Fetches and displays webmention counts
 
 (() => {
-  // Blog posts load their own webmention script, which fills the counter
-  // from the payload it already fetches
-  if (document.getElementById("webmentions")) return;
-
   const footer = document.querySelector('[data-capsule="footer"]');
   if (!footer) return;
 
@@ -14,6 +10,10 @@
   let lastUrl = null;
 
   function updateCount() {
+    // Blog posts load their own webmention script, which fills the counter
+    // from the payload it already fetches
+    if (document.getElementById("webmentions")) return;
+
     // Error pages carry no canonical, and counting mentions for a URL that
     // does not exist is a request with no answer
     const canonical = document.querySelector('link[rel="canonical"]');

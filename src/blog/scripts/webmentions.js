@@ -369,6 +369,11 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
 
   async function poll() {
     if (paused || document.visibilityState === "hidden") return;
+    // Navigating away swaps the post out, and the next page has its own count
+    if (!container.isConnected) {
+      pause();
+      return;
+    }
 
     try {
       if (!hasFetchedBuckets) {

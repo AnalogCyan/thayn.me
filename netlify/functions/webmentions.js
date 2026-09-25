@@ -42,9 +42,20 @@ function sanitizeMentionsPayload(payload) {
   return { ...base, children };
 }
 
+// The kinds the post page shows, so both counts agree
+const COUNTED_PROPERTIES = new Set([
+  "in-reply-to",
+  "like-of",
+  "repost-of",
+  "mention-of",
+  "bookmark-of",
+]);
+
 function countMentions(payload) {
   const sanitized = sanitizeMentionsPayload(payload);
-  return sanitized.children.length;
+  return sanitized.children.filter((item) =>
+    COUNTED_PROPERTIES.has(item?.["wm-property"])
+  ).length;
 }
 
 function isAllowedTarget(target) {
