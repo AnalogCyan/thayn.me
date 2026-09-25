@@ -316,6 +316,8 @@ import { sanitizeExternalUrl } from "/lib/sanitize-url.js";
 
   async function refreshFull() {
     const payload = await fetchJson({ countOnly: false });
+    // The post may have been navigated away from while this was in flight
+    if (!container.isConnected) return;
     const buckets = groupMentions(payload);
     hasFetchedBuckets = true;
     lastKnownCount = bucketCount(buckets);

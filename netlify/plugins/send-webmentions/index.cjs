@@ -3,6 +3,8 @@
 // (it parsed a 10MB PDF as HTML and blew the stack in css-select).
 // Zero external deps; a failure here must never fail the deploy.
 
+const { isIP } = require("node:net");
+
 const FEED_URL = "https://thayn.me/blog/atom.xml";
 const SITE_ORIGIN = "https://thayn.me";
 const SITE_HOSTNAME = new URL(SITE_ORIGIN).hostname;
@@ -113,6 +115,50 @@ async function discoverEndpoint(target) {
   return endpointFromHtml(res.text, res.url);
 }
 
+// Endpoints come from other people's pages, so the build never posts to
+// loopback, private or link-local addresses named by one
+function isPublicEndpoint(endpoint) {
+  let url;
+  try {
+    url = new URL(endpoint);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "https:" && url.protocol !== "http:") return false;
+  const host = url.hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  if (
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal")
+  ) {
+    return false;
+  }
+  if (isIP(host) === 4) {
+    const [a, b] = host.split(".").map(Number);
+    return !(
+      a === 0 ||
+      a === 10 ||
+      a === 127 ||
+      (a === 100 && b >= 64 && b <= 127) ||
+      (a === 169 && b === 254) ||
+      (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && b === 168)
+    );
+  }
+  if (isIP(host) === 6) {
+    // IPv4-mapped addresses have no business being a public endpoint
+    if (host.startsWith("::ffff:")) return false;
+    return !(
+      host === "::" ||
+      host === "::1" ||
+      /^f[cd]/.test(host) ||
+      /^fe[89ab]/.test(host)
+    );
+  }
+  return true;
+}
+
 async function sendMention(endpoint, source, target) {
   if (DRY_RUN) return { label: "dry-run", delivered: false };
   const res = await fetch(endpoint, {
@@ -191,6 +237,12 @@ module.exports = {
           const endpoint = await discoverEndpoint(target);
           if (!endpoint) {
             console.log(`send-webmentions: no endpoint for ${target}`);
+            continue;
+          }
+          if (!isPublicEndpoint(endpoint)) {
+            console.log(
+              `send-webmentions: refusing non-public endpoint for ${target}`
+            );
             continue;
           }
           const { label, delivered } = await sendMention(
