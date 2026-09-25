@@ -1118,10 +1118,12 @@ export async function runSyndicationPostDeploy() {
           retrySyndicationMap[target] = localUrl;
         }
 
-        const mergedStatus = pickForwardStatus(
-          retryStatusMap[target],
-          localStatusMap[target]
-        );
+        // A refusal this run is newer than the "requested" it conflicts with
+        const mergedStatus =
+          localStatusMap[target] === "failed" &&
+          retryStatusMap[target] === "requested"
+            ? "failed"
+            : pickForwardStatus(retryStatusMap[target], localStatusMap[target]);
         if (mergedStatus) {
           retryStatusMap[target] = mergedStatus;
         }
