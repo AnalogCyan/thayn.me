@@ -39,7 +39,12 @@ Production dependencies: `gachakit`, `@netlify/blobs`, `front-matter`, `handleba
 
 ## TODO
 
-- **Reduce JS-driven inlines.** Migrate JS-driven elements to native CSS where practical. Consolidating them would simplify the CSP policy and significantly reduce JS reliance.
+- **Reduce JS reliance.** The CSP no longer allows inline styles. What remains
+  is moving JS-driven elements to native CSS where practical:
+  - mobile nav toggle → `popover`
+  - container width tracking the nav → intrinsic CSS sizing
+  - sliding nav highlight → anchor positioning
+  - footer slide after navigation → a view transition
 
 ## Local development
 
