@@ -11,19 +11,19 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@netlify/blobs": "^10.7.11",
+    "@netlify/blobs": "^11.1.0",
     "front-matter": "^4.0.2",
     "gachakit": "github:AnalogCyan/GachaKit#v0.1.0",
     "handlebars": "^4.7.9",
-    "marked": "^18.0.7"
+    "marked": "^18.0.14"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@netlify/plugin-lighthouse": "6.0.4",
-    "eslint": "^10.8.0",
+    "eslint": "^10.11.0",
     "globals": "^17.12.0",
     "netlify-plugin-minify-html": "0.3.1",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.8",
     "serve": "14.2.6"
   },
   "engines": {
