@@ -51,19 +51,11 @@
       var containerTop = -0.1 * vh;
       var containerHeight = 1.2 * vh;
 
-      var style = document.getElementById("ambient-bg-style");
-      if (!style) {
-        style = document.createElement("style");
-        style.id = "ambient-bg-style";
-        document.head.appendChild(style);
-      }
-
       var config = loadConfig();
       if (config && (config.vw !== vw || config.vh !== vh)) {
         config = null;
       }
 
-      var css = "";
       var nodeData = [];
 
       for (var i = 0; i < nodes.length; i++) {
@@ -102,39 +94,20 @@
           "translate3d(" + startX + "px," + startY + "px, 0)";
 
         if (!prefersReducedMotion) {
-          var name = "ambient-float-" + i;
-
-          css +=
-            "@keyframes " +
-            name +
-            " { 0%,100% { transform: translate3d(" +
-            startX +
-            "px," +
-            startY +
-            "px,0) scale(" +
-            wp[0].scale +
-            "); } 25% { transform: translate3d(" +
-            wp[1].x +
-            "px," +
-            wp[1].y +
-            "px,0) scale(" +
-            wp[1].scale +
-            "); } 50% { transform: translate3d(" +
-            wp[2].x +
-            "px," +
-            wp[2].y +
-            "px,0) scale(" +
-            wp[2].scale +
-            "); } 75% { transform: translate3d(" +
-            wp[3].x +
-            "px," +
-            wp[3].y +
-            "px,0) scale(" +
-            wp[3].scale +
-            "); } }";
-
-          nodes[i].style.animation =
-            name + " " + duration + "s ease-in-out infinite";
+          // Waypoints feed the shared @keyframes in the stylesheet. CSSOM
+          // writes are exempt from CSP, so no <style> element is needed.
+          // The first keyframe starts from the resting spot, not waypoint 0.
+          var s = nodes[i].style;
+          s.setProperty("--float-x0", startX + "px");
+          s.setProperty("--float-y0", startY + "px");
+          for (var w = 0; w < 4; w++) {
+            if (w > 0) {
+              s.setProperty("--float-x" + w, wp[w].x + "px");
+              s.setProperty("--float-y" + w, wp[w].y + "px");
+            }
+            s.setProperty("--float-s" + w, wp[w].scale);
+          }
+          s.animation = "ambient-float " + duration + "s ease-in-out infinite";
         }
 
         nodeData.push({
@@ -143,10 +116,6 @@
           duration: duration,
           wp: wp,
         });
-      }
-
-      if (css) {
-        style.textContent = css;
       }
 
       if (!config) {
