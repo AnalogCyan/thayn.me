@@ -11,8 +11,8 @@
   Standards: HTML, CSS, JavaScript
   Repository: https://github.com/AnalogCyan/thayn.me
   Hosting: Netlify
-  Tooling: GitHub Actions (CodeQL), Codacy quality checks
-  Last update: 2026-06-22
+  Tooling: GitHub Actions (CI, CodeQL), Codacy quality checks
+  Last update: 2026-09-25
 
 /* AI & ROBOTS */
   Policy: AI training not permitted. Search/retrieval crawlers allowed.

@@ -8,7 +8,7 @@
 - [About](https://thayn.me/about): Bio and social links
 - [Projects](https://thayn.me/projects): Project showcase
 - [Music](https://thayn.me/music): Music library and profiles
-- [Blog](https://thayn.me/blog): Notes, updates, and experiments
+- [Blog](https://thayn.me/blog/): Notes, updates, and experiments
 
 ## Feeds
 

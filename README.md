@@ -25,7 +25,8 @@ and Markdown into static HTML/CSS/JS, deployed on Netlify. Pages, capsules and
 the asset bundles come from the [GachaKit](https://github.com/AnalogCyan/GachaKit)
 engine; the blog, feeds, webmentions and syndication are this repo's own.
 
-Production dependencies: `gachakit`, `front-matter`, `handlebars`, `marked`.
+Production dependencies: `gachakit`, `@netlify/blobs`, `front-matter`, `handlebars`,
+`marked`.
 
 ### How it’s put together
 
@@ -38,7 +39,7 @@ Production dependencies: `gachakit`, `front-matter`, `handlebars`, `marked`.
 
 ## TODO
 
-- **Reduce JS-driven inlines.** Migrate JS-driven elements native CSS where practical. Consolidating them would simplify the CSP policy and significantly reduce JS reliance.
+- **Reduce JS-driven inlines.** Migrate JS-driven elements to native CSS where practical. Consolidating them would simplify the CSP policy and significantly reduce JS reliance.
 
 ## Local development
 
@@ -48,6 +49,8 @@ Requires Node.js **>= v24**.
 npm install
 npm run dev      # build + serve at localhost:3000
 npm run build    # build only (outputs to ./public)
+npm test         # syndication policy tests
+npm run lint     # eslint
 npm run format   # prettier
 ```
 

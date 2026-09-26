@@ -6,7 +6,7 @@
   "scripts": {
     "build": "node build.js",
     "dev": "npm run build && npx serve public -l 3000",
-    "test": "node --test test/",
+    "test": "node --test \"test/*.test.js\"",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
