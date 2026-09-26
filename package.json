@@ -20,7 +20,6 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@netlify/plugin-lighthouse": "6.0.4",
-    "@netlify/plugin-sitemap": "0.8.1",
     "eslint": "^10.8.0",
     "globals": "^17.12.0",
     "netlify-plugin-minify-html": "0.3.1",
