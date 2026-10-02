@@ -127,6 +127,55 @@ to = "/404"
 status = 301
 force = true
 
+# Valkyrie lives on Forgejo; GitHub is its push mirror.
+[[redirects]]
+from = "https://git.thayn.me/Valkyrie.git/*"
+to = "https://forgejo.thayn.gay/cyan/Valkyrie.git/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "https://git.thayn.me/Valkyrie.git"
+to = "https://forgejo.thayn.gay/cyan/Valkyrie.git"
+status = 301
+force = true
+
+[[redirects]]
+from = "https://git.thayn.me/Valkyrie/*"
+to = "https://forgejo.thayn.gay/cyan/Valkyrie/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "https://git.thayn.me/Valkyrie"
+to = "https://forgejo.thayn.gay/cyan/Valkyrie"
+status = 301
+force = true
+
+[[redirects]]
+from = "https://git.thayn.gay/Valkyrie.git/*"
+to = "https://forgejo.thayn.gay/cyan/Valkyrie.git/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "https://git.thayn.gay/Valkyrie.git"
+to = "https://forgejo.thayn.gay/cyan/Valkyrie.git"
+status = 301
+force = true
+
+[[redirects]]
+from = "https://git.thayn.gay/Valkyrie/*"
+to = "https://forgejo.thayn.gay/cyan/Valkyrie/:splat"
+status = 301
+force = true
+
+[[redirects]]
+from = "https://git.thayn.gay/Valkyrie"
+to = "https://forgejo.thayn.gay/cyan/Valkyrie"
+status = 301
+force = true
+
 [[redirects]]
 from = "https://git.thayn.me/*"
 to = "https://github.com/AnalogCyan/:splat"
