@@ -8,7 +8,8 @@
     "dev": "npm run build && npx serve public -l 3000",
     "test": "node --test \"test/*.test.js\"",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "icons": "node tools/subset-icons.js"
   },
   "dependencies": {
     "@netlify/blobs": "^11.1.0",
@@ -24,7 +25,9 @@
     "globals": "^17.12.0",
     "netlify-plugin-minify-html": "0.3.1",
     "prettier": "^3.9.8",
-    "serve": "14.2.6"
+    "remixicon": "4.5.0",
+    "serve": "14.2.6",
+    "subset-font": "2.9.0"
   },
   "engines": {
     "node": ">=24"

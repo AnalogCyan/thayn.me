@@ -9,3 +9,7 @@ updates:
       dependencies:
         patterns:
           - "*"
+    # Remix Icon 4.9 moved from Apache-2.0 to its own license, whose terms
+    # sit badly with the site's AGPL and CC BY-SA. Stay on 4.5.0.
+    ignore:
+      - dependency-name: remixicon
