@@ -22,7 +22,7 @@
         height="64"
       />
 
-      <div class="lastfm-meta" aria-live="polite" aria-atomic="true">
+      <div class="lastfm-meta">
         <p class="lastfm-name" data-lastfm-name>Loading Last.fm…</p>
         <p class="lastfm-artist" data-lastfm-artist></p>
         <p class="lastfm-context" data-lastfm-context></p>
@@ -59,7 +59,9 @@
     </button>
   </div>
 
-  <section class="lastfm-recent" data-lastfm-recent>
+  <section class="lastfm-recent" data-lastfm-recent inert>
     <ul data-lastfm-recent-list></ul>
   </section>
+
+  <p class="lastfm-status" data-lastfm-status role="status"></p>
 </section>

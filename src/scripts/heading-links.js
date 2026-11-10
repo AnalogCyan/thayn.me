@@ -1,22 +1,22 @@
 // Auto-generates heading anchor links in blog posts
 
 (function () {
-  function stripTags(str) {
-    var out = str;
-    var prev;
-    do {
-      prev = out;
-      out = out.replace(/<[^>]*>/g, "");
-    } while (out !== prev);
-    return out;
-  }
-
+  // Matches build.js heading ids; textContent has no markup to strip
   function slugify(text) {
-    return stripTags(text.toLowerCase())
+    return text
+      .toLowerCase()
       .replace(/[^\p{L}\p{N}\s-]/gu, "")
       .replace(/\s+/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-+|-+$/g, "");
+  }
+
+  function uniqueId(base) {
+    var id = base;
+    for (var n = 2; document.getElementById(id); n += 1) {
+      id = base + "-" + n;
+    }
+    return id;
   }
 
   function init() {
@@ -24,16 +24,21 @@
     if (!container) return;
 
     container.querySelectorAll("h1, h2, h3, h4").forEach(function (h) {
-      if (h.querySelector(".heading-link")) return;
+      if (h.parentElement.classList.contains("heading-anchor")) return;
 
       if (!h.id) {
-        h.id = slugify(h.textContent);
+        var base = slugify(h.textContent);
+        if (!base) return;
+        h.id = uniqueId(base);
       }
 
       var link = document.createElement("a");
       link.className = "heading-link";
       link.href = "#" + h.id;
-      link.setAttribute("aria-label", "Copy link to this section");
+      link.setAttribute(
+        "aria-label",
+        "Copy link to section: " + h.textContent.trim()
+      );
       link.textContent = "#";
 
       link.addEventListener("click", function (e) {
@@ -52,10 +57,17 @@
           document.body.removeChild(ta);
         });
         history.replaceState(null, "", url.href);
-        h.scrollIntoView({ behavior: "smooth" });
+        var reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+        h.scrollIntoView({ behavior: reduce ? "auto" : "smooth" });
       });
 
-      h.insertBefore(link, h.firstChild);
+      // Kept outside the heading so its accessible name stays the heading text
+      var wrap = document.createElement("div");
+      wrap.className = "heading-anchor";
+      h.replaceWith(wrap);
+      wrap.append(h, link);
     });
   }
 
