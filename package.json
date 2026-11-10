@@ -21,15 +21,26 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@netlify/plugin-lighthouse": "6.0.4",
-    "eslint": "^10.11.0",
+    "eslint": "^10.14.0",
     "globals": "^17.12.0",
-    "netlify-plugin-minify-html": "0.3.1",
+    "html-minifier-terser": "^7.2.0",
     "prettier": "^3.9.8",
     "remixicon": "4.5.0",
-    "serve": "14.2.6",
+    "serve": "14.2.7",
     "subset-font": "2.9.0"
   },
   "engines": {
     "node": ">=24"
+  },
+  "overrides": {
+    "compression": "^1.8.2",
+    "ws@^8.0.0": "^8.22.2",
+    "tar-fs@^2.0.0": "^2.1.4",
+    "@eslint/config-array": {
+      "minimatch": "^11.0.6"
+    },
+    "eslint": {
+      "minimatch": "^11.0.6"
+    }
   }
 }
