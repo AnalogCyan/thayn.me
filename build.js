@@ -218,13 +218,6 @@ async function mapWithConcurrency(items, limit, mapper) {
   return results;
 }
 
-async function cleanPublic() {
-  if (await pathExists(PUBLIC_DIR)) {
-    await fs.rm(PUBLIC_DIR, { recursive: true, force: true });
-  }
-  await fs.mkdir(PUBLIC_DIR, { recursive: true });
-}
-
 async function copyDir(src, dest) {
   if (!(await pathExists(src))) return;
   await fs.mkdir(dest, { recursive: true });
@@ -239,25 +232,6 @@ async function copyDir(src, dest) {
       await fs.copyFile(srcPath, destPath);
     }
   }
-}
-
-function injectResources(content, resourcesHTML, config) {
-  const placeholder = "<!-- EXTERNAL_RESOURCES -->";
-  let output = content.includes(placeholder)
-    ? content.replace(placeholder, resourcesHTML)
-    : content.replace(/<\/head>/i, `${resourcesHTML}\n  </head>`);
-
-  if (config.meta && config.meta.title) {
-    const hasTitle = /<title>[\s\S]*?<\/title>/i.test(output);
-    if (!hasTitle) {
-      output = output.replace(
-        /<\/head>/i,
-        `    <title>${config.meta.title}</title>\n  </head>`
-      );
-    }
-  }
-
-  return output;
 }
 
 function ensureSiteBundleScript(html) {
@@ -525,29 +499,30 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
   const indexTemplateRaw = await fs.readFile(indexTemplatePath, "utf-8");
   const postTemplateRaw = await fs.readFile(postTemplatePath, "utf-8");
 
+  // Drops expand first, so the head tags the site-head capsule brings get
+  // the resources, as the engine's page build does
   const resourcesHTML = engine.generateResourcesHTML(config);
-  const indexWithResources = engine.injectIndieWebTags(
-    injectResources(indexTemplateRaw, resourcesHTML, config),
+  const indexTemplateSourceRaw = engine.injectResources(
+    await engine.expandAllDrops(
+      indexTemplateRaw,
+      capsules,
+      "blog-index",
+      globalUsed
+    ),
+    resourcesHTML,
     config,
     "blog/index.html"
   );
-  const postWithResources = engine.injectIndieWebTags(
-    injectResources(postTemplateRaw, resourcesHTML, config),
+  const postTemplateSourceRaw = engine.injectResources(
+    await engine.expandAllDrops(
+      postTemplateRaw,
+      capsules,
+      "blog-post",
+      globalUsed
+    ),
+    resourcesHTML,
     config,
     "blog/post.html"
-  );
-
-  const indexTemplateSourceRaw = await engine.expandAllDrops(
-    indexWithResources,
-    capsules,
-    "blog-index",
-    globalUsed
-  );
-  const postTemplateSourceRaw = await engine.expandAllDrops(
-    postWithResources,
-    capsules,
-    "blog-post",
-    globalUsed
   );
   const indexTemplateSource = bustBlogAssets(
     engine.bustAssetPaths(
@@ -754,7 +729,7 @@ async function build() {
 
   // The engine's steps are composed here rather than calling engine.build(),
   // so the sitemap is written after the blog, which engine.build() never sees
-  await cleanPublic();
+  await engine.cleanPublic();
   config.buildHash = crypto
     .createHash("sha1")
     .update((await engine.generateHash()) + (await hashBlogSources()))
