@@ -216,6 +216,38 @@ test("HTML: first <link> or <a> in document order, any quoting", () => {
   assert.equal(endpointFromHtml(`<p>nothing</p>`), null);
 });
 
+test("discovery stays linear on hostile pages and headers", () => {
+  const n = 200_000;
+  const cases = [
+    () => endpointFromHtml("<!--".repeat(n)),
+    () => endpointFromHtml("<a ".repeat(n)),
+    () => endpointFromHtml('<a "'.repeat(n)),
+    () => endpointFromHtml("<".repeat(n) + "<p>"),
+    () => endpointFromLinkHeader("<" + "<=".repeat(n)),
+    () => endpointFromLinkHeader("<a>;".repeat(n)),
+  ];
+  for (const run of cases) {
+    const started = performance.now();
+    assert.equal(run(), null);
+    assert.ok(performance.now() - started < 500, run.toString());
+  }
+});
+
+test("an unclosed comment or tag hides everything after it", () => {
+  assert.equal(
+    endpointFromHtml(`<!-- <link rel="webmention" href="/no">`),
+    null
+  );
+  assert.equal(
+    endpointFromHtml(`<a title="open <link rel=webmention href=/no>`),
+    null
+  );
+  assert.equal(
+    endpointFromHtml(`<p><!-- x --><link rel="webmention" href="/yes"><p>`),
+    "/yes"
+  );
+});
+
 test("discovery prefers the Link header and resolves after redirects", async () => {
   stubDns({ "a.example": ["93.184.216.34"], "b.example": ["93.184.216.35"] });
   stubFetch({

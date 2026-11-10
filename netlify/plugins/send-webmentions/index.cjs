@@ -193,12 +193,22 @@ function hasWebmentionRel(value) {
   return value.toLowerCase().split(/\s+/).includes("webmention");
 }
 
-// Returns the raw URL reference, which may be "" for the page itself
+// Returns the raw URL reference, which may be "" for the page itself.
+// Scanned with indexOf: a regex here backtracks quadratically on a header
+// full of unclosed "<"
 function endpointFromLinkHeader(header) {
   if (!header) return null;
-  for (const [, ref, params] of header.matchAll(/<([^>]*)>([^<]*)/g)) {
+  let start = header.indexOf("<");
+  while (start !== -1) {
+    const end = header.indexOf(">", start + 1);
+    if (end === -1) break;
+    const next = header.indexOf("<", end + 1);
+    const params = header.slice(end + 1, next === -1 ? undefined : next);
     const rel = params.match(/;\s*rel\s*=\s*(?:"([^"]*)"|([^\s;,]+))/i);
-    if (rel && hasWebmentionRel(rel[1] ?? rel[2])) return ref.trim();
+    if (rel && hasWebmentionRel(rel[1] ?? rel[2])) {
+      return header.slice(start + 1, end).trim();
+    }
+    start = next;
   }
   return null;
 }
@@ -214,16 +224,50 @@ function parseAttributes(source) {
   return attrs;
 }
 
-// First <link> or <a> in document order with rel webmention and an href
+// End of the tag whose attributes start at `from`: the first ">" outside a
+// quoted value, or -1 when the tag runs to the end of the document
+function tagEnd(html, from) {
+  let quote = "";
+  for (let i = from; i < html.length; i += 1) {
+    const ch = html[i];
+    if (quote) {
+      if (ch === quote) quote = "";
+    } else if (ch === '"' || ch === "'") {
+      quote = ch;
+    } else if (ch === ">") {
+      return i;
+    }
+  }
+  return -1;
+}
+
+// First <link> or <a> in document order with rel webmention and an href.
+// One pass that never revisits a character; target pages are untrusted and up
+// to MAX_BYTES, so a backtracking regex could stall the deploy.
 function endpointFromHtml(html) {
-  const live = html.replace(/<!--[\s\S]*?-->/g, "");
-  for (const [, , rest] of live.matchAll(
-    /<(link|a)\b((?:[^>"']|"[^"]*"|'[^']*')*)>/gi
-  )) {
-    const attrs = parseAttributes(rest);
+  const tagName = /(link|a)(?!\w)/iy;
+  let i = html.indexOf("<");
+  while (i !== -1) {
+    if (html.startsWith("<!--", i)) {
+      const close = html.indexOf("-->", i + 4);
+      if (close === -1) return null;
+      i = html.indexOf("<", close + 3);
+      continue;
+    }
+    tagName.lastIndex = i + 1;
+    const name = tagName.exec(html);
+    if (!name) {
+      i = html.indexOf("<", i + 1);
+      continue;
+    }
+    const from = i + 1 + name[0].length;
+    const end = tagEnd(html, from);
+    if (end === -1) return null;
+    const attrs = parseAttributes(html.slice(from, end));
     if ("href" in attrs && attrs.rel && hasWebmentionRel(attrs.rel)) {
       return decodeEntities(attrs.href.trim());
     }
+    i = html.indexOf("<", end + 1);
   }
   return null;
 }
