@@ -5,7 +5,6 @@ import { fileURLToPath } from "node:url";
 import {
   BRIDGY_PUBLISH_TARGETS,
   getSyndicationUrl,
-  hasOwn,
   normalizeErrorMap,
   normalizeStatusMap,
   normalizeSyndicateTargets,
@@ -287,15 +286,6 @@ function buildCanonicalUrl(attributes, slug, siteUrl) {
   return canonicalizeUrl(siteUrl, getCanonicalBlogPath(slug));
 }
 
-async function extractContentSha(response, fallbackSha) {
-  try {
-    const payload = await response.json();
-    return payload?.content?.sha || fallbackSha;
-  } catch {
-    return fallbackSha;
-  }
-}
-
 function collectSyndicationState(attributes = {}) {
   return {
     syndicationMap: normalizeSyndicationMap(attributes.syndication),
@@ -368,6 +358,43 @@ function canAttemptPublishNow({ target, state, now }) {
   return { ok: true, status };
 }
 
+// Reads the post fresh, lets mutate change it, and writes it against the sha
+// it read. A 409 means something else wrote first, so read and apply again.
+async function updatePost({ filePath, branch, message, mutate }) {
+  for (let attempt = 0; attempt < LEASE_MAX_ATTEMPTS; attempt += 1) {
+    const fetched = await getFileContent(filePath, branch);
+    const parsed = fm(fetched.content);
+    const attributes = parsed.attributes || {};
+    const outcome = mutate(attributes);
+    if (!outcome.write) {
+      return { written: false, reason: outcome.reason };
+    }
+
+    const res = await updateFileContent(
+      filePath,
+      branch,
+      fetched.sha,
+      buildFrontmatter(attributes, parsed.body || ""),
+      message
+    );
+    if (res.ok) {
+      return { written: true };
+    }
+    if (res.status !== 409) {
+      return { written: false, reason: "error", status: res.status };
+    }
+  }
+
+  return { written: false, reason: "lease-conflict" };
+}
+
+function findSyndicatedUrl(attributes, state, target) {
+  return (
+    getSyndicationUrl(state.syndicationMap, target) ||
+    inferLegacySyndicationUrl(attributes, target)
+  );
+}
+
 async function acquirePublishLease({ filePath, branch, target, now }) {
   const nowIso = now.toISOString();
   const slug = filePath.split("/").pop()?.replace(/\.md$/, "") || filePath;
@@ -375,52 +402,46 @@ async function acquirePublishLease({ filePath, branch, target, now }) {
     `${COMMIT_PREFIX} lease publish ${slug} ${target}`
   );
 
-  for (let attempt = 0; attempt < LEASE_MAX_ATTEMPTS; attempt += 1) {
-    const fetched = await getFileContent(filePath, branch);
-    const parsed = fm(fetched.content);
-    const attributes = parsed.attributes || {};
-    const state = collectSyndicationState(attributes);
-    const eligibility = canAttemptPublishNow({
-      target,
-      state,
-      now,
-    });
+  const res = await updatePost({
+    filePath,
+    branch,
+    message,
+    mutate: (attributes) => {
+      if (!normalizeSyndicateTargets(attributes.syndicate).includes(target)) {
+        return { write: false, reason: "not-syndicated" };
+      }
+      const state = collectSyndicationState(attributes);
+      if (findSyndicatedUrl(attributes, state, target)) {
+        return { write: false, reason: "already-syndicated" };
+      }
+      const eligibility = canAttemptPublishNow({
+        target,
+        state,
+        now,
+      });
+      if (!eligibility.ok) {
+        return { write: false, reason: eligibility.reason };
+      }
 
-    if (!eligibility.ok) {
-      return { acquired: false, reason: eligibility.reason };
-    }
+      state.statusMap[target] =
+        pickForwardStatus(state.statusMap[target], "requested") || "requested";
+      state.requestedAtMap[target] = nowIso;
+      state.checkedAtMap[target] = nowIso;
+      delete state.lastErrorMap[target];
+      applySyndicationState(attributes, state);
+      return { write: true };
+    },
+  });
 
-    state.statusMap[target] =
-      pickForwardStatus(state.statusMap[target], "requested") || "requested";
-    state.requestedAtMap[target] = nowIso;
-    state.checkedAtMap[target] = nowIso;
-    delete state.lastErrorMap[target];
-    applySyndicationState(attributes, state);
-
-    const updated = buildFrontmatter(attributes, parsed.body || "");
-    const res = await updateFileContent(
-      filePath,
-      branch,
-      fetched.sha,
-      updated,
-      message
-    );
-
-    if (res.ok) {
-      const sha = await extractContentSha(res, fetched.sha);
-      return { acquired: true, sha, nowIso };
-    }
-
-    if (res.status === 409) {
-      continue;
-    }
-
+  if (res.written) {
+    return { acquired: true, nowIso };
+  }
+  if (res.reason === "error") {
     throw new Error(
       `Lease publish update failed for ${filePath} -> ${target} (status ${res.status})`
     );
   }
-
-  return { acquired: false, reason: "lease-conflict" };
+  return { acquired: false, reason: res.reason };
 }
 
 async function acquireConfirmLease({ filePath, branch, target, now }) {
@@ -430,57 +451,188 @@ async function acquireConfirmLease({ filePath, branch, target, now }) {
     `${COMMIT_PREFIX} lease confirm ${slug} ${target}`
   );
 
-  for (let attempt = 0; attempt < LEASE_MAX_ATTEMPTS; attempt += 1) {
-    const fetched = await getFileContent(filePath, branch);
-    const parsed = fm(fetched.content);
-    const attributes = parsed.attributes || {};
-    const state = collectSyndicationState(attributes);
-    const status = normalizeStatusValue(state.statusMap[target]);
-    if (status !== "requested") {
-      return { acquired: false, reason: "not-requested" };
-    }
+  const res = await updatePost({
+    filePath,
+    branch,
+    message,
+    mutate: (attributes) => {
+      const state = collectSyndicationState(attributes);
+      // A confirm re-sends the publish, so a URL added by hand must stop it
+      if (findSyndicatedUrl(attributes, state, target)) {
+        return { write: false, reason: "already-syndicated" };
+      }
+      const status = normalizeStatusValue(state.statusMap[target]);
+      if (status !== "requested") {
+        return { write: false, reason: "not-requested" };
+      }
 
-    const requestedAction = getRequestedConfirmAction({
-      status,
-      requestedAt: state.requestedAtMap[target],
-      checkedAt: state.checkedAtMap[target],
-      now,
-    });
+      const requestedAction = getRequestedConfirmAction({
+        status,
+        requestedAt: state.requestedAtMap[target],
+        checkedAt: state.checkedAtMap[target],
+        now,
+      });
+      if (requestedAction.action !== "confirm") {
+        return { write: false, reason: `requested-${requestedAction.action}` };
+      }
 
-    if (requestedAction.action !== "confirm") {
-      return {
-        acquired: false,
-        reason: `requested-${requestedAction.action}`,
-      };
-    }
+      state.checkedAtMap[target] = nowIso;
+      applySyndicationState(attributes, state);
+      return { write: true };
+    },
+  });
 
-    state.checkedAtMap[target] = nowIso;
-    applySyndicationState(attributes, state);
-
-    const updated = buildFrontmatter(attributes, parsed.body || "");
-    const res = await updateFileContent(
-      filePath,
-      branch,
-      fetched.sha,
-      updated,
-      message
-    );
-
-    if (res.ok) {
-      const sha = await extractContentSha(res, fetched.sha);
-      return { acquired: true, sha, nowIso };
-    }
-
-    if (res.status === 409) {
-      continue;
-    }
-
+  if (res.written) {
+    return { acquired: true, nowIso };
+  }
+  if (res.reason === "error") {
     throw new Error(
       `Lease confirm update failed for ${filePath} -> ${target} (status ${res.status})`
     );
   }
+  return { acquired: false, reason: res.reason };
+}
 
-  return { acquired: false, reason: "lease-conflict" };
+function toOutcome(result, leaseIso, phase) {
+  if (result.ok && result.syndicatedUrl) {
+    return { url: result.syndicatedUrl };
+  }
+  const lastError = summarizeSyndicationResult(result, phase);
+  if (shouldMarkRequested(result)) {
+    return {
+      status: "requested",
+      requestedAt: leaseIso,
+      // A confirm keeps the original request time so the request can go stale
+      keepRequestedAt: phase === "confirm",
+      checkedAt: leaseIso,
+      lastError,
+    };
+  }
+  // A refusal is final for this request. pickForwardStatus would keep
+  // "requested", and with the fresh timestamp it would never go stale.
+  return { status: "failed", requestedAt: leaseIso, checkedAt: "", lastError };
+}
+
+// Settles the syndication keys of a post as read now: adopts URLs that are
+// already there (legacy fields, by hand, another run), applies this run's
+// Bridgy outcomes, and seeds or expires requests. Nothing else is touched,
+// so edits made during the run survive the write-back.
+function reconcilePost(attributes, outcomes, now) {
+  const nowIso = now.toISOString();
+  const syndicateTargets = normalizeSyndicateTargets(attributes.syndicate);
+  const state = collectSyndicationState(attributes);
+  const {
+    syndicationMap,
+    statusMap,
+    requestedAtMap,
+    checkedAtMap,
+    lastErrorMap,
+  } = state;
+
+  for (const target of syndicateTargets) {
+    if (getSyndicationUrl(syndicationMap, target)) continue;
+    const legacyUrl = inferLegacySyndicationUrl(attributes, target);
+    if (legacyUrl) syndicationMap[target] = legacyUrl;
+  }
+
+  for (const [target, outcome] of outcomes) {
+    if (getSyndicationUrl(syndicationMap, target)) continue;
+    if (outcome.url) {
+      syndicationMap[target] = outcome.url;
+      continue;
+    }
+    // A refusal this run is newer than the "requested" it conflicts with
+    const status =
+      outcome.status === "failed" &&
+      normalizeStatusValue(statusMap[target]) === "requested"
+        ? "failed"
+        : pickForwardStatus(statusMap[target], outcome.status);
+    statusMap[target] = status;
+    if (status === "confirmed") continue;
+    requestedAtMap[target] =
+      (outcome.keepRequestedAt && requestedAtMap[target]) ||
+      outcome.requestedAt;
+    if (outcome.checkedAt) {
+      checkedAtMap[target] = outcome.checkedAt;
+    } else {
+      delete checkedAtMap[target];
+    }
+    lastErrorMap[target] = outcome.lastError;
+  }
+
+  const settle = (target) => {
+    statusMap[target] = "confirmed";
+    delete requestedAtMap[target];
+    delete checkedAtMap[target];
+    delete lastErrorMap[target];
+  };
+
+  for (const target of Object.keys(syndicationMap)) {
+    if (BRIDGY_PUBLISH_TARGETS[target]) settle(target);
+  }
+
+  for (const target of syndicateTargets) {
+    const status = normalizeStatusValue(statusMap[target]);
+    if (getSyndicationUrl(syndicationMap, target) || status === "confirmed") {
+      settle(target);
+      continue;
+    }
+    if (status !== "requested") continue;
+
+    const { action } = getRequestedConfirmAction({
+      status,
+      requestedAt: requestedAtMap[target],
+      checkedAt: checkedAtMap[target],
+      now,
+    });
+    if (action === "seed-requested-at") {
+      requestedAtMap[target] = nowIso;
+      checkedAtMap[target] = nowIso;
+      if (!lastErrorMap[target]) {
+        lastErrorMap[target] = "requested-missing-timestamp";
+      }
+    } else if (action === "stale-failed") {
+      statusMap[target] = "failed";
+      requestedAtMap[target] = nowIso;
+      delete checkedAtMap[target];
+      lastErrorMap[target] = truncateError("requested-stale");
+    }
+  }
+
+  const remainingSyndicate = syndicateTargets.filter(
+    (target) => !getSyndicationUrl(syndicationMap, target)
+  );
+  if (remainingSyndicate.length > 0) {
+    attributes.syndicate = remainingSyndicate;
+    delete attributes.syndicationComplete;
+  } else if (
+    syndicateTargets.length > 0 ||
+    attributes.syndicate !== undefined
+  ) {
+    delete attributes.syndicate;
+    attributes.syndicationComplete = true;
+  }
+
+  applySyndicationState(attributes, state);
+  return state;
+}
+
+// Normalized so reformatting alone never counts as a change worth a commit
+function syndicationSnapshot(attributes) {
+  return JSON.stringify(
+    {
+      ...collectSyndicationState(attributes),
+      syndicate: normalizeSyndicateTargets(attributes.syndicate),
+      hasSyndicate: attributes.syndicate !== undefined,
+      complete: attributes.syndicationComplete ?? null,
+    },
+    (key, value) =>
+      value && typeof value === "object" && !Array.isArray(value)
+        ? Object.fromEntries(
+            Object.entries(value).sort(([a], [b]) => (a < b ? -1 : 1))
+          )
+        : value
+  );
 }
 
 function sleep(ms) {
@@ -583,7 +735,6 @@ export async function runSyndicationPostDeploy() {
     updated: [],
     errors: [],
   };
-  let committedWriteback = false;
 
   let files;
   try {
@@ -628,14 +779,7 @@ export async function runSyndicationPostDeploy() {
         syncNeeded = needsSyndicateCleanup || needsStatusConfirm;
       }
 
-      posts.push({
-        filePath,
-        sha: fetched.sha,
-        content: fetched.content,
-        attributes,
-        body: parsedPost.body || "",
-        pendingTargets,
-      });
+      posts.push({ filePath, attributes });
     } catch (err) {
       report.errors.push({ file: filePath, error: err.message });
     }
@@ -648,247 +792,56 @@ export async function runSyndicationPostDeploy() {
   const siteUrl = getSiteUrl();
 
   for (const post of posts) {
-    const { filePath, attributes, body } = post;
-    if (committedWriteback) {
-      report.skipped.push({
-        file: filePath,
-        reason: "deferred-after-writeback",
-      });
-      continue;
-    }
-    let currentSha = post.sha;
-    const slug = post.filePath.split("/").pop()?.replace(/\.md$/, "") || "";
-    const syndicateTargets = normalizeSyndicateTargets(attributes.syndicate);
-    const syndicationMap = normalizeSyndicationMap(attributes.syndication);
-    const statusMap = normalizeStatusMap(attributes.syndicationStatus);
-    const requestedAtMap = normalizeTimestampMap(
-      attributes.syndicationRequestedAt
-    );
-    const checkedAtMap = normalizeTimestampMap(attributes.syndicationCheckedAt);
-    const lastErrorMap = normalizeErrorMap(attributes.syndicationLastError);
-    const touchedTargets = new Set();
-    const touch = (target) => {
-      if (target) touchedTargets.add(target);
-    };
-
-    let dirty = false;
+    const { filePath, attributes } = post;
+    const slug = filePath.split("/").pop()?.replace(/\.md$/, "") || "";
     const canonicalUrl = buildCanonicalUrl(attributes, slug, siteUrl);
-    const nowIso = now.toISOString();
-    for (const target of syndicateTargets) {
-      if (!BRIDGY_PUBLISH_TARGETS[target]) continue;
-      if (getSyndicationUrl(syndicationMap, target)) continue;
-      const legacyUrl = inferLegacySyndicationUrl(attributes, target);
-      if (!legacyUrl) continue;
-      syndicationMap[target] = legacyUrl;
-      const next = pickForwardStatus(statusMap[target], "confirmed");
-      if (next !== statusMap[target]) {
-        statusMap[target] = next || "confirmed";
-      }
-      delete requestedAtMap[target];
-      delete checkedAtMap[target];
-      delete lastErrorMap[target];
-      dirty = true;
-      touch(target);
-    }
+    const syndicateTargets = normalizeSyndicateTargets(attributes.syndicate);
 
-    for (const target of Object.keys(syndicationMap)) {
-      if (!BRIDGY_PUBLISH_TARGETS[target]) continue;
-      if (statusMap[target] !== "confirmed") {
-        const next = pickForwardStatus(statusMap[target], "confirmed");
-        if (next !== statusMap[target]) {
-          statusMap[target] = next;
-          dirty = true;
-          touch(target);
-        }
-      }
-      if (requestedAtMap[target]) {
-        delete requestedAtMap[target];
-        dirty = true;
-        touch(target);
-      }
-      if (checkedAtMap[target]) {
-        delete checkedAtMap[target];
-        dirty = true;
-        touch(target);
-      }
-      if (lastErrorMap[target]) {
-        delete lastErrorMap[target];
-        dirty = true;
-        touch(target);
-      }
-    }
-
+    // Plan from the scan; leases and the write-back each read the file again
+    const planned = structuredClone(attributes);
+    const state = reconcilePost(planned, new Map(), now);
+    const outcomes = new Map();
     const pendingTargets = [];
+    // A lease reads the file again and may find it changed, so settle it
+    let leased = false;
+
     for (const target of syndicateTargets) {
-      const syndicatedUrl = getSyndicationUrl(syndicationMap, target);
-      const currentStatus = normalizeStatusValue(statusMap[target]);
-      const hasConfirmed =
-        Boolean(syndicatedUrl) || currentStatus === "confirmed";
-      if (hasConfirmed) {
-        const next = pickForwardStatus(statusMap[target], "confirmed");
-        if (next !== statusMap[target]) {
-          statusMap[target] = next;
-          dirty = true;
-          touch(target);
-        }
-        if (requestedAtMap[target]) {
-          delete requestedAtMap[target];
-          dirty = true;
-          touch(target);
-        }
-        if (checkedAtMap[target]) {
-          delete checkedAtMap[target];
-          dirty = true;
-          touch(target);
-        }
-        if (lastErrorMap[target]) {
-          delete lastErrorMap[target];
-          dirty = true;
-          touch(target);
-        }
-        continue;
-      }
-      if (currentStatus === "requested") {
-        const requestedAction = getRequestedConfirmAction({
-          status: currentStatus,
-          requestedAt: requestedAtMap[target],
-          checkedAt: checkedAtMap[target],
-          now,
-        });
+      if (getSyndicationUrl(state.syndicationMap, target)) continue;
+      const status = normalizeStatusValue(state.statusMap[target]);
+      if (status === "confirmed") continue;
 
-        if (requestedAction.action === "seed-requested-at") {
-          if (requestedAtMap[target] !== nowIso) {
-            requestedAtMap[target] = nowIso;
-            dirty = true;
-            touch(target);
-          }
-          if (checkedAtMap[target] !== nowIso) {
-            checkedAtMap[target] = nowIso;
-            dirty = true;
-            touch(target);
-          }
-          if (!lastErrorMap[target]) {
-            lastErrorMap[target] = "requested-missing-timestamp";
-            dirty = true;
-            touch(target);
-          }
-          continue;
-        }
-
-        if (requestedAction.action === "wait") {
-          continue;
-        }
-
-        if (requestedAction.action === "stale-failed") {
-          if (statusMap[target] !== "failed") {
-            statusMap[target] = "failed";
-            dirty = true;
-            touch(target);
-          }
-          requestedAtMap[target] = nowIso;
-          if (checkedAtMap[target]) {
-            delete checkedAtMap[target];
-          }
-          lastErrorMap[target] = truncateError("requested-stale");
-          dirty = true;
-          touch(target);
-          continue;
-        }
-
-        if (requestedAction.action === "confirm") {
-          const lease = await acquireConfirmLease({
-            filePath,
-            branch,
-            target,
-            now,
-          });
-          if (!lease.acquired) {
-            continue;
-          }
-          currentSha = lease.sha;
-          if (checkedAtMap[target] !== lease.nowIso) {
-            checkedAtMap[target] = lease.nowIso;
-            dirty = true;
-            touch(target);
-          }
-
-          const publishTarget = BRIDGY_PUBLISH_TARGETS[target];
-          if (!publishTarget) {
-            continue;
-          }
-          const result = await sendBridgyWebmention({
-            source: canonicalUrl,
-            target: publishTarget,
-          });
-
-          if (result.ok && result.syndicatedUrl) {
-            if (!syndicationMap[target]) {
-              syndicationMap[target] = result.syndicatedUrl;
-              dirty = true;
-              touch(target);
-            }
-            const next = pickForwardStatus(statusMap[target], "confirmed");
-            if (next !== statusMap[target]) {
-              statusMap[target] = next;
-              dirty = true;
-              touch(target);
-            }
-            delete requestedAtMap[target];
-            delete checkedAtMap[target];
-            delete lastErrorMap[target];
-            touch(target);
-            continue;
-          }
-
-          if (shouldMarkRequested(result)) {
-            const next = pickForwardStatus(statusMap[target], "requested");
-            if (next !== statusMap[target]) {
-              statusMap[target] = next;
-              dirty = true;
-              touch(target);
-            }
-            if (!requestedAtMap[target]) {
-              requestedAtMap[target] = lease.nowIso;
-              dirty = true;
-              touch(target);
-            }
-            checkedAtMap[target] = lease.nowIso;
-            lastErrorMap[target] = summarizeSyndicationResult(
-              result,
-              "confirm"
-            );
-            dirty = true;
-            touch(target);
-            continue;
-          }
-
-          // A refusal is final for this request. pickForwardStatus would keep
-          // "requested", and with the fresh timestamp it would never go stale.
-          if (statusMap[target] !== "failed") {
-            statusMap[target] = "failed";
-            dirty = true;
-            touch(target);
-          }
-          requestedAtMap[target] = lease.nowIso;
-          delete checkedAtMap[target];
-          lastErrorMap[target] = summarizeSyndicationResult(result, "confirm");
-          dirty = true;
-          touch(target);
-          continue;
-        }
-
-        continue;
-      }
-      if (BRIDGY_PUBLISH_TARGETS[target]) {
+      if (status !== "requested") {
+        const ageHours = hoursSince(state.requestedAtMap[target], now);
+        if (status === "failed" && ageHours < FAILED_BACKOFF_HOURS) continue;
         pendingTargets.push(target);
+        continue;
       }
+
+      const requestedAction = getRequestedConfirmAction({
+        status,
+        requestedAt: state.requestedAtMap[target],
+        checkedAt: state.checkedAtMap[target],
+        now,
+      });
+      if (requestedAction.action !== "confirm") continue;
+
+      leased = true;
+      const lease = await acquireConfirmLease({
+        filePath,
+        branch,
+        target,
+        now,
+      });
+      if (!lease.acquired) continue;
+
+      const result = await sendBridgyWebmention({
+        source: canonicalUrl,
+        target: BRIDGY_PUBLISH_TARGETS[target],
+      });
+      outcomes.set(target, toOutcome(result, lease.nowIso, "confirm"));
     }
 
-    const allPublishTargets = syndicateTargets.filter(
-      (target) => BRIDGY_PUBLISH_TARGETS[target]
-    );
-
-    if (allPublishTargets.length > 0) {
+    if (pendingTargets.length > 0) {
       const ready = await waitForPublishAssets({
         canonicalUrl,
         publishTargets: pendingTargets,
@@ -899,306 +852,73 @@ export async function runSyndicationPostDeploy() {
           reason: ready.reason,
           url: ready.url,
         });
-        continue;
-      }
-    }
+      } else {
+        for (const target of pendingTargets) {
+          leased = true;
+          const lease = await acquirePublishLease({
+            filePath,
+            branch,
+            target,
+            now,
+          });
+          if (!lease.acquired) continue;
 
-    if (pendingTargets.length > 0) {
-      for (const targetKey of pendingTargets) {
-        const status = normalizeStatusValue(statusMap[targetKey]) || "pending";
-        const requestedAt = requestedAtMap[targetKey];
-        const ageHours = hoursSince(requestedAt, now);
-
-        if (status === "failed" && ageHours < FAILED_BACKOFF_HOURS) {
-          continue;
-        }
-
-        const lease = await acquirePublishLease({
-          filePath,
-          branch,
-          target: targetKey,
-          now,
-        });
-        if (!lease.acquired) {
-          continue;
-        }
-        currentSha = lease.sha;
-
-        const leasedStatus =
-          pickForwardStatus(statusMap[targetKey], "requested") || "requested";
-        if (leasedStatus !== statusMap[targetKey]) {
-          statusMap[targetKey] = leasedStatus;
-          dirty = true;
-          touch(targetKey);
-        }
-        if (requestedAtMap[targetKey] !== lease.nowIso) {
-          requestedAtMap[targetKey] = lease.nowIso;
-          dirty = true;
-          touch(targetKey);
-        }
-        if (checkedAtMap[targetKey] !== lease.nowIso) {
-          checkedAtMap[targetKey] = lease.nowIso;
-          dirty = true;
-          touch(targetKey);
-        }
-        if (lastErrorMap[targetKey]) {
-          delete lastErrorMap[targetKey];
-          dirty = true;
-          touch(targetKey);
-        }
-
-        const target = BRIDGY_PUBLISH_TARGETS[targetKey];
-        const result = await sendBridgyWebmention({
-          source: canonicalUrl,
-          target,
-        });
-
-        if (result.ok && result.syndicatedUrl) {
-          if (!syndicationMap[targetKey]) {
-            syndicationMap[targetKey] = result.syndicatedUrl;
-            dirty = true;
-            touch(targetKey);
-          }
-          const next = pickForwardStatus(statusMap[targetKey], "confirmed");
-          if (next !== statusMap[targetKey]) {
-            statusMap[targetKey] = next;
-            dirty = true;
-            touch(targetKey);
-          }
-          delete requestedAtMap[targetKey];
-          delete checkedAtMap[targetKey];
-          delete lastErrorMap[targetKey];
-          touch(targetKey);
-          continue;
-        }
-
-        if (shouldMarkRequested(result)) {
-          const next = pickForwardStatus(statusMap[targetKey], "requested");
-          if (next !== statusMap[targetKey]) {
-            statusMap[targetKey] = next;
-            dirty = true;
-            touch(targetKey);
-          }
-          requestedAtMap[targetKey] = lease.nowIso;
-          checkedAtMap[targetKey] = lease.nowIso;
-          lastErrorMap[targetKey] = summarizeSyndicationResult(
-            result,
-            "publish"
-          );
-          dirty = true;
-          touch(targetKey);
-        } else {
-          // The lease already set "requested", which pickForwardStatus would
-          // keep; a refusal is a failure
-          if (statusMap[targetKey] !== "failed") {
-            statusMap[targetKey] = "failed";
-            dirty = true;
-            touch(targetKey);
-          }
-          requestedAtMap[targetKey] = lease.nowIso;
-          delete checkedAtMap[targetKey];
-          lastErrorMap[targetKey] = summarizeSyndicationResult(
-            result,
-            "publish"
-          );
-          dirty = true;
-          touch(targetKey);
+          const result = await sendBridgyWebmention({
+            source: canonicalUrl,
+            target: BRIDGY_PUBLISH_TARGETS[target],
+          });
+          outcomes.set(target, toOutcome(result, lease.nowIso, "publish"));
         }
       }
     }
 
-    const remainingSyndicate = syndicateTargets.filter(
-      (target) => !getSyndicationUrl(syndicationMap, target)
-    );
-    const hadSyndicate =
-      syndicateTargets.length > 0 || attributes.syndicate !== undefined;
-
-    if (remainingSyndicate.length > 0) {
-      attributes.syndicate = remainingSyndicate;
-      if (attributes.syndicationComplete) {
-        delete attributes.syndicationComplete;
-        dirty = true;
-      }
-    } else if (hadSyndicate) {
-      if (attributes.syndicate) {
-        delete attributes.syndicate;
-        dirty = true;
-      }
-      if (attributes.syndicationComplete !== true) {
-        attributes.syndicationComplete = true;
-        dirty = true;
-      }
-    }
-
-    attributes.syndication = syndicationMap;
-
-    if (Object.keys(statusMap).length > 0) {
-      attributes.syndicationStatus = statusMap;
-    } else if (attributes.syndicationStatus) {
-      delete attributes.syndicationStatus;
-      dirty = true;
-    }
-
-    if (Object.keys(requestedAtMap).length > 0) {
-      attributes.syndicationRequestedAt = requestedAtMap;
-    } else if (attributes.syndicationRequestedAt) {
-      delete attributes.syndicationRequestedAt;
-      dirty = true;
-    }
-
-    if (Object.keys(checkedAtMap).length > 0) {
-      attributes.syndicationCheckedAt = checkedAtMap;
-    } else if (attributes.syndicationCheckedAt) {
-      delete attributes.syndicationCheckedAt;
-      dirty = true;
-    }
-
-    if (Object.keys(lastErrorMap).length > 0) {
-      attributes.syndicationLastError = lastErrorMap;
-    } else if (attributes.syndicationLastError) {
-      delete attributes.syndicationLastError;
-      dirty = true;
-    }
-
-    if (!dirty) {
+    if (
+      !leased &&
+      syndicationSnapshot(planned) === syndicationSnapshot(attributes)
+    ) {
       report.skipped.push({ file: filePath, reason: "no-changes" });
       continue;
     }
 
-    const updated = buildFrontmatter(attributes, body);
     const message = toSkipCiMessage(`${COMMIT_PREFIX} update ${slug}`);
-    const res = await updateFileContent(
-      filePath,
-      branch,
-      currentSha,
-      updated,
-      message
-    );
-
-    if (!res.ok && res.status === 409) {
-      const retry = await getFileContent(filePath, branch);
-      const retryParsed = fm(retry.content);
-      const retryAttrs = retryParsed.attributes || {};
-      retryAttrs.syndicate = attributes.syndicate;
-      retryAttrs.syndicationComplete = attributes.syndicationComplete;
-
-      const retrySyndicationMap = normalizeSyndicationMap(
-        retryAttrs.syndication
-      );
-      const retryStatusMap = normalizeStatusMap(retryAttrs.syndicationStatus);
-      const retryRequestedAtMap = normalizeTimestampMap(
-        retryAttrs.syndicationRequestedAt
-      );
-      const retryCheckedAtMap = normalizeTimestampMap(
-        retryAttrs.syndicationCheckedAt
-      );
-      const retryLastErrorMap = normalizeErrorMap(
-        retryAttrs.syndicationLastError
-      );
-
-      const localSyndicationMap = normalizeSyndicationMap(
-        attributes.syndication
-      );
-      const localStatusMap = normalizeStatusMap(attributes.syndicationStatus);
-      const localRequestedAtMap = normalizeTimestampMap(
-        attributes.syndicationRequestedAt
-      );
-      const localCheckedAtMap = normalizeTimestampMap(
-        attributes.syndicationCheckedAt
-      );
-      const localLastErrorMap = normalizeErrorMap(
-        attributes.syndicationLastError
-      );
-
-      for (const target of touchedTargets) {
-        const localUrl = getSyndicationUrl(localSyndicationMap, target);
-        const remoteUrl = getSyndicationUrl(retrySyndicationMap, target);
-        if (localUrl && !remoteUrl) {
-          retrySyndicationMap[target] = localUrl;
-        }
-
-        // A refusal this run is newer than the "requested" it conflicts with
-        const mergedStatus =
-          localStatusMap[target] === "failed" &&
-          retryStatusMap[target] === "requested"
-            ? "failed"
-            : pickForwardStatus(retryStatusMap[target], localStatusMap[target]);
-        if (mergedStatus) {
-          retryStatusMap[target] = mergedStatus;
-        }
-
-        if (retryStatusMap[target] === "confirmed") {
-          delete retryRequestedAtMap[target];
-          delete retryCheckedAtMap[target];
-          delete retryLastErrorMap[target];
-          continue;
-        }
-
-        if (hasOwn(localRequestedAtMap, target)) {
-          retryRequestedAtMap[target] = localRequestedAtMap[target];
-        }
-        if (hasOwn(localCheckedAtMap, target)) {
-          retryCheckedAtMap[target] = localCheckedAtMap[target];
-        } else {
-          delete retryCheckedAtMap[target];
-        }
-        if (hasOwn(localLastErrorMap, target)) {
-          retryLastErrorMap[target] = localLastErrorMap[target];
-        }
-      }
-
-      retryAttrs.syndication = retrySyndicationMap;
-      if (Object.keys(retryStatusMap).length > 0) {
-        retryAttrs.syndicationStatus = retryStatusMap;
-      } else {
-        delete retryAttrs.syndicationStatus;
-      }
-      if (Object.keys(retryRequestedAtMap).length > 0) {
-        retryAttrs.syndicationRequestedAt = retryRequestedAtMap;
-      } else {
-        delete retryAttrs.syndicationRequestedAt;
-      }
-      if (Object.keys(retryCheckedAtMap).length > 0) {
-        retryAttrs.syndicationCheckedAt = retryCheckedAtMap;
-      } else {
-        delete retryAttrs.syndicationCheckedAt;
-      }
-      if (Object.keys(retryLastErrorMap).length > 0) {
-        retryAttrs.syndicationLastError = retryLastErrorMap;
-      } else {
-        delete retryAttrs.syndicationLastError;
-      }
-
-      const retryUpdated = buildFrontmatter(retryAttrs, retryParsed.body || "");
-      const retryRes = await updateFileContent(
+    let written = state;
+    let res;
+    try {
+      res = await updatePost({
         filePath,
         branch,
-        retry.sha,
-        retryUpdated,
-        message
-      );
-      if (!retryRes.ok) {
-        report.errors.push({
-          file: filePath,
-          error: `Update failed (status ${retryRes.status})`,
-        });
-        continue;
-      }
-    } else if (!res.ok) {
+        message,
+        mutate: (fresh) => {
+          const before = syndicationSnapshot(fresh);
+          written = reconcilePost(fresh, outcomes, now);
+          return syndicationSnapshot(fresh) === before
+            ? { write: false, reason: "no-changes" }
+            : { write: true };
+        },
+      });
+    } catch (err) {
+      report.errors.push({ file: filePath, error: err.message });
+      continue;
+    }
+
+    if (res.reason === "no-changes") {
+      report.skipped.push({ file: filePath, reason: "no-changes" });
+      continue;
+    }
+    if (!res.written) {
       report.errors.push({
         file: filePath,
-        error: `Update failed (status ${res.status})`,
+        error: `Update failed (${res.status ? `status ${res.status}` : res.reason})`,
       });
       continue;
     }
 
     report.updated.push({
       file: filePath,
-      updatedTargets: Object.keys(syndicationMap).filter(
+      updatedTargets: Object.keys(written.syndicationMap).filter(
         (key) => BRIDGY_PUBLISH_TARGETS[key]
       ),
     });
-    committedWriteback = true;
   }
 
   return report;
