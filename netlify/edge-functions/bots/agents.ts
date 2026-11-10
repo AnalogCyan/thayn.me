@@ -1,57 +1,50 @@
+// Training crawlers the bots edge function turns away. Each pattern is matched
+// against the user agent, so a token that only appears in robots.txt, such as
+// Google-Extended, does not belong here. "googleother" also covers
+// GoogleOther-Image and GoogleOther-Video.
 const agentDefinitions = [
   {
     name: "OpenAI GPTBot",
     pattern: "gptbot",
-    documentation: "https://platform.openai.com/docs/gptbot",
+    documentation: "https://developers.openai.com/api/docs/bots",
   },
   {
     name: "Anthropic ClaudeBot",
     pattern: "claudebot",
     documentation:
-      "https://docs.anthropic.com/claude/docs/claudebot-web-crawler",
+      "https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler",
   },
   {
     name: "Anthropic anthropic-ai",
     pattern: "anthropic-ai",
     documentation:
-      "https://docs.anthropic.com/claude/docs/claudebot-web-crawler",
-  },
-  {
-    name: "Google-Extended",
-    pattern: "google-extended",
-    documentation: "https://ai.google.dev/docs/ai-search-guidelines",
+      "https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler",
   },
   {
     name: "GoogleOther",
     pattern: "googleother",
     documentation:
-      "https://developers.google.com/search/docs/crawling-indexing/googlebot",
-  },
-  {
-    name: "GoogleOther-Image",
-    pattern: "googleother-image",
-    documentation:
-      "https://developers.google.com/search/docs/crawling-indexing/googlebot",
+      "https://developers.google.com/crawling/docs/crawlers-fetchers/google-common-crawlers",
   },
   {
     name: "Amazonbot",
     pattern: "amazonbot",
-    documentation: "https://developer.amazon.com/support/amazonbot",
+    documentation: "https://developer.amazon.com/docs/amazonbot/amazonbot.html",
   },
   {
     name: "ByteDance Bytespider",
     pattern: "bytespider",
-    documentation: "https://www.bytedance.com/en/bytespider",
   },
   {
     name: "Common Crawl CCBot",
     pattern: "ccbot",
-    documentation: "https://commoncrawl.org/bp/CCBot",
+    documentation: "https://commoncrawl.org/ccbot",
   },
   {
     name: "Perplexity Bot",
     pattern: "perplexitybot",
-    documentation: "https://www.perplexity.ai/hc/en/articles/2087021059",
+    documentation:
+      "https://docs.perplexity.ai/docs/resources/perplexity-crawlers",
   },
   {
     name: "Meta-ExternalAgent",
@@ -68,28 +61,25 @@ const agentDefinitions = [
   {
     name: "Cohere AI",
     pattern: "cohere-ai",
-    documentation: "https://docs.cohere.com/docs/crawler",
   },
   {
     name: "You.com crawler",
     pattern: "youbot",
-    documentation: "https://about.you.com/youbot",
   },
   {
     name: "KagiBot",
     pattern: "kagibot",
-    documentation: "https://help.kagi.com/kagi/search/kagibot.html",
+    documentation: "https://kagi.com/bot",
   },
   {
     name: "Diffbot",
     pattern: "diffbot",
-    documentation:
-      "https://docs.diffbot.com/docs/why-is-diffbot-crawling-my-site",
   },
   {
     name: "Omgili data crawler",
     pattern: "omgili",
-    documentation: "https://www.omgili.com/",
+    documentation:
+      "https://webz.io/blog/web-data/what-is-the-omgili-bot-and-why-is-it-crawling-your-website/",
   },
 ] as const;
 
