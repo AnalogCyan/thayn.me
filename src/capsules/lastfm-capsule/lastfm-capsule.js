@@ -36,7 +36,7 @@
         toggle: root.querySelector("[data-lastfm-toggle]"),
         recentList: root.querySelector("[data-lastfm-recent-list]"),
         recent: root.querySelector("[data-lastfm-recent]"),
-        bars: Array.from(root.querySelectorAll("[data-lastfm-wave] span")),
+        status: root.querySelector("[data-lastfm-status]"),
       };
     }
     return root.__els;
@@ -327,19 +327,17 @@
     );
   }
 
-  function stopVisualizer(root) {
-    const { bars } = getEls(root);
-    bars.forEach((bar) => {
-      bar.style.height = "";
-    });
-  }
-
-  function startVisualizer(root) {
-    const { bars } = getEls(root);
-    if (bars.length === 0) return;
-    bars.forEach((bar) => {
-      bar.style.height = "";
-    });
+  // Only a new now-playing track is worth interrupting for, not "N minutes ago" ticks
+  function announceNowPlaying(root, track) {
+    const { status } = getEls(root);
+    const key = track
+      ? `${track.name || "Unknown track"} by ${track.artist || "Unknown artist"}`
+      : "";
+    const prev = root.__lastfmAnnounced;
+    root.__lastfmAnnounced = key;
+    // first load is already on screen
+    if (!status || prev === undefined || !key || key === prev) return;
+    status.textContent = `Now playing ${key}`;
   }
 
   function setTrackUI(root, track, mode, profileUrl) {
@@ -403,11 +401,6 @@
     if (!wave) return;
     wave.hidden = !visible;
     wave.classList.toggle("is-active", visible);
-    if (visible) {
-      startVisualizer(root);
-    } else {
-      stopVisualizer(root);
-    }
   }
 
   function setToggleVisible(root, visible) {
@@ -423,6 +416,10 @@
     const { recentList } = getEls(root);
     if (!recentList) return;
 
+    // A poll rebuilds the list, so keep a visitor's place in it
+    const focused = Array.from(recentList.querySelectorAll("a")).indexOf(
+      document.activeElement
+    );
     recentList.innerHTML = "";
     tracks.slice(0, 10).forEach((track) => {
       const item = document.createElement("li");
@@ -467,6 +464,13 @@
       item.append(link);
       recentList.append(item);
     });
+
+    if (focused >= 0) {
+      const links = recentList.querySelectorAll("a");
+      links[Math.min(focused, links.length - 1)]?.focus({
+        preventScroll: true,
+      });
+    }
   }
 
   function setRecentOpen(root, open) {
@@ -479,9 +483,11 @@
       open ? "Hide recent tracks" : "Show recent tracks"
     );
     recent.classList.toggle("is-open", open);
+    recent.inert = !open;
   }
 
   function setIdleMode(root, tracks, profileUrl) {
+    announceNowPlaying(root, null);
     if (!Array.isArray(tracks) || tracks.length === 0) {
       setToggleVisible(root, false);
       setWaveVisible(root, false);
@@ -508,7 +514,9 @@
       setToggleVisible(root, false);
     }
 
-    setRecentOpen(root, false);
+    // A poll must not shut a list the visitor opened
+    const wasOpen = toggle?.getAttribute("aria-expanded") === "true";
+    setRecentOpen(root, wasOpen && historyTracks.length > 0);
   }
 
   function setLiveMode(root, track, profileUrl) {
@@ -516,9 +524,11 @@
     setWaveVisible(root, true);
     setRecentOpen(root, false);
     setTrackUI(root, track, "live", profileUrl);
+    announceNowPlaying(root, track);
   }
 
   function showUnavailable(root, profileUrl) {
+    announceNowPlaying(root, null);
     setToggleVisible(root, false);
     setWaveVisible(root, false);
     setRecentOpen(root, false);
@@ -549,6 +559,13 @@
       root.__lastfmThemeObserver.disconnect();
       root.__lastfmThemeObserver = null;
     }
+    if (root.__lastfmVisibilityHandler) {
+      document.removeEventListener(
+        "visibilitychange",
+        root.__lastfmVisibilityHandler
+      );
+      root.__lastfmVisibilityHandler = null;
+    }
     activeRoots.delete(root);
   }
 
@@ -570,6 +587,7 @@
     root.__lastfmRefreshMs = DEFAULT_REFRESH_INTERVAL_MS;
     root.__lastfmSampledColor = null;
     root.__lastfmVizColorsByTheme = null;
+    root.__lastfmAnnounced = undefined;
 
     if (!root.__lastfmThemeObserver) {
       const html = document.documentElement;
@@ -602,6 +620,7 @@
     const refresh = async () => {
       if (root.__lastfmRefreshing) return;
       root.__lastfmRefreshing = true;
+      root.__lastfmFetchedAt = Date.now();
       try {
         const response = await fetch("/api/lastfm-now-playing");
         const data = await response.json();
@@ -635,36 +654,54 @@
       }
     };
 
-    try {
-      await refresh();
-    } catch {
-      showUnavailable(root, profileUrl);
-    }
+    const runRefresh = async () => {
+      try {
+        await refresh();
+      } catch {
+        showUnavailable(root, profileUrl);
+      }
+    };
 
-    const scheduleNextRefresh = () => {
+    const scheduleNextRefresh = (delayMs) => {
       if (root.__lastfmStopped || !root.isConnected) {
         teardownCapsule(root);
         return;
       }
       if (root.__lastfmRefreshTimer) {
         window.clearTimeout(root.__lastfmRefreshTimer);
+        root.__lastfmRefreshTimer = null;
       }
+      // paused while hidden, the visibilitychange handler resumes it
+      if (document.visibilityState === "hidden") return;
       const delay =
-        Number(root.__lastfmRefreshMs) || DEFAULT_REFRESH_INTERVAL_MS;
+        delayMs ??
+        (Number(root.__lastfmRefreshMs) || DEFAULT_REFRESH_INTERVAL_MS);
       root.__lastfmRefreshTimer = window.setTimeout(async () => {
         if (root.__lastfmStopped || !root.isConnected) {
           teardownCapsule(root);
           return;
         }
-        try {
-          await refresh();
-        } catch {
-          showUnavailable(root, profileUrl);
-        }
+        await runRefresh();
         scheduleNextRefresh();
       }, delay);
     };
 
+    root.__lastfmVisibilityHandler = () => {
+      if (document.visibilityState === "hidden") {
+        window.clearTimeout(root.__lastfmRefreshTimer);
+        root.__lastfmRefreshTimer = null;
+        return;
+      }
+      // refresh on return, but not more often than the minimum interval
+      const since = Date.now() - (root.__lastfmFetchedAt || 0);
+      scheduleNextRefresh(Math.max(0, MIN_REFRESH_INTERVAL_MS - since));
+    };
+    document.addEventListener(
+      "visibilitychange",
+      root.__lastfmVisibilityHandler
+    );
+
+    await runRefresh();
     scheduleNextRefresh();
   }
 
