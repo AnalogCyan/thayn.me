@@ -3,7 +3,8 @@
 // (it parsed a 10MB PDF as HTML and blew the stack in css-select).
 // Zero external deps; a failure here must never fail the deploy.
 
-const { isIP } = require("node:net");
+const dns = require("node:dns");
+const { BlockList, isIP } = require("node:net");
 
 const FEED_URL = "https://thayn.me/blog/atom.xml";
 const SITE_ORIGIN = "https://thayn.me";
@@ -15,16 +16,118 @@ const DRY_RUN = process.env.WEBMENTIONS_DRY_RUN === "1";
 const STORE_NAME = "webmentions";
 const STORE_KEY = "sent.json";
 const RESEND_AFTER_DAYS = 180;
+// Pages without an endpoint are looked at again sooner, in case they add one
+const RECHECK_AFTER_DAYS = 30;
+const NO_ENDPOINT = "no-endpoint ";
+const MAX_REDIRECTS = 4;
 
+// Special-purpose ranges (RFC 6890 and the IANA registries), plus anything
+// that embeds an IPv4 address in IPv6 and so could smuggle one of these in.
+// Two lists, because BlockList also tests IPv4 against ::ffff:0:0/96.
+const NON_PUBLIC_V4 = new BlockList();
+const NON_PUBLIC_V6 = new BlockList();
+for (const [net, prefix] of [
+  ["0.0.0.0", 8],
+  ["10.0.0.0", 8],
+  ["100.64.0.0", 10],
+  ["127.0.0.0", 8],
+  ["169.254.0.0", 16],
+  ["172.16.0.0", 12],
+  ["192.0.0.0", 24],
+  ["192.0.2.0", 24],
+  ["192.88.99.0", 24],
+  ["192.168.0.0", 16],
+  ["198.18.0.0", 15],
+  ["198.51.100.0", 24],
+  ["203.0.113.0", 24],
+  ["224.0.0.0", 4],
+  ["240.0.0.0", 4],
+]) {
+  NON_PUBLIC_V4.addSubnet(net, prefix, "ipv4");
+}
+for (const [net, prefix] of [
+  ["::", 96],
+  ["::ffff:0:0", 96],
+  ["64:ff9b::", 96],
+  ["64:ff9b:1::", 48],
+  ["100::", 64],
+  ["2001::", 32],
+  ["2001:2::", 48],
+  ["2001:db8::", 32],
+  ["2002::", 16],
+  ["fc00::", 7],
+  ["fe80::", 10],
+  ["fec0::", 10],
+  ["ff00::", 8],
+]) {
+  NON_PUBLIC_V6.addSubnet(net, prefix, "ipv6");
+}
+
+function isPublicAddress(address) {
+  const family = isIP(address);
+  if (family === 4) return !NON_PUBLIC_V4.check(address, "ipv4");
+  if (family === 6) return !NON_PUBLIC_V6.check(address, "ipv6");
+  return false;
+}
+
+// Endpoints come from other people's pages, so the build never talks to
+// loopback, private or link-local addresses named by one. Every address the
+// name resolves to must be public.
+async function isPublicEndpoint(endpoint) {
+  let url;
+  try {
+    url = new URL(endpoint);
+  } catch {
+    return false;
+  }
+  if (url.protocol !== "https:" && url.protocol !== "http:") return false;
+  // "localhost." is localhost too
+  const host = url.hostname
+    .replace(/^\[|\]$/g, "")
+    .replace(/\.$/, "")
+    .toLowerCase();
+  if (
+    host === "localhost" ||
+    host.endsWith(".localhost") ||
+    host.endsWith(".local") ||
+    host.endsWith(".internal")
+  ) {
+    return false;
+  }
+  if (isIP(host) !== 0) return isPublicAddress(host);
+  let addresses;
+  try {
+    addresses = await dns.promises.lookup(host, { all: true });
+  } catch {
+    return false;
+  }
+  return (
+    addresses.length > 0 &&
+    addresses.every(({ address }) => isPublicAddress(address))
+  );
+}
+
+// Redirects are followed by hand so each hop gets the public check
 async function fetchWithCap(url, { htmlOnly = false } = {}) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   try {
-    const res = await fetch(url, {
-      signal: controller.signal,
-      headers: { "user-agent": "thayn.me send-webmentions" },
-      redirect: "follow",
-    });
+    let res;
+    for (let hop = 0; ; hop += 1) {
+      if (!(await isPublicEndpoint(url))) {
+        throw new Error(`refusing non-public address ${url}`);
+      }
+      res = await fetch(url, {
+        signal: controller.signal,
+        headers: { "user-agent": "thayn.me send-webmentions" },
+        redirect: "manual",
+      });
+      const location = res.headers.get("location");
+      if (res.status < 300 || res.status >= 400 || !location) break;
+      if (hop >= MAX_REDIRECTS) throw new Error(`too many redirects ${url}`);
+      await res.body?.cancel();
+      url = new URL(location, url).toString();
+    }
     const type = res.headers.get("content-type") || "";
     const chunks = [];
     let size = 0;
@@ -38,7 +141,8 @@ async function fetchWithCap(url, { htmlOnly = false } = {}) {
     controller.abort();
     return {
       ok: res.ok,
-      url: res.url || url,
+      status: res.status,
+      url,
       headers: res.headers,
       text: Buffer.concat(chunks).toString("utf-8"),
     };
@@ -85,82 +189,55 @@ function extractEntries(xml) {
   return entries;
 }
 
+function hasWebmentionRel(value) {
+  return value.toLowerCase().split(/\s+/).includes("webmention");
+}
+
+// Returns the raw URL reference, which may be "" for the page itself
 function endpointFromLinkHeader(header) {
   if (!header) return null;
-  for (const part of header.split(",")) {
-    if (/rel="?webmention"?/.test(part)) {
-      return part.match(/<([^>]+)>/)?.[1] || null;
+  for (const [, ref, params] of header.matchAll(/<([^>]*)>([^<]*)/g)) {
+    const rel = params.match(/;\s*rel\s*=\s*(?:"([^"]*)"|([^\s;,]+))/i);
+    if (rel && hasWebmentionRel(rel[1] ?? rel[2])) return ref.trim();
+  }
+  return null;
+}
+
+function parseAttributes(source) {
+  const attrs = Object.create(null);
+  for (const m of source.matchAll(
+    /([^\s"'=<>/]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g
+  )) {
+    const name = m[1].toLowerCase();
+    if (!(name in attrs)) attrs[name] = m[2] ?? m[3] ?? m[4] ?? "";
+  }
+  return attrs;
+}
+
+// First <link> or <a> in document order with rel webmention and an href
+function endpointFromHtml(html) {
+  const live = html.replace(/<!--[\s\S]*?-->/g, "");
+  for (const [, , rest] of live.matchAll(
+    /<(link|a)\b((?:[^>"']|"[^"]*"|'[^']*')*)>/gi
+  )) {
+    const attrs = parseAttributes(rest);
+    if ("href" in attrs && attrs.rel && hasWebmentionRel(attrs.rel)) {
+      return decodeEntities(attrs.href.trim());
     }
   }
   return null;
 }
 
-function endpointFromHtml(html, baseUrl) {
-  const tag =
-    html.match(/<link[^>]+rel="[^"]*webmention[^"]*"[^>]*>/i) ||
-    html.match(/<a[^>]+rel="[^"]*webmention[^"]*"[^>]*>/i);
-  if (!tag) return null;
-  const href = tag[0].match(/href="([^"]+)"/i)?.[1];
-  return href ? new URL(href, baseUrl).toString() : null;
-}
-
 async function discoverEndpoint(target) {
   const res = await fetchWithCap(target, { htmlOnly: true });
-  if (!res.ok) return null;
-  // Relative endpoints resolve against the page after redirects
-  const fromHeader = endpointFromLinkHeader(res.headers.get("link"));
-  if (fromHeader) return new URL(fromHeader, res.url).toString();
+  if (!res.ok) throw new Error(`target returned HTTP ${res.status}`);
+  let ref = endpointFromLinkHeader(res.headers.get("link"));
   const type = res.headers.get("content-type") || "";
-  if (!type.startsWith("text/html")) return null;
-  return endpointFromHtml(res.text, res.url);
-}
-
-// Endpoints come from other people's pages, so the build never posts to
-// loopback, private or link-local addresses named by one
-function isPublicEndpoint(endpoint) {
-  let url;
-  try {
-    url = new URL(endpoint);
-  } catch {
-    return false;
+  if (ref === null && type.startsWith("text/html")) {
+    ref = endpointFromHtml(res.text);
   }
-  if (url.protocol !== "https:" && url.protocol !== "http:") return false;
-  // "localhost." is localhost too
-  const host = url.hostname
-    .replace(/^\[|\]$/g, "")
-    .replace(/\.$/, "")
-    .toLowerCase();
-  if (
-    host === "localhost" ||
-    host.endsWith(".localhost") ||
-    host.endsWith(".local") ||
-    host.endsWith(".internal")
-  ) {
-    return false;
-  }
-  if (isIP(host) === 4) {
-    const [a, b] = host.split(".").map(Number);
-    return !(
-      a === 0 ||
-      a === 10 ||
-      a === 127 ||
-      (a === 100 && b >= 64 && b <= 127) ||
-      (a === 169 && b === 254) ||
-      (a === 172 && b >= 16 && b <= 31) ||
-      (a === 192 && b === 168)
-    );
-  }
-  if (isIP(host) === 6) {
-    // IPv4-mapped addresses have no business being a public endpoint
-    if (host.startsWith("::ffff:")) return false;
-    return !(
-      host === "::" ||
-      host === "::1" ||
-      /^f[cd]/.test(host) ||
-      /^fe[89ab]/.test(host)
-    );
-  }
-  return true;
+  // Relative endpoints resolve against the page after redirects
+  return ref === null ? null : new URL(ref, res.url).toString();
 }
 
 // Redirects are followed by hand, so each hop gets the same public check
@@ -184,7 +261,7 @@ async function sendMention(endpoint, source, target) {
       return { label: `HTTP ${res.status}`, delivered: res.ok };
     }
     url = new URL(location, url).toString();
-    if (!isPublicEndpoint(url)) {
+    if (!(await isPublicEndpoint(url))) {
       return { label: "redirect-to-non-public", delivered: false };
     }
   }
@@ -200,16 +277,21 @@ async function openLedger() {
     const store = getStore({ name: STORE_NAME, consistency: "strong" });
     const sent = (await store.get(STORE_KEY, { type: "json" })) || {};
     return {
-      has: (key) => Boolean(sent[key]),
+      has: (key) => Boolean(sent[key] || sent[NO_ENDPOINT + key]),
       record: (key) => {
         sent[key] = new Date().toISOString();
       },
       save: async () => {
-        const cutoff = Date.now() - RESEND_AFTER_DAYS * 86400000;
+        const cutoff = (days) => Date.now() - days * 86400000;
         const kept = Object.fromEntries(
           Object.entries(sent).filter(
-            ([, iso]) =>
-              Date.parse(iso) >= cutoff || Number.isNaN(Date.parse(iso))
+            ([key, iso]) =>
+              Date.parse(iso) >=
+                cutoff(
+                  key.startsWith(NO_ENDPOINT)
+                    ? RECHECK_AFTER_DAYS
+                    : RESEND_AFTER_DAYS
+                ) || Number.isNaN(Date.parse(iso))
           )
         );
         await store.setJSON(STORE_KEY, kept);
@@ -257,10 +339,11 @@ module.exports = {
         try {
           const endpoint = await discoverEndpoint(target);
           if (!endpoint) {
+            if (!DRY_RUN) ledger.record(NO_ENDPOINT + pair);
             console.log(`send-webmentions: no endpoint for ${target}`);
             continue;
           }
-          if (!isPublicEndpoint(endpoint)) {
+          if (!(await isPublicEndpoint(endpoint))) {
             console.log(
               `send-webmentions: refusing non-public endpoint for ${target}`
             );
@@ -280,7 +363,9 @@ module.exports = {
     }
 
     if (skipped > 0) {
-      console.log(`send-webmentions: ${skipped} already sent, skipped`);
+      console.log(
+        `send-webmentions: ${skipped} already sent or without an endpoint, skipped`
+      );
     }
     // Losing the ledger only means some mentions are sent again next time
     try {
@@ -290,3 +375,17 @@ module.exports = {
     }
   },
 };
+
+// Non-enumerable, so Netlify's loader, which rejects any export that is not
+// an event handler, never sees these. Tests reach them through require().
+Object.defineProperty(module.exports, "internals", {
+  value: {
+    isPublicAddress,
+    isPublicEndpoint,
+    fetchWithCap,
+    endpointFromLinkHeader,
+    endpointFromHtml,
+    discoverEndpoint,
+    sendMention,
+  },
+});
