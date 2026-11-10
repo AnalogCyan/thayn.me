@@ -59,39 +59,26 @@ function detectBlockedAgent(userAgent: string | null): CompiledAgent | null {
   return null;
 }
 
-export default async function botShield(request: Request, context: Context) {
-  try {
-    const userAgent = request.headers.get("user-agent");
-    const matchedAgent = detectBlockedAgent(userAgent);
+// Other requests get nothing back, which hands them on untouched: the
+// netlify.toml headers for /* already carry X-Robots-Tag and AI-Training, and
+// context.next() would strip conditional requests from every asset
+export default function botShield(request: Request, context: Context) {
+  const userAgent = request.headers.get("user-agent");
+  const matchedAgent = detectBlockedAgent(userAgent);
+  if (!matchedAgent) return;
 
-    if (matchedAgent) {
-      context.log(
-        `Blocked ${matchedAgent.name} via user-agent: ${userAgent ?? "<missing>"}`
-      );
+  context.log(
+    `Blocked ${matchedAgent.name} via user-agent: ${userAgent ?? "<missing>"}`
+  );
 
-      return new Response("AI scraping is not permitted on this site.", {
-        status: 403,
-        headers: {
-          "Content-Type": "text/plain; charset=utf-8",
-          "Cache-Control": "no-store, no-cache, must-revalidate",
-          "X-Robots-Tag": ROBOTS_DIRECTIVE,
-          "AI-Training": AI_TRAINING_HEADER,
-        },
-      });
-    }
-
-    const upstreamResponse = await context.next();
-    const headers = new Headers(upstreamResponse.headers);
-    headers.set("X-Robots-Tag", ROBOTS_DIRECTIVE);
-    headers.set("AI-Training", AI_TRAINING_HEADER);
-
-    return new Response(upstreamResponse.body, {
-      status: upstreamResponse.status,
-      statusText: upstreamResponse.statusText,
-      headers,
-    });
-  } catch (error) {
-    context.log(`botShield error; bypassing: ${String(error)}`);
-    return context.next();
-  }
+  // A response made here skips the netlify.toml headers, so it sets its own
+  return new Response("AI scraping is not permitted on this site.", {
+    status: 403,
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store, no-cache, must-revalidate",
+      "X-Robots-Tag": ROBOTS_DIRECTIVE,
+      "AI-Training": AI_TRAINING_HEADER,
+    },
+  });
 }

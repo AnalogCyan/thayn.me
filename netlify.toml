@@ -52,8 +52,11 @@ package = "@netlify/plugin-lighthouse"
 [[plugins]]
 package = "./netlify/plugins/send-webmentions"
 
+# Assets and the robots files stay open to every agent, so a blocked crawler
+# can still read the policy that turns it away
 [[edge_functions]]
 path = "/*"
+excludedPath = ["/media/*", "/fonts/*", "/*.css", "/*.js", "/manifest.json", "/robots.txt", "/.well-known/*"]
 function = "bots"
 
 [images]
