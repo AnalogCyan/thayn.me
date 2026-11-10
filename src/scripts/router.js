@@ -14,9 +14,56 @@
   ];
 
   var TRANSITION_MS = 300;
+  var STYLESHEET_TIMEOUT_MS = 2000;
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   var navigating = false;
   // Path of the page <main> holds, which lags location during a navigation
   var renderedPath = location.pathname;
+
+  // A popstate swap lands long after the browser would restore scroll, so
+  // each entry keeps its own position in history.state
+  history.scrollRestoration = "manual";
+  var saveTimer;
+
+  function saveScroll() {
+    clearTimeout(saveTimer);
+    history.replaceState(
+      Object.assign({}, history.state, { scrollY: window.scrollY }),
+      ""
+    );
+  }
+
+  window.addEventListener(
+    "scroll",
+    function () {
+      // Mid-navigation the entry already names the next page
+      if (navigating) return;
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveScroll, 150);
+    },
+    { passive: true }
+  );
+
+  window.addEventListener("pagehide", function () {
+    if (!navigating) saveScroll();
+  });
+
+  // A reload or a full-page Back keeps the entry's state
+  if (history.state && typeof history.state.scrollY === "number") {
+    var savedY = history.state.scrollY;
+    window.addEventListener("load", function () {
+      window.scrollTo({ top: savedY, left: 0, behavior: "instant" });
+    });
+  }
+
+  function hashTarget(hash) {
+    if (hash.length < 2) return null;
+    try {
+      return document.getElementById(decodeURIComponent(hash.slice(1)));
+    } catch {
+      return null;
+    }
+  }
 
   // Scripts are keyed by path, so a ?v= suffix on one page and not another
   // is still the same script
@@ -141,6 +188,8 @@
     };
   }
 
+  // Resolves once new sheets have loaded (or timed out) and the old ones are
+  // off, so the caller can swap with the next page already styled
   function syncStylesheets(sheets, pageUrl) {
     var wanted = new Set();
     sheets.forEach(function (href) {
@@ -151,20 +200,8 @@
       }
     });
 
-    // Sheets from the first page load stay in place, switched off while the
-    // current page does not list them
-    document
-      .querySelectorAll('link[rel="stylesheet"]:not([data-spa])')
-      .forEach(function (link) {
-        if (baseStylesheets.has(link.href)) {
-          link.disabled = !wanted.has(link.href);
-        }
-      });
-
     var existing = Array.from(document.querySelectorAll("link[data-spa]"));
-    existing.forEach(function (link) {
-      if (!wanted.has(link.href)) link.remove();
-    });
+    var loads = [];
 
     wanted.forEach(function (href) {
       if (baseStylesheets.has(href)) return;
@@ -176,7 +213,38 @@
       link.rel = "stylesheet";
       link.href = href;
       link.setAttribute("data-spa", "");
+      loads.push(
+        new Promise(function (resolve) {
+          link.onload = resolve;
+          link.onerror = resolve;
+        })
+      );
       document.head.appendChild(link);
+    });
+
+    var loaded = loads.length
+      ? Promise.race([
+          Promise.all(loads),
+          new Promise(function (resolve) {
+            setTimeout(resolve, STYLESHEET_TIMEOUT_MS);
+          }),
+        ])
+      : Promise.resolve();
+
+    return loaded.then(function () {
+      // Sheets from the first page load stay in place, switched off while
+      // the current page does not list them
+      document
+        .querySelectorAll('link[rel="stylesheet"]:not([data-spa])')
+        .forEach(function (link) {
+          if (baseStylesheets.has(link.href)) {
+            link.disabled = !wanted.has(link.href);
+          }
+        });
+
+      existing.forEach(function (link) {
+        if (!wanted.has(link.href)) link.remove();
+      });
     });
   }
 
@@ -227,11 +295,24 @@
     var dir = getDirection(fromPage, toPage);
     if (!dir) dir = "slide-left";
     var dirClass = "dir-" + dir;
+    var wait = reducedMotion.matches ? 0 : TRANSITION_MS;
+    var targetUrl = new URL(url, location.href);
+    // Back and Forward return to where the entry was left
+    var restoreY =
+      push === false &&
+      history.state &&
+      typeof history.state.scrollY === "number"
+        ? history.state.scrollY
+        : null;
 
     // Pushed now, not after the swap, so Back pressed during the transition
     // has an entry to go back from; the replay below then follows it
     if (push !== false) {
+      saveScroll();
       history.pushState(null, "", url);
+    } else {
+      // A save still pending belongs to the entry just left
+      clearTimeout(saveTimer);
     }
 
     var footerEl = document.querySelector('[data-capsule="footer"]');
@@ -245,21 +326,25 @@
     main.classList.add("spa-out", dirClass);
 
     var outDone = new Promise(function (r) {
-      setTimeout(r, TRANSITION_MS);
+      setTimeout(r, wait);
     });
 
+    var data;
     Promise.all([fetchDone, outDone])
       .then(function (results) {
         var html = results[0];
         var doc = new DOMParser().parseFromString(html, "text/html");
-        var data = extractPageData(doc);
+        data = extractPageData(doc);
 
         if (data.mainHTML == null) throw new Error("no main");
 
+        return syncStylesheets(data.stylesheets, url);
+      })
+      .then(function () {
         main.classList.remove("spa-out", "dir-slide-left", "dir-slide-right");
 
         swapMain(main, data.mainHTML);
-        renderedPath = new URL(url, location.href).pathname;
+        renderedPath = targetUrl.pathname;
 
         if (
           footerEl &&
@@ -306,13 +391,19 @@
         var descEl = document.querySelector('meta[name="description"]');
         if (descEl) descEl.setAttribute("content", data.description);
 
-        syncStylesheets(data.stylesheets, url);
         syncScripts(data.scripts);
 
         main.classList.add("spa-in");
         if (dirClass) main.classList.add(dirClass);
 
-        window.scrollTo(0, 0);
+        var target = hashTarget(targetUrl.hash);
+        if (restoreY !== null) {
+          window.scrollTo({ top: restoreY, left: 0, behavior: "instant" });
+        } else if (target) {
+          target.scrollIntoView({ behavior: "instant" });
+        } else {
+          window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        }
         window.dispatchEvent(new Event("resize"));
 
         // A swapped <main> is a new page; move focus so it is announced
@@ -333,7 +424,7 @@
           if (location.pathname !== renderedPath) {
             onHistoryChange();
           }
-        }, TRANSITION_MS);
+        }, wait);
       })
       .catch(function () {
         main.classList.remove(
@@ -356,9 +447,20 @@
 
     var anchor = e.target.closest("a[href]");
     if (!anchor) return;
+    // Clicked again mid-navigation: already on its way there
+    if (navigating && anchor.href === location.href) {
+      e.preventDefault();
+      return;
+    }
     if (!shouldIntercept(anchor)) return;
 
     e.preventDefault();
+    if (navigating) {
+      // Queued: the running swap follows the URL when it finishes, as it
+      // does for Back pressed mid-navigation
+      history.pushState(null, "", anchor.href);
+      return;
+    }
     navigate(anchor.href);
   });
 
