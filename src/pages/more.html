@@ -1,14 +1,19 @@
-<!-- More page (under construction) -->
+<!-- More page: feeds, site files and the webring -->
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <drop capsule="site-head"></drop>
-    <meta name="robots" content="noindex" />
-    <meta name="description" content="More from Cyan Thayn." />
+    <meta
+      name="description"
+      content="Feeds, site files and the webring for Cyan Thayn's site."
+    />
 
     <meta property="og:title" content="Cyan Thayn — More" />
-    <meta property="og:description" content="More from Cyan Thayn." />
+    <meta
+      property="og:description"
+      content="Feeds, site files and the webring for Cyan Thayn's site."
+    />
     <meta property="og:image" content="https://thayn.me/media/og-image.png" />
     <meta property="og:url" content="https://thayn.me/more" />
     <meta property="og:type" content="website" />
@@ -25,12 +30,140 @@
     <drop capsule="site-header"></drop>
 
     <main id="main">
-      <section class="glass section-card">
+      <section class="glass section-card" id="more">
         <div class="section-title">
           <h1 class="page-title">More</h1>
         </div>
+        <p>
+          Odds and ends: feeds for following the blog, the plain-text files that
+          describe this site, and the webring it belongs to.
+        </p>
+        <drop capsule="button-array"></drop>
+        <nav class="button-group" aria-label="Blog feeds">
+          <a
+            class="button secondary button-group__item button-group__item--first"
+            href="/blog/rss.xml"
+          >
+            <i class="ri-rss-line" aria-hidden="true"></i>
+            <span>RSS feed</span>
+          </a>
+          <a
+            class="button secondary button-group__item button-group__item--last"
+            href="/blog/atom.xml"
+          >
+            <i class="ri-rss-line" aria-hidden="true"></i>
+            <span>Atom feed</span>
+          </a>
+        </nav>
       </section>
-      <drop capsule="under-construction"></drop>
+
+      <drop capsule="card-list"></drop>
+      <div class="card-list">
+        <article class="glass card-list__item">
+          <a href="/.well-known/humans.txt">
+            <div class="card-list__header">
+              <h2>
+                <i class="ri-user-smile-line" aria-hidden="true"></i>
+                <span>humans.txt</span>
+              </h2>
+            </div>
+            <p>Who makes this site, and what it is built with.</p>
+          </a>
+        </article>
+        <article class="glass card-list__item">
+          <a href="/.well-known/security.txt">
+            <div class="card-list__header">
+              <h2>
+                <i class="ri-shield-check-line" aria-hidden="true"></i>
+                <span>security.txt</span>
+              </h2>
+            </div>
+            <p>How to reach me about a security problem.</p>
+          </a>
+        </article>
+        <article class="glass card-list__item">
+          <a href="/.well-known/ai.txt">
+            <div class="card-list__header">
+              <h2>
+                <i class="ri-robot-2-line" aria-hidden="true"></i>
+                <span>ai.txt</span>
+              </h2>
+            </div>
+            <p>The AI usage policy: no training, retrieval is fine.</p>
+          </a>
+        </article>
+        <article class="glass card-list__item">
+          <a href="/.well-known/robots.txt">
+            <div class="card-list__header">
+              <h2>
+                <i class="ri-file-text-line" aria-hidden="true"></i>
+                <span>robots.txt</span>
+              </h2>
+            </div>
+            <p>Which crawlers may visit, and which are turned away.</p>
+          </a>
+        </article>
+        <article class="glass card-list__item">
+          <a href="/llms.txt">
+            <div class="card-list__header">
+              <h2>
+                <i class="ri-file-text-line" aria-hidden="true"></i>
+                <span>llms.txt</span>
+              </h2>
+            </div>
+            <p>A plain-text map of the site for language models.</p>
+          </a>
+        </article>
+        <article class="glass card-list__item">
+          <a href="/.well-known/code-of-conduct.txt">
+            <div class="card-list__header">
+              <h2>
+                <i class="ri-hand-heart-line" aria-hidden="true"></i>
+                <span>Code of conduct</span>
+              </h2>
+            </div>
+            <p>The Contributor Covenant, for my projects and spaces.</p>
+          </a>
+        </article>
+        <article class="glass card-list__item">
+          <a href="https://github.com/AnalogCyan/thayn.me">
+            <div class="card-list__header">
+              <h2>
+                <i class="ri-code-s-slash-line" aria-hidden="true"></i>
+                <span>Source code</span>
+              </h2>
+            </div>
+            <p>This site on GitHub, under AGPLv3 and CC BY-SA 4.0.</p>
+          </a>
+        </article>
+      </div>
+
+      <section class="glass section-card" id="fediring">
+        <div class="section-title">
+          <h2>Fediring</h2>
+        </div>
+        <p>
+          This site is a member of
+          <a href="https://fediring.net/">Fediring</a>, a webring of personal
+          sites run by people on the fediverse. Hop to a neighbour:
+        </p>
+        <nav class="button-group" aria-label="Fediring">
+          <a
+            class="button secondary button-group__item button-group__item--first"
+            href="https://fediring.net/previous?host=thayn.me"
+          >
+            <i class="ri-arrow-left-line" aria-hidden="true"></i>
+            <span>Previous site</span>
+          </a>
+          <a
+            class="button secondary button-group__item button-group__item--last"
+            href="https://fediring.net/next?host=thayn.me"
+          >
+            <span>Next site</span>
+            <i class="ri-arrow-right-line" aria-hidden="true"></i>
+          </a>
+        </nav>
+      </section>
     </main>
 
     <drop capsule="footer">

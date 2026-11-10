@@ -9,6 +9,7 @@
 - [Projects](https://thayn.me/projects): Project showcase
 - [Music](https://thayn.me/music): Music library and profiles
 - [Blog](https://thayn.me/blog/): Notes, updates, and experiments
+- [More](https://thayn.me/more): Feeds, site files, and the webring
 
 ## Feeds
 

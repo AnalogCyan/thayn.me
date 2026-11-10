@@ -3,15 +3,7 @@
 (function () {
   if (!window.history || !window.history.pushState) return;
 
-  var NAV_ORDER = [
-    "home",
-    "about",
-    "blog",
-    "projects",
-    "photos",
-    "music",
-    "more",
-  ];
+  var NAV_ORDER = ["home", "about", "blog", "projects", "music", "more"];
 
   var TRANSITION_MS = 300;
   var STYLESHEET_TIMEOUT_MS = 2000;
@@ -122,6 +114,8 @@
   // Blog posts load as full pages; their comments script is a module, and a
   // module does not run twice from the same URL
   function isSpaPath(path) {
+    // Files such as /llms.txt are not pages
+    if (/\.(?!html$)[a-z0-9]+$/i.test(path)) return false;
     return !(
       path.startsWith("/blog/") &&
       path !== "/blog/" &&
