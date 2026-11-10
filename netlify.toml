@@ -37,6 +37,9 @@ package = "@netlify/plugin-lighthouse"
   path = "music"
 
   [[plugins.inputs.audits]]
+  path = "more"
+
+  [[plugins.inputs.audits]]
   path = "blog"
 
   [[plugins.inputs.audits]]

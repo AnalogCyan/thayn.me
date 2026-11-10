@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: "remixicon";
-  src: url("/fonts/remixicon.woff2?v=2d4c9f0d") format("woff2");
+  src: url("/fonts/remixicon.woff2?v=94d4472b") format("woff2");
   font-display: swap;
 }
 
@@ -22,6 +22,10 @@
 
 .ri-arrow-left-line:before {
   content: "\ea60";
+}
+
+.ri-arrow-right-line:before {
+  content: "\ea6c";
 }
 
 .ri-arrow-right-up-line:before {
@@ -44,16 +48,16 @@
   content: "\eae4";
 }
 
-.ri-camera-3-line:before {
-  content: "\eb2d";
-}
-
 .ri-chat-3-line:before {
   content: "\eb51";
 }
 
 .ri-close-line:before {
   content: "\eb99";
+}
+
+.ri-code-s-slash-line:before {
+  content: "\ebad";
 }
 
 .ri-contrast-2-line:before {
@@ -66,6 +70,10 @@
 
 .ri-fediverse-line:before {
   content: "\f575";
+}
+
+.ri-file-text-line:before {
+  content: "\ed0f";
 }
 
 .ri-fingerprint-line:before {
@@ -86,6 +94,10 @@
 
 .ri-github-fill:before {
   content: "\edca";
+}
+
+.ri-hand-heart-line:before {
+  content: "\edf3";
 }
 
 .ri-headphone-line:before {
@@ -132,6 +144,18 @@
   content: "\f073";
 }
 
+.ri-robot-2-line:before {
+  content: "\f3d9";
+}
+
+.ri-rss-line:before {
+  content: "\f09f";
+}
+
+.ri-shield-check-line:before {
+  content: "\f100";
+}
+
 .ri-smartphone-line:before {
   content: "\f15a";
 }
@@ -146,4 +170,8 @@
 
 .ri-user-heart-line:before {
   content: "\f263";
+}
+
+.ri-user-smile-line:before {
+  content: "\f274";
 }
