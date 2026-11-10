@@ -44,6 +44,37 @@ test("the CSP allows no inline styles or scripts", async () => {
   }
 });
 
+// Fonts and icons are self-hosted and every fetch is same-origin, so nothing
+// but img-src (webmention avatars come from any host) may name another origin
+test("the CSP allows no third-party styles, fonts, fetches or frames", async () => {
+  const csp = await cspDirectives();
+  for (const directive of [
+    "default-src",
+    "style-src",
+    "font-src",
+    "connect-src",
+  ]) {
+    assert.deepEqual(csp[directive], ["'self'"], directive);
+  }
+  assert.deepEqual(csp["frame-src"], ["'none'"]);
+  assert.deepEqual(csp["img-src"], ["'self'", "data:", "https:"]);
+});
+
+test("config.json loads nothing from another origin", async () => {
+  const config = JSON.parse(
+    await readFile(path.join(ROOT, "src/config.json"), "utf8")
+  );
+  const urls = [
+    ...Object.values(config.fonts || {}),
+    ...Object.values(config.externalResources || {}),
+  ]
+    .map((resource) => resource.url)
+    .filter(Boolean);
+  for (const url of urls) {
+    assert.doesNotMatch(url, /^(https?:)?\/\//i, url);
+  }
+});
+
 test("no script writes a style element or style attribute", async () => {
   const banned = [
     /createElement\(\s*["']style["']/,

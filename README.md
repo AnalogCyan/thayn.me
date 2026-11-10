@@ -54,9 +54,10 @@ Requires Node.js **>= v24**.
 npm install
 npm run dev      # build + serve at localhost:3000
 npm run build    # build only (outputs to ./public)
-npm test         # syndication policy tests
+npm test         # syndication, CSP and icon tests
 npm run lint     # eslint
 npm run format   # prettier
+npm run icons    # re-cut the icon font after adding or removing an icon
 ```
 
 ## Licensing
