@@ -34,6 +34,10 @@ Production dependencies: `gachakit`, `@netlify/blobs`, `front-matter`, `handleba
   pages. See `src/capsules/` for the header, footer, ambient background, etc.
 - **Blog** posts are Markdown with YAML frontmatter, syndicated to Mastodon and
   Bluesky via Bridgy on deploy.
+- **Version**: each build writes `/version.json` with its version and commit.
+  A clean build of main is `0.YYYYMMDD.N` (the UTC day of the commit, N
+  counting main's commits that day) and a CI workflow tags it; anything else is
+  `0.0.0-dev`.
 - **Edge functions** block AI crawlers. Serverless functions proxy Last.fm data
   and fetch webmentions.
 

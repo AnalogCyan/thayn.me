@@ -10,6 +10,7 @@ import fm from "front-matter";
 import { marked } from "marked";
 import Handlebars from "handlebars";
 import { createEngine } from "gachakit";
+import { writeVersionFile } from "./tools/version.js";
 import { getSiteUrl, getCanonicalBlogPath } from "./lib/site-url.js";
 import { canonicalizeUrl, toAbsoluteUrl } from "./lib/url.js";
 import {
@@ -747,6 +748,8 @@ async function build() {
   await copyStatic();
   await engine.writeSitemap(config, await indexablePages());
 
+  const { version, commit } = await writeVersionFile(PUBLIC_DIR);
+  console.log(`Version ${version}+${commit.slice(0, 8)}`);
   console.log("Build complete -> public/");
 }
 
