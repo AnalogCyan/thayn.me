@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: "remixicon";
-  src: url("/fonts/remixicon.woff2?v=94d4472b") format("woff2");
+  src: url("/fonts/remixicon.woff2?v=2abde980") format("woff2");
   font-display: swap;
 }
 
@@ -154,6 +154,10 @@
 
 .ri-shield-check-line:before {
   content: "\f100";
+}
+
+.ri-shuffle-line:before {
+  content: "\f124";
 }
 
 .ri-smartphone-line:before {
