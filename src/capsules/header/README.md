@@ -25,5 +25,6 @@ Responsive navigation pill with embedded theme toggle and mobile hamburger menu.
 ## Technical Notes
 
 - The active link is the one whose `data-nav` matches `data-nav-page` on an enclosing element, usually `<body>` or `page-header`. It gets `is-active` and `aria-current="page"`
-- Sliding pill follows `data-nav` attribute
+- The sliding pill is CSS only: links share one grid column width and the pill moves by whole columns to the hovered or focused link, resting on the current one. The index rules cover up to eight links
+- The mobile menu is a `popover`; the script only closes it after a link swaps the page in place or focus leaves it
 - Theme toggle uses `data-theme-key` for localStorage key (defaults to `thayn_theme`)
