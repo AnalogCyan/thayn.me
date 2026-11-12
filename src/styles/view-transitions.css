@@ -34,3 +34,21 @@
     }
   }
 }
+
+/* The router swaps <main> inside a view transition only so the footer can
+   slide to where the new page puts it; the page itself does not crossfade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* Clicks reach the live page under the transition, so a link pressed
+   mid-swap queues as it did before */
+::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(site-footer) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.68, -0.3, 0.27, 1.3);
+}

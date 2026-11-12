@@ -309,9 +309,6 @@
       clearTimeout(saveTimer);
     }
 
-    var footerEl = document.querySelector('[data-capsule="footer"]');
-    var footerFirst = footerEl ? footerEl.getBoundingClientRect().top : null;
-
     var fetchDone = fetch(url).then(function (r) {
       if (!r.ok) throw new Error(r.status);
       return r.text();
@@ -324,6 +321,53 @@
     });
 
     var data;
+
+    function showPage() {
+      main.classList.remove("spa-out", "dir-slide-left", "dir-slide-right");
+
+      swapMain(main, data.mainHTML);
+      renderedPath = targetUrl.pathname;
+
+      var shell = document.querySelector(".page-shell");
+      if (shell) {
+        shell.setAttribute("data-hero", data.hero);
+        shell.setAttribute("data-nav-page", data.navPage);
+      }
+
+      var canonicalEl = document.querySelector('link[rel="canonical"]');
+      if (canonicalEl && data.canonical) {
+        canonicalEl.setAttribute("href", data.canonical);
+      }
+      // the whole og: set moves together, or a share widget reads a
+      // title from one page and a URL from another
+      [
+        ["og:url", data.ogUrl],
+        ["og:title", data.ogTitle],
+        ["og:description", data.ogDescription],
+      ].forEach(function (pair) {
+        var el = document.querySelector('meta[property="' + pair[0] + '"]');
+        if (el && pair[1]) el.setAttribute("content", pair[1]);
+      });
+
+      document.title = data.title;
+      var descEl = document.querySelector('meta[name="description"]');
+      if (descEl) descEl.setAttribute("content", data.description);
+
+      syncScripts(data.scripts);
+
+      main.classList.add("spa-in");
+      if (dirClass) main.classList.add(dirClass);
+
+      var target = hashTarget(targetUrl.hash);
+      if (restoreY !== null) {
+        window.scrollTo({ top: restoreY, left: 0, behavior: "instant" });
+      } else if (target) {
+        target.scrollIntoView({ behavior: "instant" });
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      }
+    }
+
     Promise.all([fetchDone, outDone])
       .then(function (results) {
         var html = results[0];
@@ -335,69 +379,14 @@
         return syncStylesheets(data.stylesheets, url);
       })
       .then(function () {
-        main.classList.remove("spa-out", "dir-slide-left", "dir-slide-right");
-
-        swapMain(main, data.mainHTML);
-        renderedPath = targetUrl.pathname;
-
-        if (
-          footerEl &&
-          footerFirst !== null &&
-          !window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ) {
-          var footerLast = footerEl.getBoundingClientRect().top;
-          var delta = Math.round(footerLast - footerFirst);
-          if (Math.abs(delta) >= 3) {
-            footerEl.style.transform = "translateY(" + -delta + "px)";
-            footerEl.getBoundingClientRect();
-            footerEl.style.transition =
-              "transform 0.3s cubic-bezier(0.68, -0.3, 0.27, 1.3)";
-            footerEl.style.transform = "translateY(0)";
-            setTimeout(function () {
-              footerEl.style.transition = "";
-              footerEl.style.transform = "";
-            }, 300);
-          }
+        // The footer slides to its new place as a view transition. The
+        // rest of the page is left to the slide animations on <main>.
+        if (document.startViewTransition && !reducedMotion.matches) {
+          return document.startViewTransition(showPage).updateCallbackDone;
         }
-
-        var shell = document.querySelector(".page-shell");
-        if (shell) {
-          shell.setAttribute("data-hero", data.hero);
-          shell.setAttribute("data-nav-page", data.navPage);
-        }
-
-        var canonicalEl = document.querySelector('link[rel="canonical"]');
-        if (canonicalEl && data.canonical) {
-          canonicalEl.setAttribute("href", data.canonical);
-        }
-        // the whole og: set moves together, or a share widget reads a
-        // title from one page and a URL from another
-        [
-          ["og:url", data.ogUrl],
-          ["og:title", data.ogTitle],
-          ["og:description", data.ogDescription],
-        ].forEach(function (pair) {
-          var el = document.querySelector('meta[property="' + pair[0] + '"]');
-          if (el && pair[1]) el.setAttribute("content", pair[1]);
-        });
-
-        document.title = data.title;
-        var descEl = document.querySelector('meta[name="description"]');
-        if (descEl) descEl.setAttribute("content", data.description);
-
-        syncScripts(data.scripts);
-
-        main.classList.add("spa-in");
-        if (dirClass) main.classList.add(dirClass);
-
-        var target = hashTarget(targetUrl.hash);
-        if (restoreY !== null) {
-          window.scrollTo({ top: restoreY, left: 0, behavior: "instant" });
-        } else if (target) {
-          target.scrollIntoView({ behavior: "instant" });
-        } else {
-          window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-        }
+        showPage();
+      })
+      .then(function () {
         window.dispatchEvent(new Event("resize"));
 
         // A swapped <main> is a new page; move focus so it is announced
