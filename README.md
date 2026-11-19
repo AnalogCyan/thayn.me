@@ -68,6 +68,9 @@ npm run icons    # re-cut the icon font after adding or removing an icon
 
 ## Narrating a post
 
+Narration is a synthetic voice, and the player says so. Word timings come
+from a speech model that aligns the text to the audio.
+
 1. Add `readAloud: true` to the post's front matter.
 2. Run the narration tool with a TTS command:
 

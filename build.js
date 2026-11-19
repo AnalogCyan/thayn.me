@@ -357,60 +357,7 @@ function absolutizeHtml(html, siteUrl) {
   );
 }
 
-// A draft's images and other media live in src/static like everything else,
-// so they would ship at guessable URLs before the post does. Anything a built
-// page, feed or asset still names stays. The whole file is scanned, so front
-// matter images and reference-style links count too.
-const MEDIA_REF = /(?:^|[\s"'(=:])(\/media\/[^\s"'()<>?#]+)/gm;
-// Built pages name media by absolute URL too, so any mention counts there:
-// a false match only keeps a file
-const BUILT_MEDIA_REF = /(\/media\/[^\s"'()<>?#]+)/g;
-const draftMedia = new Set();
 const readAloudMedia = new Set();
-
-function mediaRefs(text, pattern = MEDIA_REF) {
-  const refs = new Set();
-  for (const [, ref] of String(text).matchAll(pattern)) {
-    try {
-      refs.add(decodeURI(ref));
-    } catch {
-      refs.add(ref);
-    }
-  }
-  return refs;
-}
-
-async function builtText(dir) {
-  const parts = [];
-  for (const entry of await fs.readdir(dir, {
-    withFileTypes: true,
-    recursive: true,
-  })) {
-    if (!entry.isFile() || !/\.(html|xml|css|js|json|txt)$/.test(entry.name)) {
-      continue;
-    }
-    parts.push(
-      await fs.readFile(path.join(entry.parentPath, entry.name), "utf8")
-    );
-  }
-  return parts.join("\n");
-}
-
-async function dropDraftMedia() {
-  if (!draftMedia.size) return;
-  // Compare resolved files, not URLs, so "/media/x/../a.png" can't remove
-  // the "/media/a.png" a live page uses
-  const toFile = (ref) => path.resolve(PUBLIC_DIR, "." + ref);
-  const published = new Set(
-    [...mediaRefs(await builtText(PUBLIC_DIR), BUILT_MEDIA_REF)].map(toFile)
-  );
-  const mediaRoot = path.join(PUBLIC_DIR, "media") + path.sep;
-  for (const ref of draftMedia) {
-    const file = toFile(ref);
-    if (published.has(file) || !file.startsWith(mediaRoot)) continue;
-    await fs.rm(file, { force: true });
-  }
-}
 
 function buildRSS(posts, meta, siteUrl) {
   const channelUrl = toAbsoluteUrl(siteUrl, "/blog/");
@@ -620,7 +567,6 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         }
 
         if (attributes.draft && process.env.BLOG_INCLUDE_DRAFTS !== "1") {
-          for (const ref of mediaRefs(markdown)) draftMedia.add(ref);
           return null;
         }
         const { raw: normalizedDate, parsed: parsedDate } = parsePostDate(
@@ -826,7 +772,6 @@ async function build() {
   await engine.bundleScripts(usedCapsules, capsules, config);
   await copyStatic();
   await pruneReadAloudMedia(PUBLIC_DIR, readAloudMedia);
-  await dropDraftMedia();
   await engine.writeSitemap(config, await indexablePages());
 
   const { version, commit } = await writeVersionFile(PUBLIC_DIR);

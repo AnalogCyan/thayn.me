@@ -258,73 +258,14 @@ test("a production build fails on a stale recording", async (t) => {
   assert.match(s.log, /Read-aloud for ra-stale: the post's text changed/);
 });
 
-test("a draft's media stays out of the build", async (t) => {
+test("a draft's recording stays out of the build", async (t) => {
   const s = await site({
-    posts: {
-      "ra-draft": [
-        "---",
-        'title: "Draft Post"',
-        "date: 2026-11-01",
-        "draft: true",
-        "readAloud: true",
-        "image: /media/blog/draft-cover.png",
-        "---",
-        "",
-        "Hello there, reader. See [the notes][notes].",
-        "",
-        '<img src="/media/blog/draft-only.png" alt="" />',
-        '<img src="/media/blog/shared.png" alt="" />',
-        '<img src="/media/blog/live%20shot.png" alt="" />',
-        "![](/media/blog/draft%20space.png)",
-        "![](/media/../manifest.json)",
-        "![](/media/blog/x/../shared.png)",
-        "![](/media//blog/live%20shot.png)",
-        "",
-        "[notes]: /media/blog/draft-notes.pdf",
-        "",
-      ].join("\n"),
-      "ra-live": post("Live Post", {
-        readAloud: false,
-        body: [
-          'Hello. <img src="/media/blog/shared.png" alt="" />',
-          '<img src="/media/blog/live shot.png" alt="" />',
-        ].join("\n"),
-      }),
-    },
+    posts: { "ra-draft": post("Draft Post", { draft: true }) },
     recordings: { "ra-draft": { words: WORDS("Draft Post") } },
-    staticFiles: {
-      "media/blog/draft-only.png": "draft",
-      "media/blog/draft-cover.png": "draft",
-      "media/blog/draft-notes.pdf": "draft",
-      "media/blog/draft space.png": "draft",
-      "media/blog/shared.png": "shared",
-      "media/blog/live shot.png": "shared",
-    },
   });
   t.after(() => rm(s.dir, { recursive: true, force: true }));
 
   assert.ok(!(await s.exists("blog/ra-draft/index.html")));
-  assert.ok(
-    !(await s.exists("media/blog/draft-only.png")),
-    "draft image dropped"
-  );
-  assert.ok(
-    await s.exists("media/blog/shared.png"),
-    "image a live post uses stays"
-  );
-  for (const file of [
-    "draft-cover.png",
-    "draft-notes.pdf",
-    "draft space.png",
-  ]) {
-    assert.ok(!(await s.exists(`media/blog/${file}`)), `${file} dropped`);
-  }
-  assert.ok(
-    await s.exists("media/blog/live shot.png"),
-    "a live post's file stays, however its URL is encoded"
-  );
-  assert.ok(await s.exists("manifest.json"), "nothing outside media/ goes");
-  assert.ok(await s.exists("media/og-image.png"), "unrelated media stays");
   const draftAudio = hashedMediaName(
     "ra-draft",
     Buffer.from("audio ra-draft"),

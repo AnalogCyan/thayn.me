@@ -78,8 +78,8 @@ function wrapWords(nodes, spans) {
   }
 }
 
-function fmt(seconds) {
-  const total = Math.max(0, Math.floor(seconds || 0));
+export function formatTime(seconds) {
+  const total = Math.max(0, Math.floor(Number(seconds) || 0));
   return Math.floor(total / 60) + ":" + String(total % 60).padStart(2, "0");
 }
 
@@ -91,7 +91,6 @@ function init() {
 
   const toggle = player.querySelector(".read-aloud-toggle");
   if (!toggle) return;
-  const icon = toggle.querySelector("i");
   const current = player.querySelector('[data-role="current"]');
   const duration = player.querySelector('[data-role="duration"]');
   const seek = player.querySelector(".read-aloud-seek");
@@ -107,20 +106,23 @@ function init() {
   function setDuration(seconds) {
     if (!seconds || !isFinite(seconds)) return;
     seek.max = seconds;
-    duration.textContent = fmt(seconds);
+    duration.textContent = formatTime(seconds);
     known = true;
     describe(parseFloat(seek.value) || 0);
   }
 
   function describe(t) {
     if (known) {
-      seek.setAttribute("aria-valuetext", fmt(t) + " of " + fmt(seek.max));
+      seek.setAttribute(
+        "aria-valuetext",
+        formatTime(t) + " of " + formatTime(seek.max)
+      );
     }
   }
 
   function showTime(t) {
     if (unavailable) return;
-    current.textContent = fmt(t);
+    current.textContent = formatTime(t);
     if (!seek.matches(":active") && intendedSeek == null) {
       seek.value = t;
       describe(t);
@@ -133,7 +135,7 @@ function init() {
     else audio.pause();
   });
   function setPlaying(playing) {
-    icon.className = playing ? "ri-pause-line" : "ri-play-fill";
+    toggle.classList.toggle("is-playing", playing);
     toggle.setAttribute(
       "aria-label",
       unavailable
@@ -193,7 +195,7 @@ function init() {
       }
       startLoop();
     }
-    current.textContent = fmt(time);
+    current.textContent = formatTime(time);
     describe(time);
     if (karaoke) karaoke.paint(time);
   }

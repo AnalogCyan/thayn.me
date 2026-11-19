@@ -157,7 +157,7 @@ a {
   border: 1px solid var(--glass-border);
   position: relative;
   /* clip, not hidden: hidden would turn the card into a scroll container
-     and break position: sticky for the read-aloud player */
+     and break position: sticky */
   overflow: hidden;
   overflow: clip;
   text-shadow: none;
