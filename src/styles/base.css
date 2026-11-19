@@ -37,6 +37,13 @@ html {
   box-shadow: 0 0 0 2px var(--page-bg);
 }
 
+/* The router focuses the new page's heading so it is announced; it is a
+   landing spot, not a control, and Safari would ring it after every click */
+[tabindex="-1"]:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
 * {
   -webkit-tap-highlight-color: transparent;
 }
