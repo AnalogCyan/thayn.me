@@ -14,6 +14,7 @@ const {
   endpointFromHtml,
   discoverEndpoint,
   sendMention,
+  openLedger,
 } = plugin.internals;
 
 afterEach(() => mock.restoreAll());
@@ -364,4 +365,56 @@ test("a POST follows a public redirect and reports the final status", async () =
     ),
     { label: "HTTP 202", delivered: true }
   );
+});
+
+// What a Netlify build gives the blobs client: an edge URL, no uncached one
+function useBuildBlobsContext() {
+  globalThis.netlifyBlobsContext = Buffer.from(
+    JSON.stringify({
+      edgeURL: "https://edge.example",
+      siteID: "site",
+      token: "token",
+    })
+  ).toString("base64");
+}
+
+test("the ledger reads and saves in the build's blobs context", async (t) => {
+  useBuildBlobsContext();
+  t.after(() => delete globalThis.netlifyBlobsContext);
+  const calls = [];
+  mock.method(globalThis, "fetch", async (url, init = {}) => {
+    const method = (init.method || "GET").toUpperCase();
+    calls.push({ url: String(url), method, body: init.body });
+    if (method === "GET") {
+      return Response.json({ "a -> b": new Date().toISOString() });
+    }
+    return new Response(null, { status: 200 });
+  });
+  const warn = mock.method(console, "warn", () => {});
+
+  const ledger = await openLedger();
+  assert.equal(ledger.has("a -> b"), true);
+  ledger.record("c -> d");
+  await ledger.save();
+
+  assert.equal(warn.mock.callCount(), 0);
+  assert.ok(calls.every(({ url }) => url.startsWith("https://edge.example/")));
+  const put = calls.find(({ method }) => method === "PUT");
+  assert.ok(put, "ledger was not saved");
+  assert.deepEqual(Object.keys(JSON.parse(put.body)).sort(), [
+    "a -> b",
+    "c -> d",
+  ]);
+});
+
+test("a ledger that cannot open warns and sends everything", async () => {
+  delete globalThis.netlifyBlobsContext;
+  const warn = mock.method(console, "warn", () => {});
+
+  const ledger = await openLedger();
+
+  assert.equal(ledger.has("a -> b"), false);
+  await ledger.save();
+  assert.equal(warn.mock.callCount(), 1);
+  assert.match(warn.mock.calls[0].arguments[0], /WARNING ledger unavailable/);
 });

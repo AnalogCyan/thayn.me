@@ -277,7 +277,8 @@ async function updateFileContent(path, branch, sha, content, message) {
 
 function buildFrontmatter(attributes, body) {
   const yaml = serializeYaml(attributes);
-  return `---\n${yaml}\n---\n${body}`;
+  // front-matter drops the blank line after the fence; Prettier wants it back
+  return `---\n${yaml}\n---\n\n${body.replace(/^\n+/, "")}`;
 }
 
 function buildCanonicalUrl(attributes, slug, siteUrl) {
@@ -360,6 +361,7 @@ function canAttemptPublishNow({ target, state, now }) {
 
 // Reads the post fresh, lets mutate change it, and writes it against the sha
 // it read. A 409 means something else wrote first, so read and apply again.
+// mutate may return its own commit message for what it found.
 async function updatePost({ filePath, branch, message, mutate }) {
   for (let attempt = 0; attempt < LEASE_MAX_ATTEMPTS; attempt += 1) {
     const fetched = await getFileContent(filePath, branch);
@@ -375,7 +377,7 @@ async function updatePost({ filePath, branch, message, mutate }) {
       branch,
       fetched.sha,
       buildFrontmatter(attributes, parsed.body || ""),
-      message
+      outcome.message || message
     );
     if (res.ok) {
       return { written: true };
@@ -615,6 +617,13 @@ function reconcilePost(attributes, outcomes, now) {
 
   applySyndicationState(attributes, state);
   return state;
+}
+
+function getBridgyUrls(attributes) {
+  const syndicationMap = normalizeSyndicationMap(attributes.syndication);
+  return Object.keys(BRIDGY_PUBLISH_TARGETS)
+    .map((target) => getSyndicationUrl(syndicationMap, target))
+    .filter(Boolean);
 }
 
 // Normalized so reformatting alone never counts as a change worth a commit
@@ -880,7 +889,7 @@ export async function runSyndicationPostDeploy() {
       continue;
     }
 
-    const message = toSkipCiMessage(`${COMMIT_PREFIX} update ${slug}`);
+    const message = `${COMMIT_PREFIX} update ${slug}`;
     let written = state;
     let res;
     try {
@@ -890,10 +899,19 @@ export async function runSyndicationPostDeploy() {
         message,
         mutate: (fresh) => {
           const before = syndicationSnapshot(fresh);
+          const knownUrls = getBridgyUrls(fresh);
           written = reconcilePost(fresh, outcomes, now);
-          return syndicationSnapshot(fresh) === before
-            ? { write: false, reason: "no-changes" }
-            : { write: true };
+          if (syndicationSnapshot(fresh) === before) {
+            return { write: false, reason: "no-changes" };
+          }
+          // Only a new URL changes the page, so only that earns a rebuild
+          const learned = getBridgyUrls(fresh).some(
+            (url) => !knownUrls.includes(url)
+          );
+          return {
+            write: true,
+            message: learned ? message : toSkipCiMessage(message),
+          };
         },
       });
     } catch (err) {

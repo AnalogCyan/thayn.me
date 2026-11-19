@@ -315,10 +315,12 @@ async function sendMention(endpoint, source, target) {
 // Remembers what has already been delivered, so a deploy that changes nothing
 // does not re-POST to every link in the feed. Unavailable storage is not fatal:
 // the run falls back to sending, which is what it did before.
+// Eventual consistency, because the build context has an edgeURL but no
+// uncachedEdgeURL, and a strong read or write there throws.
 async function openLedger() {
   try {
     const { getStore } = await import("@netlify/blobs");
-    const store = getStore({ name: STORE_NAME, consistency: "strong" });
+    const store = getStore({ name: STORE_NAME });
     const sent = (await store.get(STORE_KEY, { type: "json" })) || {};
     return {
       has: (key) => Boolean(sent[key] || sent[NO_ENDPOINT + key]),
@@ -342,7 +344,9 @@ async function openLedger() {
       },
     };
   } catch (error) {
-    console.log(`send-webmentions: no ledger available (${error})`);
+    console.warn(
+      `send-webmentions: WARNING ledger unavailable, every link will be sent again and nothing will be saved (${error})`
+    );
     return { has: () => false, record: () => {}, save: async () => {} };
   }
 }
@@ -415,7 +419,9 @@ module.exports = {
     try {
       await ledger.save();
     } catch (error) {
-      console.log(`send-webmentions: ledger save failed (${error})`);
+      console.warn(
+        `send-webmentions: WARNING ledger save failed, these mentions will be sent again next time (${error})`
+      );
     }
   },
 };
@@ -431,5 +437,6 @@ Object.defineProperty(module.exports, "internals", {
     endpointFromHtml,
     discoverEndpoint,
     sendMention,
+    openLedger,
   },
 });
