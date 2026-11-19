@@ -25,6 +25,8 @@
 
     container.querySelectorAll("h1, h2, h3, h4").forEach(function (h) {
       if (h.parentElement.classList.contains("heading-anchor")) return;
+      // marked-footnote's screen-reader-only "Footnotes" label
+      if (h.classList.contains("sr-only")) return;
 
       if (!h.id) {
         var base = slugify(h.textContent);
