@@ -880,7 +880,13 @@ export async function runSyndicationPostDeploy() {
       } else {
         for (const target of pendingTargets) {
           leased = true;
-          const source = bridgySourceUrl(canonicalUrl, target);
+          // A retry reuses the URL the first attempt used: Bridgy dedupes by
+          // exact URL, and a request with no recorded source was sent the plain one
+          const source =
+            state.sourceMap[target] ||
+            (state.requestedAtMap[target]
+              ? canonicalUrl
+              : bridgySourceUrl(canonicalUrl, target));
           const lease = await acquirePublishLease({
             filePath,
             branch,

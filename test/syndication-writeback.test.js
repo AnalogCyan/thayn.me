@@ -504,3 +504,44 @@ syndicate:
   const prettier = await import("prettier");
   assert.equal(content, await prettier.format(content, { parser: "markdown" }));
 });
+
+test("a failed retry reuses the URL its first attempt was sent", async () => {
+  // j: a request from before fragment URLs, so it has no recorded source
+  await addPost(
+    "j.md",
+    `
+title: "J"
+date: "2026-11-01"
+syndicate:
+  - bluesky
+syndicationStatus:
+  bluesky: "failed"
+syndicationRequestedAt:
+  bluesky: "${hoursAgo(1000)}"
+`
+  );
+  // k: an earlier attempt recorded the fragment URL
+  await addPost(
+    "k.md",
+    `
+title: "K"
+date: "2026-11-01"
+syndicate:
+  - bluesky
+syndicationStatus:
+  bluesky: "failed"
+syndicationRequestedAt:
+  bluesky: "${hoursAgo(1000)}"
+syndicationSource:
+  bluesky: "https://thayn.me/blog/k/#bridgy-bluesky"
+`
+  );
+  hooks.bridgy = () => json(202, {});
+
+  await runSyndicationPostDeploy();
+
+  assert.deepEqual(bridgyCalls.map(({ source }) => source).sort(), [
+    "https://thayn.me/blog/j/",
+    "https://thayn.me/blog/k/#bridgy-bluesky",
+  ]);
+});
