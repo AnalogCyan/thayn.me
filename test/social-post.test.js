@@ -240,3 +240,12 @@ test("the card image has alt text and a size, and a post can replace it", async 
   assert.deepEqual(meta(own, "og:image:width"), []);
   assert.deepEqual(meta(own, "og:image:height"), []);
 });
+
+test("a hashtag needs a letter and may carry combining marks", () => {
+  assert.throws(() => normalizeHashtags(["2026"]), /not a single hashtag/);
+  assert.deepEqual(normalizeHashtags(["Cafe\u0301", "हिन्दी", "web2026"]), [
+    "Cafe\u0301",
+    "हिन्दी",
+    "web2026",
+  ]);
+});
