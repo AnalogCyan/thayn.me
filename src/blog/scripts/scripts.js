@@ -23,15 +23,14 @@
           return;
         }
 
-        // UTC, so the rendered day matches the one the build wrote and the
-        // post page shows, whatever timezone the reader is in
+        // The reader's own time, with its zone named so it reads unambiguously
         el.textContent = date.toLocaleString("en-US", {
           year: "numeric",
           month: "short",
           day: "numeric",
-          hour: "2-digit",
+          hour: "numeric",
           minute: "2-digit",
-          timeZone: "UTC",
+          timeZoneName: "short",
         });
       });
     }
