@@ -108,11 +108,16 @@
 
 .blog-meta {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--spacing-sm);
   color: var(--text-muted);
   font-size: 0.9rem;
+
+  /* Date on the left, every tag grouped on the right */
+  & time {
+    margin-right: auto;
+  }
 }
 
 .blog-footer {
