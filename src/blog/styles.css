@@ -246,6 +246,14 @@
   flex-wrap: wrap;
 }
 
+/* Where else the post was shared */
+.post-elsewhere {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
 .bridgy-publish-links {
   display: none;
 }

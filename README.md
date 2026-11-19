@@ -91,6 +91,15 @@ curl -si https://news.indieweb.org/en/webmention \
   -d target=https://news.indieweb.org/en
 ```
 
+When a post is shared somewhere else by hand, list it under `elsewhere`. The
+post shows it as "Also on" and marks each link `u-syndication`:
+
+```yaml
+elsewhere:
+  - name: LinkedIn
+    url: https://www.linkedin.com/posts/...
+```
+
 ## Narrating a post
 
 Narration is a synthetic voice, and the player says so. Word timings come
