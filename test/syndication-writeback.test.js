@@ -307,3 +307,77 @@ syndicationCheckedAt:
   assert.deepEqual(post.attributes.syndicate, ["bluesky"]);
   assert.equal(report.skipped[0].reason, "page-not-ready");
 });
+
+// The rebuild a writeback triggers checks out what it wrote
+async function rebuildFromGitHub() {
+  for (const [filePath, { content }] of files) {
+    await fs.writeFile(path.join(tmp, filePath), content);
+  }
+}
+
+test("only a write-back with a new URL triggers a rebuild", async () => {
+  await addPost(
+    "g.md",
+    `
+title: "G"
+date: "2026-11-01"
+syndicate:
+  - mastodon
+`
+  );
+  const messages = [];
+  hooks.put = (filePath, payload) => messages.push(payload.message);
+
+  await runSyndicationPostDeploy();
+
+  assert.deepEqual(messages, [
+    "Syndication: lease publish g mastodon [skip ci]",
+    "Syndication: update g",
+  ]);
+
+  // The rebuild runs syndication again and finds nothing to do
+  messages.length = 0;
+  await rebuildFromGitHub();
+  const report = await runSyndicationPostDeploy();
+
+  assert.deepEqual(messages, []);
+  assert.equal(bridgyCalls.length, 1);
+  assert.equal(report.reason, "no-pending");
+});
+
+test("a request with no URL yet keeps [skip ci] on every commit", async () => {
+  await addPost(
+    "h.md",
+    `
+title: "H"
+date: "2026-11-01"
+syndicate:
+  - bluesky
+syndicationStatus:
+  bluesky: "requested"
+syndicationRequestedAt:
+  bluesky: "${hoursAgo(3)}"
+syndicationCheckedAt:
+  bluesky: "${hoursAgo(2)}"
+`
+  );
+  hooks.bridgy = () => json(202, {});
+  const messages = [];
+  hooks.put = (filePath, payload) => messages.push(payload.message);
+
+  await runSyndicationPostDeploy();
+
+  assert.deepEqual(messages, [
+    "Syndication: lease confirm h bluesky [skip ci]",
+    "Syndication: update h [skip ci]",
+  ]);
+  assert.equal(read("h.md").attributes.syndicationStatus.bluesky, "requested");
+
+  // Too soon to confirm again, so the next run writes nothing
+  messages.length = 0;
+  await rebuildFromGitHub();
+  await runSyndicationPostDeploy();
+
+  assert.deepEqual(messages, []);
+  assert.equal(bridgyCalls.length, 1);
+});
