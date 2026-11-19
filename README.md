@@ -57,6 +57,30 @@ npm run format   # prettier
 npm run icons    # re-cut the icon font after adding or removing an icon
 ```
 
+## Social posts
+
+Bridgy Publish posts each new post to Mastodon and Bluesky on deploy. These
+front matter fields shape what it posts, and all are optional:
+
+```yaml
+social: "One or two plain sentences for the post, under 280 characters."
+hashtags: [InfoSec, CyberSecurity]
+ogImage: /media/blog/my-post-card.png
+ogImageAlt: "What the card image shows."
+```
+
+- `social` is the blurb. Without it the post uses `excerpt`, then `title`.
+  Over 280 graphemes the build warns, since Bluesky would cut it.
+- `hashtags` go on the Mastodon post only. A leading `#` is fine; a tag with a
+  space or punctuation fails the build.
+- `ogImage` and `ogImageAlt` replace the default card image on that post's
+  page.
+
+Mastodon gets the title, the blurb, the link and the hashtags, and builds its
+link card from the page. Bluesky gets the blurb alone, over a card with the
+title and link. The text lives in hidden markup in the post's header, see
+`src/blog/templates/post-template.html`.
+
 ## Narrating a post
 
 Narration is a synthetic voice, and the player says so. Word timings come
