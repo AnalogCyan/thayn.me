@@ -28,7 +28,8 @@ const hoursAgo = (h) => new Date(NOW - h * 3600 * 1000).toISOString();
 const REPO = "https://api.github.com/repos/o/r/contents/";
 const BRIDGY = "https://brid.gy/publish/webmention";
 const PAGE_LINKS =
-  '<a href="https://brid.gy/publish/mastodon"></a><a href="https://brid.gy/publish/bluesky"></a>';
+  '<a href="https://brid.gy/publish/mastodon"></a><a href="https://brid.gy/publish/bluesky"></a>' +
+  '<div id="bridgy-bluesky" class="h-entry" hidden></div>';
 
 let files;
 let sha;
@@ -240,6 +241,109 @@ syndicate:
   }
   assert.equal(report.updated.length, 2);
   assert.equal(report.errors.length, 0);
+});
+
+test("Bluesky is sent its own entry's fragment, and a confirm reuses the source", async () => {
+  await addPost(
+    "g.md",
+    `
+title: "G"
+date: "2026-11-01"
+syndicate:
+  - mastodon
+  - bluesky
+`
+  );
+  // Requested by a runner that sent the plain URL and recorded no source
+  await addPost(
+    "h.md",
+    `
+title: "H"
+date: "2026-11-01"
+syndicate:
+  - bluesky
+syndicationStatus:
+  bluesky: "requested"
+syndicationRequestedAt:
+  bluesky: "${hoursAgo(3)}"
+syndicationCheckedAt:
+  bluesky: "${hoursAgo(2)}"
+`
+  );
+  await addPost(
+    "i.md",
+    `
+title: "I"
+date: "2026-11-01"
+syndicate:
+  - bluesky
+syndicationStatus:
+  bluesky: "requested"
+syndicationRequestedAt:
+  bluesky: "${hoursAgo(3)}"
+syndicationCheckedAt:
+  bluesky: "${hoursAgo(2)}"
+syndicationSource:
+  bluesky: "https://thayn.me/blog/i/#bridgy-bluesky"
+`
+  );
+  // Bridgy accepts G's Bluesky request without a URL yet
+  hooks.bridgy = (target) =>
+    target.endsWith("bluesky")
+      ? json(202, {})
+      : json(201, { url: "https://mastodon.social/@cyan/new" });
+
+  await runSyndicationPostDeploy();
+
+  assert.deepEqual(
+    bridgyCalls.map(({ source, target }) => [source, target]),
+    [
+      ["https://thayn.me/blog/g/", "https://brid.gy/publish/mastodon"],
+      [
+        "https://thayn.me/blog/g/#bridgy-bluesky",
+        "https://brid.gy/publish/bluesky",
+      ],
+      ["https://thayn.me/blog/h/", "https://brid.gy/publish/bluesky"],
+      [
+        "https://thayn.me/blog/i/#bridgy-bluesky",
+        "https://brid.gy/publish/bluesky",
+      ],
+    ]
+  );
+  const g = read("g.md").attributes;
+  assert.equal(g.syndicationStatus.bluesky, "requested");
+  assert.deepEqual(g.syndicationSource, {
+    bluesky: "https://thayn.me/blog/g/#bridgy-bluesky",
+  });
+});
+
+test("a settled target drops its recorded source", async () => {
+  await addPost(
+    "j.md",
+    `
+title: "J"
+date: "2026-11-01"
+syndicate:
+  - bluesky
+syndicationStatus:
+  bluesky: "requested"
+syndicationRequestedAt:
+  bluesky: "${hoursAgo(3)}"
+syndicationCheckedAt:
+  bluesky: "${hoursAgo(2)}"
+syndicationSource:
+  bluesky: "https://thayn.me/blog/j/#bridgy-bluesky"
+`
+  );
+
+  await runSyndicationPostDeploy();
+
+  const j = read("j.md").attributes;
+  assert.equal(
+    j.syndication.bluesky,
+    "https://bsky.app/profile/thayn.me/post/new"
+  );
+  assert.equal(j.syndicationSource, undefined);
 });
 
 test("a 409 on the write-back re-reads, keeps the edit, and keeps a refusal", async () => {

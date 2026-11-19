@@ -4,8 +4,11 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   BRIDGY_PUBLISH_TARGETS,
+  BRIDGY_SOURCE_FRAGMENTS,
+  bridgySourceUrl,
   getSyndicationUrl,
   normalizeErrorMap,
+  normalizeSourceMap,
   normalizeStatusMap,
   normalizeSyndicateTargets,
   normalizeSyndicationMap,
@@ -294,6 +297,7 @@ function collectSyndicationState(attributes = {}) {
     requestedAtMap: normalizeTimestampMap(attributes.syndicationRequestedAt),
     checkedAtMap: normalizeTimestampMap(attributes.syndicationCheckedAt),
     lastErrorMap: normalizeErrorMap(attributes.syndicationLastError),
+    sourceMap: normalizeSourceMap(attributes.syndicationSource),
   };
 }
 
@@ -322,6 +326,12 @@ function applySyndicationState(attributes, state) {
     attributes.syndicationLastError = state.lastErrorMap;
   } else {
     delete attributes.syndicationLastError;
+  }
+
+  if (Object.keys(state.sourceMap).length > 0) {
+    attributes.syndicationSource = state.sourceMap;
+  } else {
+    delete attributes.syndicationSource;
   }
 }
 
@@ -397,7 +407,7 @@ function findSyndicatedUrl(attributes, state, target) {
   );
 }
 
-async function acquirePublishLease({ filePath, branch, target, now }) {
+async function acquirePublishLease({ filePath, branch, target, source, now }) {
   const nowIso = now.toISOString();
   const slug = filePath.split("/").pop()?.replace(/\.md$/, "") || filePath;
   const message = toSkipCiMessage(
@@ -429,6 +439,7 @@ async function acquirePublishLease({ filePath, branch, target, now }) {
         pickForwardStatus(state.statusMap[target], "requested") || "requested";
       state.requestedAtMap[target] = nowIso;
       state.checkedAtMap[target] = nowIso;
+      state.sourceMap[target] = source;
       delete state.lastErrorMap[target];
       applySyndicationState(attributes, state);
       return { write: true };
@@ -567,6 +578,7 @@ function reconcilePost(attributes, outcomes, now) {
     delete requestedAtMap[target];
     delete checkedAtMap[target];
     delete lastErrorMap[target];
+    delete state.sourceMap[target];
   };
 
   for (const target of Object.keys(syndicationMap)) {
@@ -701,13 +713,16 @@ async function waitForUrlReady(url, options = {}) {
   return { ok: false, attempts };
 }
 
-// Bridgy reads the page for a link to each target it publishes to, so every
-// target about to be published needs its link live
+// Bridgy reads the page for a link to each target it publishes to, and for
+// the element its source fragment names, so both need to be live first
 async function waitForPublishAssets({ canonicalUrl, publishTargets = [] }) {
   const pageReady = await waitForUrlReady(canonicalUrl, {
-    requiredText: publishTargets.map(
-      (target) => BRIDGY_PUBLISH_TARGETS[target]
-    ),
+    requiredText: publishTargets.flatMap((target) => [
+      BRIDGY_PUBLISH_TARGETS[target],
+      ...(BRIDGY_SOURCE_FRAGMENTS[target]
+        ? [BRIDGY_SOURCE_FRAGMENTS[target]]
+        : []),
+    ]),
   });
   if (!pageReady.ok) {
     return { ok: false, reason: "page-not-ready", url: canonicalUrl };
@@ -843,8 +858,9 @@ export async function runSyndicationPostDeploy() {
       });
       if (!lease.acquired) continue;
 
+      // A request with no recorded source was sent the plain URL
       const result = await sendBridgyWebmention({
-        source: canonicalUrl,
+        source: state.sourceMap[target] || canonicalUrl,
         target: BRIDGY_PUBLISH_TARGETS[target],
       });
       outcomes.set(target, toOutcome(result, lease.nowIso, "confirm"));
@@ -864,16 +880,18 @@ export async function runSyndicationPostDeploy() {
       } else {
         for (const target of pendingTargets) {
           leased = true;
+          const source = bridgySourceUrl(canonicalUrl, target);
           const lease = await acquirePublishLease({
             filePath,
             branch,
             target,
+            source,
             now,
           });
           if (!lease.acquired) continue;
 
           const result = await sendBridgyWebmention({
-            source: canonicalUrl,
+            source,
             target: BRIDGY_PUBLISH_TARGETS[target],
           });
           outcomes.set(target, toOutcome(result, lease.nowIso, "publish"));

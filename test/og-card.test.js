@@ -215,3 +215,80 @@ test("a post gets its own card, unless it names an image", async (t) => {
   assert.equal(again["og:image"], carded["og:image"]);
   assert.deepEqual(await readdir(s.cacheDir), cards);
 });
+
+// Finds elements whose class list has the given class
+function byClass(node, name, found = []) {
+  const cls = node.attrs?.find((a) => a.name === "class")?.value.split(/\s+/);
+  if (cls?.includes(name)) found.push(node);
+  for (const child of node.childNodes || []) byClass(child, name, found);
+  return found;
+}
+const attr = (node, name) => node.attrs.find((a) => a.name === name)?.value;
+const text = (node) =>
+  node.nodeName === "#text"
+    ? node.value
+    : (node.childNodes || []).map(text).join("");
+
+test("a post bound for Bluesky carries its card in an entry of its own", async (t) => {
+  const s = await site({
+    bsky: [
+      "---",
+      'title: "Bluesky Post"',
+      "date: 2026-11-01",
+      'excerpt: "The excerpt."',
+      "syndicate:",
+      "  - mastodon",
+      "  - bluesky",
+      "---",
+      "",
+      "The *opening* paragraph, with a [link](https://example.com) and a note.[^1]",
+      "",
+      "The second paragraph.",
+      "",
+      "[^1]: The note.",
+    ].join("\n"),
+    plain: [
+      "---",
+      'title: "Plain"',
+      "date: 2026-11-01",
+      "---",
+      "",
+      "Body.",
+    ].join("\n"),
+  });
+  t.after(() => rm(s.dir, { recursive: true, force: true }));
+  await s.build();
+
+  const doc = parse(String(await s.read("blog/bsky/index.html")));
+  const entries = byClass(doc, "h-entry");
+  assert.equal(entries.length, 2);
+  const [article, bluesky] = entries;
+  // Mastodon reads the article: no image there, so it keeps its link card
+  assert.equal(article.nodeName, "article");
+  assert.deepEqual(byClass(article, "u-featured"), []);
+  assert.equal(byClass(article, "u-photo").length, 1); // the author's
+  assert.equal(attr(bluesky, "id"), "bridgy-bluesky");
+  assert.equal(attr(bluesky, "hidden"), "");
+
+  const [featured] = byClass(bluesky, "u-featured");
+  assert.equal(attr(featured, "src"), metas(doc)["og:image"]);
+  assert.equal(attr(featured, "alt"), "Bluesky Post: The excerpt.");
+  assert.equal(attr(featured, "loading"), "lazy");
+  const [url] = byClass(bluesky, "u-url");
+  assert.equal(attr(url, "href"), "https://thayn.me/blog/bsky/");
+  assert.equal(text(byClass(bluesky, "p-name")[0]), "Bluesky Post");
+  assert.equal(text(byClass(bluesky, "p-summary")[0]), "The excerpt.");
+  // The opening paragraph, not the excerpt: granary drops a summary that
+  // equals the content
+  assert.equal(
+    text(byClass(bluesky, "e-content")[0]),
+    "The opening paragraph, with a link and a note."
+  );
+  assert.equal(
+    attr(byClass(bluesky, "p-bridgy-omit-link")[0], "value"),
+    "maybe"
+  );
+
+  const plain = parse(String(await s.read("blog/plain/index.html")));
+  assert.equal(byClass(plain, "h-entry").length, 1);
+});

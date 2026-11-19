@@ -367,6 +367,28 @@ function toExcerpt(rawExcerpt, markdownBody) {
   return /[.!?…]$/.test(candidate) ? candidate : `${candidate}…`;
 }
 
+// The post's opening paragraph as plain text, for Bluesky's link card,
+// without its tags and footnote markers
+function leadParagraph(html, limit = 300) {
+  const match = String(html).match(/<p>([\s\S]*?)<\/p>/);
+  if (!match) return "";
+  const text = decodeEntities(
+    stripTags(match[1].replace(/<sup[\s\S]*?<\/sup>/g, ""))
+  )
+    .replace(/\s+/g, " ")
+    .trim();
+  const cut = truncateOnWord(text, limit);
+  return cut === text ? text : `${cut}…`;
+}
+
+// The entities marked writes into text
+function decodeEntities(text) {
+  return text
+    .replace(/&(lt|gt|quot|#39);/g, (m, name) => ENTITIES[name])
+    .replace(/&amp;/g, "&");
+}
+const ENTITIES = { lt: "<", gt: ">", quot: '"', "#39": "'" };
+
 // Serializes JSON-LD for a <script> block. "<" is escaped so a title
 // containing </script> cannot close it early.
 function toJsonLdScript(data) {
@@ -671,6 +693,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         const pendingTargets = syndicateTargets.filter(
           (target) => !syndicationMap[target]
         );
+        const content = absolutizeHtml(renderMarkdown(body), siteUrl);
         const excerpt = toExcerpt(attributes.excerpt, body);
         const dateIso = toPublishedIso(normalizedDate, parsedDate);
         const ogImage = await resolveOgImage({
@@ -708,7 +731,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             updatedIso,
             tags: postTags,
             tagFilterKey: postTags.map(normalizeFilterValue).join("|"),
-            content: absolutizeHtml(renderMarkdown(body), siteUrl),
+            content,
             excerpt,
             url,
             siteUrl,
@@ -723,6 +746,9 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             blueskySyndicationUrl: syndicationMap["bluesky"] || "",
             mastodonSyndicationUrl: syndicationMap["mastodon"] || "",
             bridgyPublishTargets,
+            // Bluesky's own entry, for as long as the post syndicates there
+            bridgyBlueskyEntry: syndicateTargets.includes("bluesky"),
+            bridgyBlueskyLead: leadParagraph(content),
             socialBlurb,
             socialMastodonBlurb,
             socialHashtags,
