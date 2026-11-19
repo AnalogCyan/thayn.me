@@ -18,10 +18,13 @@ syndication:
   {}
 syndicationStatus:
   bluesky: "requested"
+  mastodon: "requested"
 syndicationRequestedAt:
   bluesky: "2026-11-19T17:23:03.459Z"
+  mastodon: "2026-11-19T17:23:03.459Z"
 syndicationCheckedAt:
   bluesky: "2026-11-19T17:23:03.459Z"
+  mastodon: "2026-11-19T17:23:03.459Z"
 ---
 
 It used to be that every September, the internet broke a little, and every October, it healed. I missed it by a bit, I'm a little too young, but I know the history: [Usenet](https://en.wikipedia.org/wiki/Usenet) was the big public conversation network before the web, and through the eighties it ran mostly on university and research networks. Every September, a new class of freshmen logged in with fresh accounts. They top-posted. They typed in ALL CAPS. They asked questions the FAQ had been answering for years. The old-timers yelled at them. Some learned the rules, some gave up, and by October everything was quiet again. September was loud, but it ended. It always ended.
