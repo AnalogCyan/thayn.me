@@ -1,0 +1,4 @@
+# Forced alignment for tools/read-aloud/align.py. CPU is enough.
+numpy==2.5.5
+torch==2.15.0
+torchaudio==2.11.1
