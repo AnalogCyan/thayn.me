@@ -109,7 +109,12 @@ async function build(posts) {
   }
   const { stdout, stderr } = await run(process.execPath, ["build.js"], {
     cwd: dir,
-    env: { ...process.env, BLOG_INCLUDE_DRAFTS: "", CONTEXT: "" },
+    env: {
+      ...process.env,
+      BLOG_INCLUDE_DRAFTS: "",
+      CONTEXT: "",
+      OG_CARD_CACHE_DIR: path.join(dir, "og-cache"),
+    },
   });
   const page = async (slug) =>
     parse(
@@ -223,11 +228,13 @@ test("the card image has alt text and a size, and a post can replace it", async 
   });
   t.after(() => rm(s.dir, { recursive: true, force: true }));
 
+  // Without an image of its own, a post gets its generated card
   const plain = await s.page("plain");
-  assert.deepEqual(meta(plain, "og:image"), [
-    "https://thayn.me/media/og-image.png",
-  ]);
-  assert.match(meta(plain, "og:image:alt")[0], /^Cyan's Memoji avatar/);
+  assert.match(
+    meta(plain, "og:image")[0],
+    /^https:\/\/thayn\.me\/media\/og\/plain\.[0-9a-f]{12}\.png$/
+  );
+  assert.deepEqual(meta(plain, "og:image:alt"), ["Plain: Body."]);
   assert.deepEqual(meta(plain, "og:image:width"), ["1200"]);
   assert.deepEqual(meta(plain, "og:image:height"), ["630"]);
 

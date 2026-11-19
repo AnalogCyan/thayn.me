@@ -21,6 +21,14 @@ import {
   normalizeSyndicationMap,
 } from "./lib/bridgy-syndication.js";
 import { toSocialFields } from "./lib/social-post.js";
+import {
+  CARD_HEIGHT,
+  CARD_WIDTH,
+  buildCard,
+  cardAlt,
+  cardFields,
+  pruneCardCache,
+} from "./lib/og-card.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -43,6 +51,12 @@ const DEFAULT_OG_IMAGE = {
   width: 1200,
   height: 630,
 };
+
+// Drawn cards survive between builds here; Netlify keeps node_modules
+const OG_CARD_CACHE_DIR =
+  process.env.OG_CARD_CACHE_DIR ||
+  path.join(__dirname, "node_modules", ".cache", "og-cards");
+const ogCards = { used: new Set(), drawn: 0, cached: 0 };
 
 const POST_READ_CONCURRENCY = (() => {
   const raw = Number.parseInt(process.env.POST_READ_CONCURRENCY || "", 10);
@@ -353,6 +367,28 @@ function toExcerpt(rawExcerpt, markdownBody) {
   return /[.!?…]$/.test(candidate) ? candidate : `${candidate}…`;
 }
 
+// The post's opening paragraph as plain text, for Bluesky's link card,
+// without its tags and footnote markers
+function leadParagraph(html, limit = 300) {
+  const match = String(html).match(/<p>([\s\S]*?)<\/p>/);
+  if (!match) return "";
+  const text = decodeEntities(
+    stripTags(match[1].replace(/<sup[\s\S]*?<\/sup>/g, ""))
+  )
+    .replace(/\s+/g, " ")
+    .trim();
+  const cut = truncateOnWord(text, limit);
+  return cut === text ? text : `${cut}…`;
+}
+
+// The entities marked writes into text
+function decodeEntities(text) {
+  return text
+    .replace(/&(lt|gt|quot|#39);/g, (m, name) => ENTITIES[name])
+    .replace(/&amp;/g, "&");
+}
+const ENTITIES = { lt: "<", gt: ">", quot: '"', "#39": "'" };
+
 // Serializes JSON-LD for a <script> block. "<" is escaped so a title
 // containing </script> cannot close it early.
 function toJsonLdScript(data) {
@@ -370,6 +406,40 @@ function absolutizeHtml(html, siteUrl) {
 }
 
 const readAloudMedia = new Set();
+
+// A post's og:image: the one it names itself, else its generated card,
+// else the site-wide image when the card cannot be drawn
+async function resolveOgImage({ attributes, slug, siteUrl, fields }) {
+  // image is the older name for ogImage
+  const custom = attributes.ogImage || attributes.image;
+  if (custom) {
+    return {
+      url: toAbsoluteUrl(siteUrl, custom),
+      alt: attributes.ogImageAlt || "",
+    };
+  }
+  try {
+    const card = await buildCard({
+      fields,
+      slug,
+      publicDir: PUBLIC_DIR,
+      cacheDir: OG_CARD_CACHE_DIR,
+    });
+    ogCards.used.add(path.basename(card.path));
+    ogCards[card.hit ? "cached" : "drawn"] += 1;
+    return {
+      url: toAbsoluteUrl(siteUrl, card.path),
+      alt: cardAlt(fields),
+      width: CARD_WIDTH,
+      height: CARD_HEIGHT,
+    };
+  } catch (err) {
+    console.warn(
+      `⚠️ ${slug}: no social card, using the default image (${err.message})`
+    );
+    return { ...DEFAULT_OG_IMAGE, url: `${siteUrl}${DEFAULT_OG_IMAGE.path}` };
+  }
+}
 
 function buildRSS(posts, meta, siteUrl) {
   const channelUrl = toAbsoluteUrl(siteUrl, "/blog/");
@@ -623,17 +693,20 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         const pendingTargets = syndicateTargets.filter(
           (target) => !syndicationMap[target]
         );
-        // image is the older name for ogImage
-        const customOgImage = attributes.ogImage || attributes.image;
-        const ogImage = customOgImage
-          ? {
-              url: toAbsoluteUrl(siteUrl, customOgImage),
-              alt: attributes.ogImageAlt || "",
-            }
-          : {
-              ...DEFAULT_OG_IMAGE,
-              url: `${siteUrl}${DEFAULT_OG_IMAGE.path}`,
-            };
+        const content = absolutizeHtml(renderMarkdown(body), siteUrl);
+        const excerpt = toExcerpt(attributes.excerpt, body);
+        const dateIso = toPublishedIso(normalizedDate, parsedDate);
+        const ogImage = await resolveOgImage({
+          attributes,
+          slug,
+          siteUrl,
+          fields: cardFields({
+            title: attributes.title,
+            excerpt,
+            dateIso,
+            tags: postTags,
+          }),
+        });
         const bridgyPublishTargets = pendingTargets.map(
           (target) => BRIDGY_PUBLISH_TARGETS[target]
         );
@@ -653,13 +726,13 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             author: attributes.author || "Cyan Thayn",
             authorUrl,
             date: normalizedDate,
-            dateIso: toPublishedIso(normalizedDate, parsedDate),
+            dateIso,
             dateMs: parsedDate.getTime(),
             updatedIso,
             tags: postTags,
             tagFilterKey: postTags.map(normalizeFilterValue).join("|"),
-            content: absolutizeHtml(renderMarkdown(body), siteUrl),
-            excerpt: toExcerpt(attributes.excerpt, body),
+            content,
+            excerpt,
             url,
             siteUrl,
             canonicalUrl,
@@ -673,6 +746,9 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             blueskySyndicationUrl: syndicationMap["bluesky"] || "",
             mastodonSyndicationUrl: syndicationMap["mastodon"] || "",
             bridgyPublishTargets,
+            // Bluesky's own entry, for as long as the post syndicates there
+            bridgyBlueskyEntry: syndicateTargets.includes("bluesky"),
+            bridgyBlueskyLead: leadParagraph(content),
             socialBlurb,
             socialMastodonBlurb,
             socialHashtags,
@@ -680,13 +756,13 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
               "@context": "https://schema.org",
               "@type": "BlogPosting",
               headline: attributes.title,
-              description: toExcerpt(attributes.excerpt, body),
+              description: excerpt,
               author: {
                 "@type": "Person",
                 name: attributes.author || "Cyan Thayn",
                 url: authorUrl,
               },
-              datePublished: toPublishedIso(normalizedDate, parsedDate),
+              datePublished: dateIso,
               ...(updatedIso ? { dateModified: updatedIso } : {}),
               image: ogImage.url,
               ...(postTags.length ? { keywords: postTags.join(", ") } : {}),
@@ -795,6 +871,10 @@ async function build() {
     .slice(0, 8);
   await engine.buildPages(capsules, config, usedCapsules);
   await buildBlog(capsules, config, usedCapsules, siteUrl);
+  await pruneCardCache(OG_CARD_CACHE_DIR, ogCards.used);
+  console.log(
+    `🖼️ Social cards: ${ogCards.drawn} drawn, ${ogCards.cached} from cache`
+  );
   await engine.bundleStyles(
     capsules,
     usedCapsules,

@@ -29,6 +29,10 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@AnalogCyan" />
     <meta name="twitter:creator" content="@AnalogCyan" />
+    <meta name="twitter:image" content="{{ogImage.url}}" />
+    {{#if ogImage.alt}}
+    <meta name="twitter:image:alt" content="{{ogImage.alt}}" />
+    {{/if}}
     <link rel="canonical" href="{{canonicalUrl}}" />
 
     <script type="application/ld+json">
@@ -189,6 +193,26 @@
           </nav>
         </footer>
       </article>
+      {{#if bridgyBlueskyEntry}}
+      <!-- What Bridgy posts to Bluesky. Its source URL ends in
+           #bridgy-bluesky, so Bridgy reads only this entry: the social card
+           becomes the link card's thumbnail, and the opening paragraph its
+           description (granary ignores a summary that equals the content). Mastodon reads the article above, which has no
+           image, so it keeps its own link card. -->
+      <div id="bridgy-bluesky" class="h-entry" hidden>
+        <a class="u-url p-name" href="{{canonicalUrl}}">{{title}}</a>
+        <time class="dt-published" datetime="{{dateIso}}"></time>
+        <p class="p-summary">{{socialBlurb}}</p>
+        <p class="e-content">{{bridgyBlueskyLead}}</p>
+        <img
+          class="u-featured"
+          src="{{ogImage.url}}"
+          alt="{{ogImage.alt}}"
+          loading="lazy"
+        />
+        <data class="p-bridgy-omit-link" value="maybe"></data>
+      </div>
+      {{/if}}
     </main>
 
     <drop capsule="footer">

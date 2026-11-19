@@ -146,7 +146,13 @@ async function site({ posts, recordings = {}, staticFiles = {}, env = {} }) {
   try {
     ({ stdout, stderr } = await run(process.execPath, ["build.js"], {
       cwd: dir,
-      env: { ...process.env, BLOG_INCLUDE_DRAFTS: "", CONTEXT: "", ...env },
+      env: {
+        ...process.env,
+        BLOG_INCLUDE_DRAFTS: "",
+        CONTEXT: "",
+        OG_CARD_CACHE_DIR: path.join(dir, "og-cache"),
+        ...env,
+      },
     }));
   } catch (err) {
     ({ stdout, stderr } = err);
