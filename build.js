@@ -19,6 +19,7 @@ import {
   normalizeSyndicateTargets,
   normalizeSyndicationMap,
 } from "./lib/bridgy-syndication.js";
+import { toSocialFields } from "./lib/social-post.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -614,6 +615,13 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         const bridgyPublishTargets = pendingTargets.map(
           (target) => BRIDGY_PUBLISH_TARGETS[target]
         );
+        const {
+          socialBlurb,
+          socialMastodonBlurb,
+          socialHashtags,
+          socialWarning,
+        } = toSocialFields(attributes, filePath);
+        if (socialWarning) console.warn(`⚠️ ${slug}: ${socialWarning}`);
 
         return {
           slug,
@@ -645,6 +653,9 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             blueskySyndicationUrl: syndicationMap["bluesky"] || "",
             mastodonSyndicationUrl: syndicationMap["mastodon"] || "",
             bridgyPublishTargets,
+            socialBlurb,
+            socialMastodonBlurb,
+            socialHashtags,
             jsonLd: toJsonLdScript({
               "@context": "https://schema.org",
               "@type": "BlogPosting",

@@ -64,6 +64,20 @@
               <data class="u-photo" value="/media/profile.webp"></data>
             </span>
           </p>
+          <!-- What Bridgy Publish posts: Bluesky takes the summary under the
+               article card, Mastodon its own text with the link for its card -->
+          <p class="p-summary" hidden>{{socialBlurb}}</p>
+          <div class="e-bridgy-mastodon-content" hidden>
+            <p>{{title}}</p>
+            {{#if socialMastodonBlurb}}
+            <p>{{socialMastodonBlurb}}</p>
+            {{/if}}
+            <p><a href="{{canonicalUrl}}">{{canonicalUrl}}</a></p>
+            {{#if socialHashtags}}
+            <p>{{socialHashtags}}</p>
+            {{/if}}
+          </div>
+          <data class="p-bridgy-omit-link" value="maybe" hidden></data>
         </header>
         {{#if readAloud}}
         <!-- Hidden until audio-sync.js runs, so readers without JS get no dead controls -->
