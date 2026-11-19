@@ -306,13 +306,6 @@
     .nav-pill__link::after {
       display: none;
     }
-
-    @media (prefers-reduced-motion: reduce) {
-      .nav-pill__list::before,
-      .nav-pill__list::after {
-        transition: opacity 0.2s ease;
-      }
-    }
   }
 }
 
@@ -466,13 +459,13 @@
   }
 
   .nav-pill__toggle .nav-pill__icon-close,
-  .nav-pill:has(.nav-pill__list:popover-open)
+  .nav-pill:has(.nav-pill__list:is(:popover-open, .is-open))
     .nav-pill__toggle
     .nav-pill__icon-menu {
     display: none;
   }
 
-  .nav-pill:has(.nav-pill__list:popover-open)
+  .nav-pill:has(.nav-pill__list:is(:popover-open, .is-open))
     .nav-pill__toggle
     .nav-pill__icon-close {
     display: block;

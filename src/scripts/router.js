@@ -387,8 +387,6 @@
         showPage();
       })
       .then(function () {
-        window.dispatchEvent(new Event("resize"));
-
         // A swapped <main> is a new page; move focus so it is announced
         var heading = main.querySelector("h1") || main;
         heading.setAttribute("tabindex", "-1");

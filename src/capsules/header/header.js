@@ -6,18 +6,35 @@
     const list = nav?.querySelector(".nav-pill__list");
     if (!list) return;
 
-    // Browsers older than popover get a class toggle instead
+    // Browsers older than popover get a class toggle instead, with the
+    // state, Escape and outside clicks that popover would have handled
     const native = "popover" in HTMLElement.prototype;
+    const toggle = nav.querySelector(".nav-pill__toggle");
+    const setOpen = (open) => {
+      list.classList.toggle("is-open", open);
+      toggle?.setAttribute("aria-expanded", String(open));
+    };
     if (!native) {
-      nav
-        .querySelector(".nav-pill__toggle")
-        ?.addEventListener("click", () => list.classList.toggle("is-open"));
+      setOpen(false);
+      toggle?.addEventListener("click", () =>
+        setOpen(!list.classList.contains("is-open"))
+      );
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape" || !list.classList.contains("is-open")) {
+          return;
+        }
+        setOpen(false);
+        toggle?.focus();
+      });
+      document.addEventListener("click", (event) => {
+        if (!nav.contains(event.target)) setOpen(false);
+      });
     }
 
     // The menu does not close on its own when a link swaps the page in
     // place or when focus leaves it
     const close = () => {
-      if (!native) list.classList.remove("is-open");
+      if (!native) setOpen(false);
       else if (list.matches(":popover-open")) list.hidePopover();
     };
     list.addEventListener("click", (event) => {
