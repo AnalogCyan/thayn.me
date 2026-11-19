@@ -8,6 +8,9 @@ excerpt: "Eternal September never ended. Now AI-driven attacks have done the sam
 draft: false
 readAloud: true
 indieNews: true
+elsewhere:
+  - name: IndieNews
+    url: https://news.indieweb.org/en/thayn.me/blog/eternal-october/
 hashtags:
   - "InfoSec"
   - "AI"
