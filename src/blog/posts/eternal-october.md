@@ -36,9 +36,9 @@ Thirty-plus years later, I think it got a sibling. This October. I may have miss
 
 People started calling it **Black October**[^1], and unlike a lot of security naming, this one was earned. On October 21, two critical flaws in the PHP runtime, soon nicknamed PHP2Shell, were reported exploited in the wild[^2]. PHP runs nearly 70% of websites, by some estimates[^3]. The fixes shipped about six hours after the first reports of attacks, which sounds heroic until you sit with the details: researchers had used AI to find the flaws[^4], two separate teams with two different models[^2], and there was no telling who else had. The next day, a viral post called the previous two days "the most serious 48 hours in cybersecurity history."[^5]
 
-The rest of October looked the same: a supply-chain attack on LiteLLM that, for a couple of hours, shipped a password-stealing backdoor to anyone who installed the new version[^6], an intruder at Railway who may have reached customer environment variables and decrypted some of them[^7], Quest Diagnostics confirming a breach touching patients' personal and health data[^8], browser makers racing to distrust eMudhra after eight of the certificate authority's keys turned out to be guessable almost instantly[^9], and Japan's ruling party declaring "a state of emergency in cyber space" after a wave of attacks hit banks, rail and retail[^10]. And in South Korea, CrowdStrike assessed that a single individual with agentic AI tools was behind a series of attacks on financial institutions[^11]. Not all of that was AI. But it all landed at once, on people who were already stretched.
+The rest of October looked the same: a supply-chain attack on LiteLLM that, for a couple of hours, shipped a password-stealing backdoor to anyone who installed the new version[^6], an intruder at Railway who may have reached customer environment variables and decrypted some of them[^7], Quest Diagnostics confirming a breach touching patients' personal and health data[^8], browser makers racing to distrust eMudhra after eight of the certificate authority's keys turned out to be guessable almost instantly[^9], and Japan's ruling party declaring "a state of emergency in cyber space" after a wave of attacks hit banks, rail and retail[^10]. And in South Korea, CrowdStrike traced attacks on several financial institutions to an unnamed attacker driving agentic AI tools[^crowdstrike], and a policy analysis read it as the work of a single person[^11]. Not all of that was AI. But it all landed at once, on people who were already stretched.
 
-That last one is the part I can't stop thinking about. One person. One subscription, basically. Operations that used to take a crew now fit in a terminal window.
+That last one is the part I can't stop thinking about. Maybe one person. One subscription, basically. Operations that used to take a crew now fit in a terminal window.
 
 ## The Difference
 
@@ -103,6 +103,8 @@ For now, I crawl back into the server room. <span aria-hidden="true">&gt;:3</spa
 [^10]: [A spate of cyber attacks has rocked Japan, and it's spooked lawmakers, ITPro](https://itpro.com/security/cyber-attacks/a-spate-of-cyber-attacks-has-rocked-japan-and-its-spooked-lawmakers)
 
 [^11]: [Cybersecurity's "Black October", Progressive Policy Institute](https://www.progressivepolicy.org/cybersecuritys-black-october)
+
+[^crowdstrike]: [Unknown Threat Actor Uses AI-Driven ARTEX to Target South Korean Finance, CrowdStrike](https://www.crowdstrike.com/en-us/blog/unknown-threat-actor-uses-artex-to-target-south-korean-finance/)
 
 [^12]: [Things Will Get Worse Before They Get Better: Anthropic Deputy Chief Information Security Officer On Recent Cyber Incidents, OfficeChai](https://officechai.com/ai/things-will-get-worse-before-they-get-better-anthropic-deputy-chief-information-security-officer-on-recent-cyber-incidents/)
 
