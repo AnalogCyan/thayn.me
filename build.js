@@ -600,6 +600,8 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
           attributes.canonical
         );
         const canonicalUrl = canonicalOverride || defaultCanonical;
+        // Open Graph wants a profile URL for article:author, not a name
+        const authorUrl = `${siteUrl}/about`;
 
         const url = defaultPath;
         const syndicationMap = normalizeSyndicationMap(attributes.syndication);
@@ -619,6 +621,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
           data: {
             title: attributes.title,
             author: attributes.author || "Cyan Thayn",
+            authorUrl,
             date: normalizedDate,
             dateIso: toPublishedIso(normalizedDate, parsedDate),
             dateMs: parsedDate.getTime(),
@@ -650,7 +653,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
               author: {
                 "@type": "Person",
                 name: attributes.author || "Cyan Thayn",
-                url: `${siteUrl}/about`,
+                url: authorUrl,
               },
               datePublished: toPublishedIso(normalizedDate, parsedDate),
               ...(updatedIso ? { dateModified: updatedIso } : {}),
