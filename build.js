@@ -8,6 +8,7 @@ import { promisify } from "util";
 import { fileURLToPath } from "url";
 import fm from "front-matter";
 import { marked } from "marked";
+import markedFootnote from "marked-footnote";
 import Handlebars from "handlebars";
 import { createEngine } from "gachakit";
 import { writeVersionFile } from "./tools/version.js";
@@ -168,6 +169,8 @@ function renderMarkdown(body) {
   headingSlugs = new Map();
   return marked(body);
 }
+
+marked.use(markedFootnote());
 
 marked.setOptions({
   gfm: true,
