@@ -7,7 +7,7 @@
 
 - [About](https://thayn.me/about): Bio and social links
 - [Projects](https://thayn.me/projects): Project showcase
-- [Music](https://thayn.me/music): Music library and profiles
+- [Music](https://thayn.me/music): Music library and listening
 - [Blog](https://thayn.me/blog/): Notes, updates, and experiments
 - [More](https://thayn.me/more): Feeds, site files, and the webring
 

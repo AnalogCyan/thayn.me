@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: "remixicon";
-  src: url("/fonts/remixicon.woff2?v=2abde980") format("woff2");
+  src: url("/fonts/remixicon.woff2?v=714767b9") format("woff2");
   font-display: swap;
 }
 
@@ -74,10 +74,6 @@
 
 .ri-file-text-line:before {
   content: "\ed0f";
-}
-
-.ri-fingerprint-line:before {
-  content: "\ed31";
 }
 
 .ri-folder-3-line:before {
