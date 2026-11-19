@@ -419,7 +419,9 @@ module.exports = {
     try {
       await ledger.save();
     } catch (error) {
-      console.log(`send-webmentions: ledger save failed (${error})`);
+      console.warn(
+        `send-webmentions: WARNING ledger save failed, these mentions will be sent again next time (${error})`
+      );
     }
   },
 };
