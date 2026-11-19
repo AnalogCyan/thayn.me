@@ -407,6 +407,67 @@ function absolutizeHtml(html, siteUrl) {
 
 const readAloudMedia = new Set();
 
+// A draft's images and other media live in src/static like everything else,
+// so they would ship at guessable URLs before the post does. Anything a built
+// page, feed or asset still names stays. The whole file is scanned, so front
+// matter images, reference-style links, srcset lists and full URLs count too.
+const MEDIA_REF =
+  /(?:^|[\s"'(=:,]|https?:\/\/[^\s/"'()<>]+)(\/media\/[^\s"'()<>?#,]+)/gm;
+// Built pages name media by absolute URL too, so any mention counts there:
+// a false match only keeps a file
+const BUILT_MEDIA_REF = /(\/media\/[^\s"'()<>?#]+)/g;
+const draftMedia = new Set();
+
+function mediaRefs(text, pattern = MEDIA_REF) {
+  const refs = new Set();
+  for (const [, ref] of String(text).matchAll(pattern)) {
+    try {
+      refs.add(decodeURI(ref));
+    } catch {
+      refs.add(ref);
+    }
+  }
+  return refs;
+}
+
+const BINARY_MEDIA =
+  /\.(png|jpe?g|gif|webp|avif|ico|m4a|mp3|ogg|wav|mp4|webm|woff2?|ttf|otf|pdf|zip)$/i;
+
+async function builtText(dir) {
+  const parts = [];
+  for (const entry of await fs.readdir(dir, {
+    withFileTypes: true,
+    recursive: true,
+  })) {
+    // Skip only formats that can't name a URL; any other file might
+    if (!entry.isFile() || BINARY_MEDIA.test(entry.name)) continue;
+    parts.push(
+      await fs.readFile(path.join(entry.parentPath, entry.name), "utf8")
+    );
+  }
+  // HTML and XML write "&" in a file name as "&amp;"
+  return parts.join("\n").replace(/&amp;/g, "&");
+}
+
+async function dropDraftMedia() {
+  if (!draftMedia.size) return;
+  // Compare resolved files, not URLs, so "/media/x/../a.png" can't remove
+  // the "/media/a.png" a live page uses
+  const toFile = (ref) => path.resolve(PUBLIC_DIR, "." + ref);
+  // A comma may end a srcset entry or belong to the name: keep both readings
+  const published = new Set(
+    [...mediaRefs(await builtText(PUBLIC_DIR), BUILT_MEDIA_REF)]
+      .flatMap((ref) => [ref, ...ref.split(",")])
+      .map(toFile)
+  );
+  const mediaRoot = path.join(PUBLIC_DIR, "media") + path.sep;
+  for (const ref of draftMedia) {
+    const file = toFile(ref);
+    if (published.has(file) || !file.startsWith(mediaRoot)) continue;
+    await fs.rm(file, { force: true });
+  }
+}
+
 // A post's og:image: the one it names itself, else its generated card,
 // else the site-wide image when the card cannot be drawn
 async function resolveOgImage({ attributes, slug, siteUrl, fields }) {
@@ -649,6 +710,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         }
 
         if (attributes.draft && process.env.BLOG_INCLUDE_DRAFTS !== "1") {
+          for (const ref of mediaRefs(markdown)) draftMedia.add(ref);
           return null;
         }
         const { raw: normalizedDate, parsed: parsedDate } = parsePostDate(
@@ -887,6 +949,7 @@ async function build() {
   await engine.bundleScripts(usedCapsules, capsules, config);
   await copyStatic();
   await pruneReadAloudMedia(PUBLIC_DIR, readAloudMedia);
+  await dropDraftMedia();
   await engine.writeSitemap(config, await indexablePages());
 
   const { version, commit } = await writeVersionFile(PUBLIC_DIR);
