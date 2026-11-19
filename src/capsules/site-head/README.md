@@ -1,7 +1,8 @@
 # Site Head Capsule
 
-The `<head>` tags every page shares: viewport, theme colors, manifest and
-icons, the font preload, theme-init, and the bundles.
+The `<head>` tags every page shares: viewport, theme colors, the
+`fediverse:creator` attribution, manifest and icons, the font preload,
+theme-init, and the bundles.
 
 ## Usage
 
