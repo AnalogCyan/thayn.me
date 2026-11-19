@@ -15,6 +15,7 @@ footer[data-capsule="footer"] {
      against whatever the gradient is doing behind it. */
   color: var(--text-muted);
   text-shadow: var(--text-halo);
+  view-transition-name: site-footer;
 }
 
 @media print {

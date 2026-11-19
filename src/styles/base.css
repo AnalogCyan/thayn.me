@@ -55,6 +55,21 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--header-gap);
+
+  /* The column is as wide as the header's nav. Main and the footer take no
+     part in that width (contain), they fill whatever the header asks for. */
+  @media (width > 720px) {
+    box-sizing: border-box;
+    width: fit-content;
+    min-width: min(var(--container-min-width), 100%);
+    max-width: min(var(--container-max-width), 100%);
+    margin-inline: auto;
+
+    & > main,
+    & > footer {
+      contain: inline-size;
+    }
+  }
 }
 
 main {
