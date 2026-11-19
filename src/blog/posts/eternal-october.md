@@ -1,6 +1,6 @@
 ---
 title: "Eternal October"
-date: 2026-11-19T17:17:00Z
+date: "2026-11-19T17:17:00.000Z"
 categories:
   - "Security"
   - "AI"
@@ -8,12 +8,20 @@ excerpt: "Eternal September never ended. Now AI-driven attacks have done the sam
 draft: false
 readAloud: true
 hashtags:
-  - InfoSec
-  - AI
-  - EternalSeptember
+  - "InfoSec"
+  - "AI"
+  - "EternalSeptember"
 syndicate:
-  - bluesky
-  - mastodon
+  - "bluesky"
+  - "mastodon"
+syndication:
+  {}
+syndicationStatus:
+  bluesky: "requested"
+syndicationRequestedAt:
+  bluesky: "2026-11-19T17:23:03.459Z"
+syndicationCheckedAt:
+  bluesky: "2026-11-19T17:23:03.459Z"
 ---
 
 It used to be that every September, the internet broke a little, and every October, it healed. I missed it by a bit, I'm a little too young, but I know the history: [Usenet](https://en.wikipedia.org/wiki/Usenet) was the big public conversation network before the web, and through the eighties it ran mostly on university and research networks. Every September, a new class of freshmen logged in with fresh accounts. They top-posted. They typed in ALL CAPS. They asked questions the FAQ had been answering for years. The old-timers yelled at them. Some learned the rules, some gave up, and by October everything was quiet again. September was loud, but it ended. It always ended.
