@@ -20,7 +20,7 @@ import {
   normalizeSyndicateTargets,
   normalizeSyndicationMap,
 } from "./lib/bridgy-syndication.js";
-import { toSocialFields } from "./lib/social-post.js";
+import { normalizeElsewhere, toSocialFields } from "./lib/social-post.js";
 import {
   CARD_HEIGHT,
   CARD_WIDTH,
@@ -754,6 +754,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             socialHashtags,
             // IndieNews lists a post that links to it as u-syndication
             indieNews: attributes.indieNews === true,
+            elsewhere: normalizeElsewhere(attributes.elsewhere, filePath),
             jsonLd: toJsonLdScript({
               "@context": "https://schema.org",
               "@type": "BlogPosting",

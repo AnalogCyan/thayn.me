@@ -196,6 +196,16 @@
               <span>Mastodon</span>
             </a>
           </nav>
+          {{#if elsewhere.length}}
+          <p class="post-elsewhere">
+            Also on {{#each elsewhere}}<a
+              class="u-syndication"
+              href="{{url}}"
+              rel="noopener"
+              >{{name}}</a
+            >{{#unless @last}}, {{/unless}}{{/each}}
+          </p>
+          {{/if}}
         </footer>
       </article>
       {{#if bridgyBlueskyEntry}}

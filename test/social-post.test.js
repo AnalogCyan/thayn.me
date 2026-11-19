@@ -19,6 +19,7 @@ import test from "node:test";
 import { promisify } from "node:util";
 import { parse } from "parse5";
 import {
+  normalizeElsewhere,
   SOCIAL_BLURB_LIMIT,
   countGraphemes,
   normalizeHashtags,
@@ -255,4 +256,21 @@ test("a hashtag needs a letter and may carry combining marks", () => {
     "हिन्दी",
     "web2026",
   ]);
+});
+
+test("elsewhere entries need a name and an https url", () => {
+  assert.deepEqual(normalizeElsewhere(undefined), []);
+  assert.deepEqual(
+    normalizeElsewhere([{ name: " LinkedIn ", url: "https://example.com/p" }]),
+    [{ name: "LinkedIn", url: "https://example.com/p" }]
+  );
+  assert.throws(() => normalizeElsewhere("x"), /expected a list/);
+  assert.throws(
+    () => normalizeElsewhere([{ name: "X", url: "http://example.com" }]),
+    /https url/
+  );
+  assert.throws(
+    () => normalizeElsewhere([{ url: "https://example.com" }]),
+    /needs a name/
+  );
 });
