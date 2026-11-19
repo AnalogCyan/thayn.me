@@ -277,7 +277,8 @@ async function updateFileContent(path, branch, sha, content, message) {
 
 function buildFrontmatter(attributes, body) {
   const yaml = serializeYaml(attributes);
-  return `---\n${yaml}\n---\n${body}`;
+  // front-matter drops the blank line after the fence; Prettier wants it back
+  return `---\n${yaml}\n---\n\n${body.replace(/^\n+/, "")}`;
 }
 
 function buildCanonicalUrl(attributes, slug, siteUrl) {

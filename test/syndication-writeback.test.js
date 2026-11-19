@@ -381,3 +381,22 @@ syndicationCheckedAt:
   assert.deepEqual(messages, []);
   assert.equal(bridgyCalls.length, 1);
 });
+
+test("a written-back post passes Prettier", async () => {
+  await addPost(
+    "i.md",
+    `
+title: "I"
+date: "2026-11-01"
+syndicate:
+  - mastodon
+`,
+    "\nHello.\n"
+  );
+
+  await runSyndicationPostDeploy();
+
+  const { content } = files.get("src/blog/posts/i.md");
+  const prettier = await import("prettier");
+  assert.equal(content, await prettier.format(content, { parser: "markdown" }));
+});
