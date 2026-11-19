@@ -73,6 +73,8 @@ Nobody elected Eternal September. Dave Fischer made a joke, it was true, and it 
 
 Do you see the same shape I do? Is this a new climate, or a storm that will pass? I genuinely want to know where you think I'm wrong. Reply on [Mastodon](https://tech.lgbt/@AnalogCyan) or [Bluesky](https://bsky.app/profile/thayn.me), or skip the middleman and write your own post, then send me a webmention.
 
+I'm keeping a running timeline of all of this, with sources, at [october.thayn.me](https://october.thayn.me). It updates daily, since the season hasn't ended.
+
 There's also a longer post about AI in general in the works. It's done when it's done: writing about a flood is easier when you're not also sandbagging against it, and AI keeps this sysadmin busy running three stacks while the industry rebuilds itself. More on that later.
 
 For now, I crawl back into the server room. <span aria-hidden="true">&gt;:3</span>
