@@ -31,6 +31,9 @@
 
     <link rel="stylesheet" href="/blog/styles.css" />
     <script type="module" src="/blog/scripts/webmentions.js"></script>
+    {{#if readAloud}}
+    <script type="module" src="/blog/scripts/audio-sync.js"></script>
+    {{/if}}
 
     <title>{{title}} — Cyan Thayn</title>
   </head>
@@ -62,6 +65,40 @@
             </span>
           </p>
         </header>
+        {{#if readAloud}}
+        <!-- Hidden until audio-sync.js runs, so readers without JS get no dead controls -->
+        <div class="read-aloud-dock" hidden>
+          <div
+            class="read-aloud-player"
+            role="region"
+            aria-label="Read-aloud player"
+            data-timings="{{readAloud.timings}}"
+            data-duration="{{readAloud.duration}}"
+          >
+            <audio preload="none" src="{{readAloud.audio}}"></audio>
+            <button
+              class="read-aloud-toggle"
+              type="button"
+              aria-label="Play the read-aloud"
+            >
+              <i class="ri-play-fill" aria-hidden="true"></i>
+            </button>
+            <span class="read-aloud-time" data-role="current">0:00</span>
+            <input
+              class="read-aloud-seek"
+              type="range"
+              min="0"
+              max="{{readAloud.duration}}"
+              value="0"
+              step="0.1"
+              aria-label="Seek through the read-aloud"
+            />
+            <span class="read-aloud-time" data-role="duration"
+              >{{readAloud.durationText}}</span
+            >
+          </div>
+        </div>
+        {{/if}}
         <div class="blog-post-content e-content">{{{content}}}</div>
         <section
           id="webmentions"

@@ -4,7 +4,7 @@
 
 @font-face {
   font-family: "remixicon";
-  src: url("/fonts/remixicon.woff2?v=2abde980") format("woff2");
+  src: url("/fonts/remixicon.woff2?v=0d1b2067") format("woff2");
   font-display: swap;
 }
 
@@ -138,6 +138,14 @@
 
 .ri-music-line:before {
   content: "\ef85";
+}
+
+.ri-pause-line:before {
+  content: "\efd8";
+}
+
+.ri-play-fill:before {
+  content: "\f00a";
 }
 
 .ri-repeat-fill:before {
