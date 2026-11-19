@@ -7,6 +7,7 @@ categories:
 excerpt: "Eternal September never ended. Now AI-driven attacks have done the same to October."
 draft: false
 readAloud: true
+indieNews: true
 hashtags:
   - "InfoSec"
   - "AI"

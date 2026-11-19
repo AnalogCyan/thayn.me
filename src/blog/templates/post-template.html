@@ -88,6 +88,11 @@
             {{/if}}
           </div>
           <data class="p-bridgy-omit-link" value="maybe" hidden></data>
+          {{#if indieNews}}
+          <a class="u-syndication" href="https://news.indieweb.org/en" hidden
+            >IndieNews</a
+          >
+          {{/if}}
         </header>
         {{#if readAloud}}
         <!-- Hidden until audio-sync.js runs, so readers without JS get no dead controls -->
