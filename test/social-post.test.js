@@ -191,3 +191,52 @@ test("the post page carries the hidden Bridgy markup", async (t) => {
   assert.match(s.log, /long: social blurb is 349 graphemes, over 280/);
   assert.doesNotMatch(s.log, /(full|bare): social blurb/);
 });
+
+function meta(doc, property, found = []) {
+  if (doc.nodeName === "meta" && attr(doc, "property") === property) {
+    found.push(attr(doc, "content"));
+  }
+  for (const child of doc.childNodes || []) meta(child, property, found);
+  return found;
+}
+
+test("the card image has alt text and a size, and a post can replace it", async (t) => {
+  const s = await build({
+    plain: [
+      "---",
+      'title: "Plain"',
+      "date: 2026-11-01",
+      "---",
+      "",
+      "Body.",
+    ].join("\n"),
+    own: [
+      "---",
+      'title: "Own Image"',
+      "date: 2026-11-01",
+      "ogImage: /media/blog/own.png",
+      'ogImageAlt: "A hand-drawn title card."',
+      "---",
+      "",
+      "Body.",
+    ].join("\n"),
+  });
+  t.after(() => rm(s.dir, { recursive: true, force: true }));
+
+  const plain = await s.page("plain");
+  assert.deepEqual(meta(plain, "og:image"), [
+    "https://thayn.me/media/og-image.png",
+  ]);
+  assert.match(meta(plain, "og:image:alt")[0], /^Cyan's Memoji avatar/);
+  assert.deepEqual(meta(plain, "og:image:width"), ["1200"]);
+  assert.deepEqual(meta(plain, "og:image:height"), ["630"]);
+
+  const own = await s.page("own");
+  assert.deepEqual(meta(own, "og:image"), [
+    "https://thayn.me/media/blog/own.png",
+  ]);
+  assert.deepEqual(meta(own, "og:image:alt"), ["A hand-drawn title card."]);
+  // Its size is unknown, so none is claimed
+  assert.deepEqual(meta(own, "og:image:width"), []);
+  assert.deepEqual(meta(own, "og:image:height"), []);
+});

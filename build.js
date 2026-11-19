@@ -35,6 +35,14 @@ const BLOG_OUTPUT_DIR = path.join(PUBLIC_DIR, "blog");
 const BLOG_STYLES_FILE = path.join(BLOG_DIR, "styles.css");
 const BLOG_SCRIPTS_DIR = path.join(BLOG_DIR, "scripts");
 const DEFAULT_POST_READ_CONCURRENCY = 4;
+// The site-wide card image; a post can set ogImage and ogImageAlt instead
+const DEFAULT_OG_IMAGE = {
+  path: "/media/og-image.png",
+  alt: "Cyan's Memoji avatar, with curly dark hair and round blue glasses, peeking over a silver laptop in front of diagonal pink, white and blue stripes.",
+  width: 1200,
+  height: 630,
+};
+
 const POST_READ_CONCURRENCY = (() => {
   const raw = Number.parseInt(process.env.POST_READ_CONCURRENCY || "", 10);
   return Number.isFinite(raw) && raw > 0 ? raw : DEFAULT_POST_READ_CONCURRENCY;
@@ -612,6 +620,17 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
         const pendingTargets = syndicateTargets.filter(
           (target) => !syndicationMap[target]
         );
+        // image is the older name for ogImage
+        const customOgImage = attributes.ogImage || attributes.image;
+        const ogImage = customOgImage
+          ? {
+              url: toAbsoluteUrl(siteUrl, customOgImage),
+              alt: attributes.ogImageAlt || "",
+            }
+          : {
+              ...DEFAULT_OG_IMAGE,
+              url: `${siteUrl}${DEFAULT_OG_IMAGE.path}`,
+            };
         const bridgyPublishTargets = pendingTargets.map(
           (target) => BRIDGY_PUBLISH_TARGETS[target]
         );
@@ -641,9 +660,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             url,
             siteUrl,
             canonicalUrl,
-            ogImage: attributes.image
-              ? toAbsoluteUrl(siteUrl, attributes.image)
-              : `${siteUrl}/media/og-image.png`,
+            ogImage,
             blueskyDiscussionUrl:
               syndicationMap["bluesky"] || "https://bsky.app/profile/thayn.me",
             mastodonDiscussionUrl:
@@ -668,9 +685,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
               },
               datePublished: toPublishedIso(normalizedDate, parsedDate),
               ...(updatedIso ? { dateModified: updatedIso } : {}),
-              image: attributes.image
-                ? toAbsoluteUrl(siteUrl, attributes.image)
-                : `${siteUrl}/media/og-image.png`,
+              image: ogImage.url,
               ...(postTags.length ? { keywords: postTags.join(", ") } : {}),
               url: canonicalUrl,
               mainEntityOfPage: canonicalUrl,
