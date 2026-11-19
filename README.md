@@ -81,6 +81,16 @@ link card from the page. Bluesky gets the blurb alone, over a card with the
 title and link. The text lives in hidden markup in the post's header, see
 `src/blog/templates/post-template.html`.
 
+To list a post on [IndieNews](https://news.indieweb.org/en), add
+`indieNews: true`. The page then links to IndieNews as `u-syndication`. After
+the deploy, send IndieNews a webmention by hand:
+
+```sh
+curl -si https://news.indieweb.org/en/webmention \
+  -d source=https://thayn.me/blog/<slug>/ \
+  -d target=https://news.indieweb.org/en
+```
+
 ## Narrating a post
 
 Narration is a synthetic voice, and the player says so. Word timings come

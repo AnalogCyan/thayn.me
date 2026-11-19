@@ -752,6 +752,8 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
             socialBlurb,
             socialMastodonBlurb,
             socialHashtags,
+            // IndieNews lists a post that links to it as u-syndication
+            indieNews: attributes.indieNews === true,
             jsonLd: toJsonLdScript({
               "@context": "https://schema.org",
               "@type": "BlogPosting",
