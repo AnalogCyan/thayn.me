@@ -264,6 +264,13 @@ for = "/media/blog/read-aloud/*"
 [headers.values]
 Cache-Control = "public, max-age=31536000, immutable"
 
+# Social cards are named by a hash of what they show, so a changed card
+# always gets a new URL
+[[headers]]
+for = "/media/og/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
 [[headers]]
 for = "/fonts/*"
 [headers.values]
