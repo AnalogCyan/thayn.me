@@ -258,6 +258,12 @@ for = "/media/*"
 [headers.values]
 Cache-Control = "public, max-age=604800"
 
+# Recordings are content-hashed, so a new one always gets a new URL
+[[headers]]
+for = "/media/blog/read-aloud/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
 [[headers]]
 for = "/fonts/*"
 [headers.values]

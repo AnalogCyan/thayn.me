@@ -13,6 +13,7 @@ import { createEngine } from "gachakit";
 import { writeVersionFile } from "./tools/version.js";
 import { getSiteUrl, getCanonicalBlogPath } from "./lib/site-url.js";
 import { canonicalizeUrl, toAbsoluteUrl } from "./lib/url.js";
+import { resolveReadAloud, pruneReadAloudMedia } from "./lib/read-aloud.js";
 import {
   BRIDGY_PUBLISH_TARGETS,
   normalizeSyndicateTargets,
@@ -356,6 +357,8 @@ function absolutizeHtml(html, siteUrl) {
   );
 }
 
+const readAloudMedia = new Set();
+
 function buildRSS(posts, meta, siteUrl) {
   const channelUrl = toAbsoluteUrl(siteUrl, "/blog/");
   const selfUrl = toAbsoluteUrl(siteUrl, "/blog/rss.xml");
@@ -612,6 +615,7 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
 
         return {
           slug,
+          readAloud: attributes.readAloud === true,
           data: {
             title: attributes.title,
             author: attributes.author || "Cyan Thayn",
@@ -664,7 +668,28 @@ async function buildBlog(capsules, config, globalUsed, siteUrl) {
 
     for (const entry of postEntries) {
       if (!entry) continue;
-      const filledTemplate = postTemplate(entry.data);
+      let filledTemplate = postTemplate(entry.data);
+      // The player goes outside the narrated text, so the page rendered
+      // without it has the same words the recording has to match
+      if (entry.readAloud) {
+        const { player, reason } = await resolveReadAloud({
+          root: __dirname,
+          slug: entry.slug,
+          html: filledTemplate,
+        });
+        if (player) {
+          entry.data.readAloud = player;
+          filledTemplate = postTemplate(entry.data);
+          readAloudMedia.add(player.audio).add(player.timings);
+        } else {
+          console.warn(`⚠️ Read-aloud left out of ${entry.slug}: ${reason}`);
+          // A production deploy must not quietly drop a narration the post
+          // asked for, whether it is stale or its files are missing
+          if (process.env.CONTEXT === "production") {
+            throw new Error(`Read-aloud for ${entry.slug}: ${reason}`);
+          }
+        }
+      }
       const outputDir = path.join(BLOG_OUTPUT_DIR, entry.slug);
       await fs.mkdir(outputDir, { recursive: true });
       const outputPath = path.join(outputDir, "index.html");
@@ -746,6 +771,7 @@ async function build() {
   );
   await engine.bundleScripts(usedCapsules, capsules, config);
   await copyStatic();
+  await pruneReadAloudMedia(PUBLIC_DIR, readAloudMedia);
   await engine.writeSitemap(config, await indexablePages());
 
   const { version, commit } = await writeVersionFile(PUBLIC_DIR);

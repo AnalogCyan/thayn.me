@@ -243,6 +243,188 @@
   display: none;
 }
 
+/* Read-aloud player + karaoke line (audio-sync.js) */
+.read-aloud-dock {
+  position: sticky;
+  top: 1rem;
+  z-index: 60;
+  margin: 0 0 1.5rem;
+  min-height: 3.7rem;
+}
+
+/* When the dock catches the top edge the player compacts and centers, so it
+   covers as little text as possible, with a deeper shadow so it reads as
+   floating */
+.read-aloud-player.is-stuck {
+  width: min(26rem, 100%);
+  margin: 0 auto;
+  padding: 0.4rem 0.9rem;
+  gap: 0.6rem;
+  box-shadow:
+    var(--shadow-xl),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.read-aloud-player.is-stuck .read-aloud-toggle {
+  width: 2.1rem;
+  height: 2.1rem;
+  font-size: 1rem;
+}
+
+.read-aloud-player.is-stuck .read-aloud-time[data-role="duration"] {
+  display: none;
+}
+
+.read-aloud-note {
+  margin: 0.4rem 0 0 1rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.read-aloud-player.is-stuck + .read-aloud-note {
+  visibility: hidden;
+}
+
+noscript audio {
+  width: 100%;
+}
+
+.read-aloud-player {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-full);
+  /* Same glass as the nav and cards */
+  background:
+    linear-gradient(135deg, var(--glass-grad-start), var(--glass-grad-end)),
+    var(--bg-main);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--bg-blur) var(--bg-saturation);
+  -webkit-backdrop-filter: var(--bg-blur) var(--bg-saturation);
+  box-shadow:
+    var(--shadow-soft),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+/* The nav's active-item pill, made round */
+.read-aloud-toggle {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--nav-highlight-border);
+  background: var(--nav-highlight) padding-box;
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
+  color: var(--text);
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+
+  & svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: currentColor;
+  }
+
+  & .read-aloud-pause,
+  &.is-playing .read-aloud-play {
+    display: none;
+  }
+
+  &.is-playing .read-aloud-pause {
+    display: block;
+  }
+
+  &:hover {
+    color: var(--accent);
+  }
+}
+
+.read-aloud-time {
+  flex: none;
+  min-width: 3.2ch;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.read-aloud-seek {
+  flex: 1;
+  min-width: 0;
+  accent-color: var(--accent-secondary);
+  cursor: pointer;
+  height: 0.9rem;
+}
+
+.read-aloud-seek::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--accent-secondary);
+  border: 2px solid var(--page-bg);
+}
+
+.read-aloud-seek::-moz-range-thumb {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: var(--accent-secondary);
+  border: 2px solid var(--page-bg);
+}
+
+.blog-post-content {
+  position: relative;
+}
+
+.read-aloud-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent-secondary);
+  box-shadow: 0 0 10px
+    color-mix(in srgb, var(--accent-secondary) 55%, transparent);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.18s ease,
+    width 0.18s ease,
+    opacity 0.3s ease;
+}
+
+.read-aloud-line.is-active {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .read-aloud-line {
+    transition: opacity 0.3s ease;
+  }
+
+  .read-aloud-player {
+    transition: none;
+  }
+}
+
+.read-aloud-player.is-unavailable :is(.read-aloud-toggle, .read-aloud-seek) {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* In-page jumps (headings, notes) land below the docked player, not under it */
+.blog-post:has(.read-aloud-dock) .blog-post-content [id] {
+  scroll-margin-top: 5rem;
+}
+
 .webmentions {
   display: flex;
   flex-direction: column;
