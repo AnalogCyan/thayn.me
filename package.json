@@ -12,7 +12,7 @@
     "icons": "node tools/subset-icons.js"
   },
   "dependencies": {
-    "@netlify/blobs": "^11.1.9",
+    "@netlify/blobs": "^11.1.10",
     "@resvg/resvg-js": "^2.6.2",
     "front-matter": "^4.0.2",
     "gachakit": "github:AnalogCyan/GachaKit#v0.1.0",
